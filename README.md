@@ -1,4 +1,4 @@
-# MAESTRO: Multi-Agent Adaptive Signal Traffic Reinforcement Optimization
+# CoLight: Cooperative Light Signal Optimization via Multi-Agent Reinforcement Learning
 
 ## Overview
 This project implements a multi-agent reinforcement learning system to optimize traffic light patterns in a simulated city grid, reducing congestion and improving traffic flow efficiency through cooperative learning.
