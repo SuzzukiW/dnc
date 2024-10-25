@@ -1,0 +1,21 @@
+dqn:
+  learning_rate: 0.001
+  gamma: 0.99
+  epsilon_start: 1.0
+  epsilon_end: 0.01
+  epsilon_decay: 0.995
+  memory_size: 10000
+  batch_size: 32
+  target_update: 10
+  hidden_size: 128
+
+training:
+  episodes: 1000
+  max_steps: 500
+  eval_interval: 10
+  save_interval: 100
+  
+checkpoint:
+  save_dir: "models/checkpoints"
+  load_checkpoint: false
+  checkpoint_path: ""

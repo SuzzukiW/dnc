@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: colight
+Version: 0.1.0
+Summary: Multi-Agent Adaptive Signal Traffic Reinforcement Optimization
+Author: George Jiang, Xiang Fu
+Requires-Python: >=3.8
+Requires-Dist: torch>=2.0.0
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: pyyaml>=5.4.1
+Requires-Dist: gymnasium>=0.28.1
+Requires-Dist: matplotlib>=3.4.3
+Requires-Dist: pandas>=1.3.0
+Requires-Dist: seaborn>=0.11.2

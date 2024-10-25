@@ -1,0 +1,21 @@
+sumo:
+  config_file: "data/sumo_nets/boston/test.sumocfg"
+  gui: true
+  simulation_steps: 3600
+  delta_time: 5
+  yellow_time: 2
+  min_green: 5
+  max_green: 50
+  max_depart_delay: 100000
+  time_to_teleport: -1
+
+reward:
+  queue_weight: 0.4
+  wait_weight: 0.4
+  emission_weight: 0.2
+  min_green_penalty: -1.0
+  max_wait_penalty: -2.0
+
+observation:
+  num_observed_lanes: 8
+  observation_radius: 50

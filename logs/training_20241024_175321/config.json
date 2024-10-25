@@ -1,0 +1,46 @@
+{
+    "sumo": {
+        "config_file": "data/sumo_nets/boston/test.sumocfg",
+        "gui": true,
+        "simulation_steps": 3600,
+        "delta_time": 5,
+        "yellow_time": 2,
+        "min_green": 5,
+        "max_green": 50,
+        "max_depart_delay": 100000,
+        "time_to_teleport": -1
+    },
+    "reward": {
+        "queue_weight": 0.4,
+        "wait_weight": 0.4,
+        "emission_weight": 0.2,
+        "min_green_penalty": -1.0,
+        "max_wait_penalty": -2.0
+    },
+    "observation": {
+        "num_observed_lanes": 8,
+        "observation_radius": 50
+    },
+    "dqn": {
+        "learning_rate": 0.001,
+        "gamma": 0.99,
+        "epsilon_start": 1.0,
+        "epsilon_end": 0.01,
+        "epsilon_decay": 0.995,
+        "memory_size": 10000,
+        "batch_size": 32,
+        "target_update": 10,
+        "hidden_size": 128
+    },
+    "training": {
+        "episodes": 1000,
+        "max_steps": 500,
+        "eval_interval": 10,
+        "save_interval": 100
+    },
+    "checkpoint": {
+        "save_dir": "models/checkpoints",
+        "load_checkpoint": false,
+        "checkpoint_path": ""
+    }
+}
