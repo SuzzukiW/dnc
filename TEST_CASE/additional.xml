@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <additional>
+    	<timedEvent type="SaveTLSStates" source="11728768465" dest="tls_states.xml" saveDetectors="true" saveConditions="true"/>
+    	<timedEvent type="SaveTLSSwitchTimes" source="11728768465" dest="tls_switches.xml"/>
+    	<timedEvent type="SaveTLSSwitchStates" source="11728768465" dest="tls_switch_states.xml"/>
+    	<timedEvent type="SaveTLSProgram" source="11728768465" dest="tls_programs.xml"/>
+    </additional>

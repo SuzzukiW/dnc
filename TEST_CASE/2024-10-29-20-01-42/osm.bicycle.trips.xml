@@ -1,0 +1,1018 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-10-29 20:01:57.627277 by osmWebWizard.py v1_21_0+0000-d7b3b481c43
+<configuration>
+    <net-file value="C:\Windows\system32\2024-10-29-20-01-42\osm.net.xml.gz"/>
+    <output-trip-file value="C:\Windows\system32\2024-10-29-20-01-42\osm.bicycle.trips.xml"/>
+    <route-file value="C:\Windows\system32\2024-10-29-20-01-42\osm.bicycle.rou.xml"/>
+    <prefix value="bike"/>
+    <trip-attributes value="departLane=&quot;best&quot;"/>
+    <fringe-start-attributes value="departSpeed=&quot;max&quot;"/>
+    <vehicle-class value="bicycle"/>
+    <fringe-factor value="2"/>
+    <vclass value="bicycle"/>
+    <via-edge-types value="highway.motorway,highway.motorway_link,highway.trunk_link,highway.primary_link,highway.secondary_link,highway.tertiary_link"/>
+    <max-distance value="8000.0"/>
+    <remove-loops value="True"/>
+    <validate value="True"/>
+    <insertion-density value="35.0"/>
+</configuration>
+-->
+
+<!-- generated on 2024-10-29 20:01:57 by Eclipse SUMO duarouter Version 1.21.0
+<duarouterConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
+
+    <input>
+        <net-file value="C:\Windows\system32\2024-10-29-20-01-42\osm.net.xml.gz"/>
+        <route-files value="C:\Windows\system32\2024-10-29-20-01-42\osm.bicycle.trips.xml"/>
+    </input>
+
+    <output>
+        <output-file value="C:\Windows\system32\2024-10-29-20-01-42\osm.bicycle.trips.xml.tmp"/>
+        <alternatives-output value="NUL"/>
+        <write-trips value="true"/>
+    </output>
+
+    <processing>
+        <remove-loops value="true"/>
+    </processing>
+
+    <time>
+        <begin value="0.0"/>
+        <end value="3600.0"/>
+    </time>
+
+    <report>
+        <no-warnings value="true"/>
+        <ignore-errors value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+</duarouterConfiguration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="bike_bicycle" vClass="bicycle"/>
+    <trip id="bike1" type="bike_bicycle" depart="3.08" departLane="best" departSpeed="max" from="-8645556#1" to="-8644647#0"/>
+    <trip id="bike3" type="bike_bicycle" depart="9.24" departLane="best" from="8649873#0" to="-217801058#0"/>
+    <trip id="bike4" type="bike_bicycle" depart="12.32" departLane="best" from="1166056604#1" to="-1115616585#0"/>
+    <trip id="bike5" type="bike_bicycle" depart="15.40" departLane="best" from="825494585#3" to="426456594#2"/>
+    <trip id="bike6" type="bike_bicycle" depart="18.48" departLane="best" from="-1112835160#5" to="-8639801#3"/>
+    <trip id="bike7" type="bike_bicycle" depart="21.55" departLane="best" from="816934280#4" to="533600032#1"/>
+    <trip id="bike10" type="bike_bicycle" depart="30.79" departLane="best" from="8646520#3" to="8637728#2"/>
+    <trip id="bike11" type="bike_bicycle" depart="33.87" departLane="best" from="-985552044#4" to="-817361891#1"/>
+    <trip id="bike12" type="bike_bicycle" depart="36.95" departLane="best" from="-8865420#4" to="1115616586#1"/>
+    <trip id="bike14" type="bike_bicycle" depart="43.11" departLane="best" from="8647670#1" to="749812082#2"/>
+    <trip id="bike16" type="bike_bicycle" depart="49.27" departLane="best" departSpeed="max" from="426456618#0" to="8865427#5"/>
+    <trip id="bike19" type="bike_bicycle" depart="58.51" departLane="best" from="8648326#1" to="63104587#1"/>
+    <trip id="bike20" type="bike_bicycle" depart="61.58" departLane="best" from="8637728#1" to="-1115616609#1"/>
+    <trip id="bike21" type="bike_bicycle" depart="64.66" departLane="best" departSpeed="max" from="-862879202#1" to="-103553904#1"/>
+    <trip id="bike22" type="bike_bicycle" depart="67.74" departLane="best" from="1117928632#0" to="-8646020#0"/>
+    <trip id="bike23" type="bike_bicycle" depart="70.82" departLane="best" departSpeed="max" from="-1303174799" to="944109700#2"/>
+    <trip id="bike24" type="bike_bicycle" depart="73.90" departLane="best" from="-815093895#1" to="1115616617#0"/>
+    <trip id="bike25" type="bike_bicycle" depart="76.98" departLane="best" from="-1112835160#6" to="-8640929#3"/>
+    <trip id="bike26" type="bike_bicycle" depart="80.06" departLane="best" from="-8644188#1" to="8652409#1"/>
+    <trip id="bike27" type="bike_bicycle" depart="83.14" departLane="best" from="816934280#2" to="779927697"/>
+    <trip id="bike31" type="bike_bicycle" depart="95.46" departLane="best" from="426487627#1" to="862879202#1"/>
+    <trip id="bike32" type="bike_bicycle" depart="98.54" departLane="best" from="8647456#2" to="8645556#1"/>
+    <trip id="bike33" type="bike_bicycle" depart="101.61" departLane="best" from="862886774#1" to="-1115616585#2"/>
+    <trip id="bike34" type="bike_bicycle" depart="104.69" departLane="best" from="-8652430#0" to="-825494585#6"/>
+    <trip id="bike35" type="bike_bicycle" depart="107.77" departLane="best" from="-817361891#1" to="8652430#0"/>
+    <trip id="bike36" type="bike_bicycle" depart="110.85" departLane="best" from="8649075#1" to="-1112835160#1"/>
+    <trip id="bike39" type="bike_bicycle" depart="120.09" departLane="best" departSpeed="max" from="-8642454#1" to="-8648527#0"/>
+    <trip id="bike40" type="bike_bicycle" depart="123.17" departLane="best" departSpeed="max" from="468490261#0" to="-8652508#0"/>
+    <trip id="bike41" type="bike_bicycle" depart="126.25" departLane="best" departSpeed="max" from="538554381#0" to="8650349#1"/>
+    <trip id="bike42" type="bike_bicycle" depart="129.33" departLane="best" from="-1115616612" to="-8641950#3"/>
+    <trip id="bike43" type="bike_bicycle" depart="132.41" departLane="best" from="-985552044#8" to="426456601#1"/>
+    <trip id="bike44" type="bike_bicycle" depart="135.49" departLane="best" from="-1302402603#0" to="1115616610#0"/>
+    <trip id="bike45" type="bike_bicycle" depart="138.57" departLane="best" departSpeed="max" from="-138827709#1" to="815093895#2"/>
+    <trip id="bike47" type="bike_bicycle" depart="144.72" departLane="best" from="-1115616610#1" to="-537303955#0"/>
+    <trip id="bike48" type="bike_bicycle" depart="147.80" departLane="best" from="-985552044#4" to="426487627#0"/>
+    <trip id="bike49" type="bike_bicycle" depart="150.88" departLane="best" from="8865426#6" to="8648769"/>
+    <trip id="bike50" type="bike_bicycle" depart="153.96" departLane="best" from="-104210747#5" to="8639801#3"/>
+    <trip id="bike53" type="bike_bicycle" depart="163.20" departLane="best" departSpeed="max" from="-138827709#1" to="138827709#1"/>
+    <trip id="bike54" type="bike_bicycle" depart="166.28" departLane="best" from="138827669#1" to="8865420#3"/>
+    <trip id="bike55" type="bike_bicycle" depart="169.36" departLane="best" from="8649075#1" to="-8652508#0"/>
+    <trip id="bike59" type="bike_bicycle" depart="181.67" departLane="best" from="63106623#1" to="-816934280#4"/>
+    <trip id="bike60" type="bike_bicycle" depart="184.75" departLane="best" from="-8641950#3" to="500291586#0"/>
+    <trip id="bike61" type="bike_bicycle" depart="187.83" departLane="best" from="8644931#3" to="426487624#1"/>
+    <trip id="bike62" type="bike_bicycle" depart="190.91" departLane="best" from="-1032022089" to="1112835161#0"/>
+    <trip id="bike63" type="bike_bicycle" depart="193.99" departLane="best" departSpeed="max" from="-1111965193" to="8651714#3"/>
+    <trip id="bike64" type="bike_bicycle" depart="197.07" departLane="best" from="-8649468#0" to="8647456#6"/>
+    <trip id="bike66" type="bike_bicycle" depart="203.23" departLane="best" from="-8649414#0" to="-8652508#1"/>
+    <trip id="bike68" type="bike_bicycle" depart="209.39" departLane="best" departSpeed="max" from="-1115616615#1" to="8644931#2"/>
+    <trip id="bike70" type="bike_bicycle" depart="215.55" departLane="best" from="-185734373#1" to="537303956#0"/>
+    <trip id="bike71" type="bike_bicycle" depart="218.63" departLane="best" departSpeed="max" from="-8642454#1" to="8649468#0"/>
+    <trip id="bike72" type="bike_bicycle" depart="221.70" departLane="best" from="1177983702" to="-8640929#6"/>
+    <trip id="bike73" type="bike_bicycle" depart="224.78" departLane="best" from="426456625#2" to="-8640674#1"/>
+    <trip id="bike74" type="bike_bicycle" depart="227.86" departLane="best" departSpeed="max" from="-816314830#1" to="1111965193"/>
+    <trip id="bike75" type="bike_bicycle" depart="230.94" departLane="best" from="-985552044#4" to="817361884#1"/>
+    <trip id="bike76" type="bike_bicycle" depart="234.02" departLane="best" from="1284186043#1" to="1323781936#1"/>
+    <trip id="bike78" type="bike_bicycle" depart="240.18" departLane="best" departSpeed="max" from="-985552044#11" to="63106623#1"/>
+    <trip id="bike79" type="bike_bicycle" depart="243.26" departLane="best" departSpeed="max" from="-862889528#1" to="8642454#0"/>
+    <trip id="bike81" type="bike_bicycle" depart="249.42" departLane="best" from="862886774#1" to="8647456#18"/>
+    <trip id="bike82" type="bike_bicycle" depart="252.50" departLane="best" from="-8648025#0" to="-1281777218#0"/>
+    <trip id="bike83" type="bike_bicycle" depart="255.58" departLane="best" from="8638991#1" to="-825494585#2"/>
+    <trip id="bike84" type="bike_bicycle" depart="258.66" departLane="best" departSpeed="max" from="-823316168#1" to="815093880#0"/>
+    <trip id="bike85" type="bike_bicycle" depart="261.73" departLane="best" from="8652409#0" to="-63104562#3"/>
+    <trip id="bike89" type="bike_bicycle" depart="274.05" departLane="best" from="1177983702" to="380662069#0"/>
+    <trip id="bike90" type="bike_bicycle" depart="277.13" departLane="best" from="8639350#4" to="-825494585#7"/>
+    <trip id="bike91" type="bike_bicycle" depart="280.21" departLane="best" from="944116814" to="-41940341#0"/>
+    <trip id="bike92" type="bike_bicycle" depart="283.29" departLane="best" from="1115616616#1" to="1115616587"/>
+    <trip id="bike93" type="bike_bicycle" depart="286.37" departLane="best" from="8648326#1" to="-8648727#2"/>
+    <trip id="bike95" type="bike_bicycle" depart="292.53" departLane="best" from="1160123819" to="-944116814"/>
+    <trip id="bike96" type="bike_bicycle" depart="295.61" departLane="best" from="8640788#0" to="8651340#0"/>
+    <trip id="bike97" type="bike_bicycle" depart="298.69" departLane="best" from="1302402604#0" to="8648789#1"/>
+    <trip id="bike98" type="bike_bicycle" depart="301.76" departLane="best" from="426484920" to="1115616613"/>
+    <trip id="bike99" type="bike_bicycle" depart="304.84" departLane="best" from="99809128#2" to="8647670#2"/>
+    <trip id="bike100" type="bike_bicycle" depart="307.92" departLane="best" from="8865426#2" to="8651358#1"/>
+    <trip id="bike101" type="bike_bicycle" depart="311.00" departLane="best" from="8647670#1" to="-825494585#7"/>
+    <trip id="bike102" type="bike_bicycle" depart="314.08" departLane="best" from="289468262#2" to="-8641560#2"/>
+    <trip id="bike103" type="bike_bicycle" depart="317.16" departLane="best" from="1115616615#0" to="-1115616621"/>
+    <trip id="bike104" type="bike_bicycle" depart="320.24" departLane="best" departSpeed="max" from="1115616585#0" to="970425316#1"/>
+    <trip id="bike105" type="bike_bicycle" depart="323.32" departLane="best" departSpeed="max" from="-8642454#1" to="-8646506#0"/>
+    <trip id="bike106" type="bike_bicycle" depart="326.40" departLane="best" from="138827669#2" to="1323781936#3"/>
+    <trip id="bike107" type="bike_bicycle" depart="329.48" departLane="best" from="-8865420#4" to="985552044#2"/>
+    <trip id="bike108" type="bike_bicycle" depart="332.56" departLane="best" from="426487627#0" to="8639801#1"/>
+    <trip id="bike109" type="bike_bicycle" depart="335.64" departLane="best" from="-63104587#2" to="104210747#2"/>
+    <trip id="bike110" type="bike_bicycle" depart="338.72" departLane="best" from="8865426#2" to="63104587#3"/>
+    <trip id="bike111" type="bike_bicycle" depart="341.79" departLane="best" from="426456637" to="8642454#0"/>
+    <trip id="bike112" type="bike_bicycle" depart="344.87" departLane="best" from="1115616604#0" to="63106577#0"/>
+    <trip id="bike113" type="bike_bicycle" depart="347.95" departLane="best" from="380662077#0" to="8650337#1"/>
+    <trip id="bike114" type="bike_bicycle" depart="351.03" departLane="best" departSpeed="max" from="-63104587#3" to="8865425#5"/>
+    <trip id="bike115" type="bike_bicycle" depart="354.11" departLane="best" from="-1181032038#0" to="-8637744#0"/>
+    <trip id="bike116" type="bike_bicycle" depart="357.19" departLane="best" departSpeed="max" from="591493144#0" to="-8640929#2"/>
+    <trip id="bike117" type="bike_bicycle" depart="360.27" departLane="best" from="8637728#2" to="-63104562#3"/>
+    <trip id="bike118" type="bike_bicycle" depart="363.35" departLane="best" from="8649630#5" to="-8648527#0"/>
+    <trip id="bike119" type="bike_bicycle" depart="366.43" departLane="best" departSpeed="max" from="591493144#0" to="815093880#1"/>
+    <trip id="bike120" type="bike_bicycle" depart="369.51" departLane="best" from="1147916780" to="63106577#0"/>
+    <trip id="bike121" type="bike_bicycle" depart="372.59" departLane="best" from="-426456577" to="8652204#1"/>
+    <trip id="bike122" type="bike_bicycle" depart="375.67" departLane="best" from="-816934280#1" to="8639350#4"/>
+    <trip id="bike123" type="bike_bicycle" depart="378.75" departLane="best" from="-8638991#3" to="1281777361#1"/>
+    <trip id="bike124" type="bike_bicycle" depart="381.82" departLane="best" from="825494585#3" to="104210747#5"/>
+    <trip id="bike125" type="bike_bicycle" depart="384.90" departLane="best" from="8652508#1" to="8643791#0"/>
+    <trip id="bike126" type="bike_bicycle" depart="387.98" departLane="best" from="-1115616617#0" to="289468262#0"/>
+    <trip id="bike127" type="bike_bicycle" depart="391.06" departLane="best" from="-8644931#1" to="985552044#2"/>
+    <trip id="bike128" type="bike_bicycle" depart="394.14" departLane="best" from="1115616616#1" to="-8641560#1"/>
+    <trip id="bike129" type="bike_bicycle" depart="397.22" departLane="best" departSpeed="max" from="-8642454#1" to="8652204#1"/>
+    <trip id="bike130" type="bike_bicycle" depart="400.30" departLane="best" from="-8649468#3" to="8649580#1"/>
+    <trip id="bike131" type="bike_bicycle" depart="403.38" departLane="best" from="-1112835160#6" to="-823316168#0"/>
+    <trip id="bike132" type="bike_bicycle" depart="406.46" departLane="best" from="8647432#1" to="8638352#1"/>
+    <trip id="bike134" type="bike_bicycle" depart="412.62" departLane="best" departSpeed="max" from="817361883#0" to="103553906#4"/>
+    <trip id="bike135" type="bike_bicycle" depart="415.70" departLane="best" from="8646962#1" to="104210747#5"/>
+    <trip id="bike136" type="bike_bicycle" depart="418.78" departLane="best" from="823316159#1" to="8652409#2"/>
+    <trip id="bike137" type="bike_bicycle" depart="421.85" departLane="best" from="-426487635#1" to="-537303955#0"/>
+    <trip id="bike138" type="bike_bicycle" depart="424.93" departLane="best" from="1323781936#3" to="538554380#0"/>
+    <trip id="bike139" type="bike_bicycle" depart="428.01" departLane="best" from="-8644931#3" to="749812082#2"/>
+    <trip id="bike140" type="bike_bicycle" depart="431.09" departLane="best" from="8638991#0" to="-8640674#0"/>
+    <trip id="bike141" type="bike_bicycle" depart="434.17" departLane="best" from="-815093895#0" to="-8652508#0"/>
+    <trip id="bike142" type="bike_bicycle" depart="437.25" departLane="best" from="289468264#2" to="8650638#1"/>
+    <trip id="bike143" type="bike_bicycle" depart="440.33" departLane="best" from="8647456#6" to="-380662067#2"/>
+    <trip id="bike144" type="bike_bicycle" depart="443.41" departLane="best" from="1177983702" to="-943802147#1"/>
+    <trip id="bike145" type="bike_bicycle" depart="446.49" departLane="best" from="-103553906#0" to="8645388#1"/>
+    <trip id="bike147" type="bike_bicycle" depart="452.65" departLane="best" departSpeed="max" from="8640674#0" to="537307165#1"/>
+    <trip id="bike148" type="bike_bicycle" depart="455.73" departLane="best" from="1196041856" to="-104210747#1"/>
+    <trip id="bike149" type="bike_bicycle" depart="458.81" departLane="best" from="-1115616620#1" to="8649630#5"/>
+    <trip id="bike151" type="bike_bicycle" depart="464.96" departLane="best" departSpeed="max" from="8647456#0" to="63104590#4"/>
+    <trip id="bike154" type="bike_bicycle" depart="474.20" departLane="best" from="8646020#0" to="8648769"/>
+    <trip id="bike155" type="bike_bicycle" depart="477.28" departLane="best" from="8650337#1" to="-8640929#4"/>
+    <trip id="bike156" type="bike_bicycle" depart="480.36" departLane="best" from="8640674#1" to="426456738#1"/>
+    <trip id="bike157" type="bike_bicycle" depart="483.44" departLane="best" from="8644957#1" to="8649630#8"/>
+    <trip id="bike158" type="bike_bicycle" depart="486.52" departLane="best" from="1115616620#0" to="815093894#0"/>
+    <trip id="bike159" type="bike_bicycle" depart="489.60" departLane="best" from="-63104587#2" to="8651750#2"/>
+    <trip id="bike160" type="bike_bicycle" depart="492.68" departLane="best" from="8648451#1" to="929580948#1"/>
+    <trip id="bike163" type="bike_bicycle" depart="501.91" departLane="best" departSpeed="max" from="-944497933" to="8651839#1"/>
+    <trip id="bike164" type="bike_bicycle" depart="504.99" departLane="best" from="8646506#0" to="8648789#3"/>
+    <trip id="bike166" type="bike_bicycle" depart="511.15" departLane="best" from="8645199#3" to="-468490261#0"/>
+    <trip id="bike167" type="bike_bicycle" depart="514.23" departLane="best" from="8648789#3" to="8648769"/>
+    <trip id="bike168" type="bike_bicycle" depart="517.31" departLane="best" from="825494585#7" to="8647351#5"/>
+    <trip id="bike169" type="bike_bicycle" depart="520.39" departLane="best" from="-138827709#0" to="1106843295#1"/>
+    <trip id="bike171" type="bike_bicycle" depart="526.55" departLane="best" from="-1112835160#3" to="8638991#3"/>
+    <trip id="bike172" type="bike_bicycle" depart="529.63" departLane="best" from="943802147#1" to="8648789#3"/>
+    <trip id="bike173" type="bike_bicycle" depart="532.71" departLane="best" from="8865426#12" to="-944116814"/>
+    <trip id="bike174" type="bike_bicycle" depart="535.79" departLane="best" from="815603050#1" to="1284186043#2"/>
+    <trip id="bike176" type="bike_bicycle" depart="541.94" departLane="best" from="8652409#3" to="-537303955#0"/>
+    <trip id="bike178" type="bike_bicycle" depart="548.10" departLane="best" from="8865425#5" to="-8652508#1"/>
+    <trip id="bike179" type="bike_bicycle" depart="551.18" departLane="best" from="138827709#0" to="138827709#1"/>
+    <trip id="bike180" type="bike_bicycle" depart="554.26" departLane="best" from="8639350#4" to="1112835159#1"/>
+    <trip id="bike182" type="bike_bicycle" depart="560.42" departLane="best" from="1115616587" to="63104587#1"/>
+    <trip id="bike183" type="bike_bicycle" depart="563.50" departLane="best" from="8640929#5" to="-8639232"/>
+    <trip id="bike184" type="bike_bicycle" depart="566.58" departLane="best" from="103553904#1" to="8651358#1"/>
+    <trip id="bike185" type="bike_bicycle" depart="569.66" departLane="best" from="426456625#1" to="-8639801#2"/>
+    <trip id="bike186" type="bike_bicycle" depart="572.74" departLane="best" from="8640674#1" to="-825494585#5"/>
+    <trip id="bike187" type="bike_bicycle" depart="575.82" departLane="best" from="-1112835160#2" to="1241149233#1"/>
+    <trip id="bike188" type="bike_bicycle" depart="578.90" departLane="best" from="823316157" to="1113193581#1"/>
+    <trip id="bike189" type="bike_bicycle" depart="581.97" departLane="best" from="-8651750#2" to="8648025#1"/>
+    <trip id="bike190" type="bike_bicycle" depart="585.05" departLane="best" from="8638991#3" to="104210747#5"/>
+    <trip id="bike192" type="bike_bicycle" depart="591.21" departLane="best" from="1115616616#1" to="103553906#4"/>
+    <trip id="bike195" type="bike_bicycle" depart="600.45" departLane="best" from="8650349#3" to="814689601#1"/>
+    <trip id="bike196" type="bike_bicycle" depart="603.53" departLane="best" departSpeed="max" from="-8649414#1" to="537260529#1"/>
+    <trip id="bike197" type="bike_bicycle" depart="606.61" departLane="best" from="-1032022089" to="1031513328"/>
+    <trip id="bike198" type="bike_bicycle" depart="609.69" departLane="best" from="1223509838#2" to="63104590#1"/>
+    <trip id="bike200" type="bike_bicycle" depart="615.85" departLane="best" from="-1302402603#1" to="-8641560#2"/>
+    <trip id="bike203" type="bike_bicycle" depart="625.08" departLane="best" from="1241149233#0" to="426456637"/>
+    <trip id="bike204" type="bike_bicycle" depart="628.16" departLane="best" from="-815093894#0" to="1115616585#2"/>
+    <trip id="bike205" type="bike_bicycle" depart="631.24" departLane="best" from="8647038#1" to="8643791#0"/>
+    <trip id="bike206" type="bike_bicycle" depart="634.32" departLane="best" from="825494585#3" to="-8644647#0"/>
+    <trip id="bike208" type="bike_bicycle" depart="640.48" departLane="best" from="-8639801#4" to="380662074#2"/>
+    <trip id="bike209" type="bike_bicycle" depart="643.56" departLane="best" from="8647670#2" to="-1281777218#1"/>
+    <trip id="bike211" type="bike_bicycle" depart="649.72" departLane="best" from="-816291664#0" to="-8637728#1"/>
+    <trip id="bike212" type="bike_bicycle" depart="652.80" departLane="best" from="380662069#1" to="8648025#0"/>
+    <trip id="bike213" type="bike_bicycle" depart="655.88" departLane="best" from="-817361891#1" to="103553906#2"/>
+    <trip id="bike214" type="bike_bicycle" depart="658.95" departLane="best" departSpeed="max" from="8641399#0" to="8645199#1"/>
+    <trip id="bike215" type="bike_bicycle" depart="662.03" departLane="best" from="-1323781936#2" to="138827669#1"/>
+    <trip id="bike216" type="bike_bicycle" depart="665.11" departLane="best" departSpeed="max" from="-788015186#1" to="8865425#1"/>
+    <trip id="bike217" type="bike_bicycle" depart="668.19" departLane="best" from="420495586#1" to="1115616613"/>
+    <trip id="bike218" type="bike_bicycle" depart="671.27" departLane="best" from="8640674#1" to="8648025#1"/>
+    <trip id="bike219" type="bike_bicycle" depart="674.35" departLane="best" from="138827679#1" to="8646962#1"/>
+    <trip id="bike220" type="bike_bicycle" depart="677.43" departLane="best" from="823316163#0" to="972626709#4"/>
+    <trip id="bike221" type="bike_bicycle" depart="680.51" departLane="best" from="63104562#0" to="879039476#0"/>
+    <trip id="bike223" type="bike_bicycle" depart="686.67" departLane="best" from="8638991#1" to="426456594#2"/>
+    <trip id="bike228" type="bike_bicycle" depart="702.06" departLane="best" from="8642281#1" to="426472927#0"/>
+    <trip id="bike229" type="bike_bicycle" depart="705.14" departLane="best" departSpeed="max" from="798941674#0" to="-8866322#2"/>
+    <trip id="bike230" type="bike_bicycle" depart="708.22" departLane="best" from="-1115616621" to="1031513328"/>
+    <trip id="bike231" type="bike_bicycle" depart="711.30" departLane="best" from="8644931#2" to="1112835160#5"/>
+    <trip id="bike233" type="bike_bicycle" depart="717.46" departLane="best" departSpeed="max" from="-862889528#1" to="8636684#4"/>
+    <trip id="bike234" type="bike_bicycle" depart="720.54" departLane="best" departSpeed="max" from="8637744#0" to="-1117928632#0"/>
+    <trip id="bike235" type="bike_bicycle" depart="723.62" departLane="best" from="1115616620#1" to="533466405"/>
+    <trip id="bike236" type="bike_bicycle" depart="726.70" departLane="best" from="1123326681#2" to="-8640788#0"/>
+    <trip id="bike237" type="bike_bicycle" depart="729.78" departLane="best" from="1154670875#1" to="8650638#1"/>
+    <trip id="bike238" type="bike_bicycle" depart="732.86" departLane="best" departSpeed="max" from="538554381#0" to="8636684#5"/>
+    <trip id="bike240" type="bike_bicycle" depart="739.01" departLane="best" from="-1115616585#1" to="103553906#2"/>
+    <trip id="bike241" type="bike_bicycle" depart="742.09" departLane="best" departSpeed="max" from="103554256#0" to="8643916#1"/>
+    <trip id="bike242" type="bike_bicycle" depart="745.17" departLane="best" from="8647891#1" to="8865420#1"/>
+    <trip id="bike243" type="bike_bicycle" depart="748.25" departLane="best" from="1147916780" to="8642454#0"/>
+    <trip id="bike244" type="bike_bicycle" depart="751.33" departLane="best" from="426472927#0" to="749812082#2"/>
+    <trip id="bike245" type="bike_bicycle" depart="754.41" departLane="best" from="-871799067#1" to="-8641950#3"/>
+    <trip id="bike246" type="bike_bicycle" depart="757.49" departLane="best" from="1281777361#0" to="-1115616585#0"/>
+    <trip id="bike247" type="bike_bicycle" depart="760.57" departLane="best" from="-985552044#10" to="846628946#0"/>
+    <trip id="bike248" type="bike_bicycle" depart="763.65" departLane="best" from="1115616617#0" to="-825494585#6"/>
+    <trip id="bike250" type="bike_bicycle" depart="769.81" departLane="best" from="-749812082#1" to="-1115273723#1"/>
+    <trip id="bike251" type="bike_bicycle" depart="772.89" departLane="best" from="1115616604#0" to="591217313#1"/>
+    <trip id="bike252" type="bike_bicycle" depart="775.97" departLane="best" from="-1112835160#6" to="-816934280#2"/>
+    <trip id="bike253" type="bike_bicycle" depart="779.04" departLane="best" from="468490261#1" to="289468264#1"/>
+    <trip id="bike254" type="bike_bicycle" depart="782.12" departLane="best" departSpeed="max" from="-1115616589" to="1160123819"/>
+    <trip id="bike255" type="bike_bicycle" depart="785.20" departLane="best" from="-817361891#2" to="1112835161#1"/>
+    <trip id="bike256" type="bike_bicycle" depart="788.28" departLane="best" from="8641950#2" to="1160123819"/>
+    <trip id="bike257" type="bike_bicycle" depart="791.36" departLane="best" departSpeed="max" from="8641399#0" to="8647456#6"/>
+    <trip id="bike258" type="bike_bicycle" depart="794.44" departLane="best" from="8640929#3" to="1323781936#3"/>
+    <trip id="bike259" type="bike_bicycle" depart="797.52" departLane="best" departSpeed="max" from="-1111965193" to="500291586#0"/>
+    <trip id="bike260" type="bike_bicycle" depart="800.60" departLane="best" from="99809128#2" to="-1115616604#0"/>
+    <trip id="bike262" type="bike_bicycle" depart="806.76" departLane="best" from="929580947#1" to="8643916#1"/>
+    <trip id="bike263" type="bike_bicycle" depart="809.84" departLane="best" from="871799064" to="-8639801#4"/>
+    <trip id="bike264" type="bike_bicycle" depart="812.92" departLane="best" from="-1112835159#1" to="-816934280#3"/>
+    <trip id="bike266" type="bike_bicycle" depart="819.07" departLane="best" from="468490261#1" to="-8641950#2"/>
+    <trip id="bike267" type="bike_bicycle" depart="822.15" departLane="best" from="8636143" to="8645199#1"/>
+    <trip id="bike268" type="bike_bicycle" depart="825.23" departLane="best" from="-749812082#1" to="750675235#1"/>
+    <trip id="bike269" type="bike_bicycle" depart="828.31" departLane="best" from="8640929#4" to="-533511492#1"/>
+    <trip id="bike271" type="bike_bicycle" depart="834.47" departLane="best" from="1323781936#3" to="-1115273723#0"/>
+    <trip id="bike273" type="bike_bicycle" depart="840.63" departLane="best" from="-8865420#4" to="1281777361#1"/>
+    <trip id="bike274" type="bike_bicycle" depart="843.71" departLane="best" from="8638252#5" to="1302402603#1"/>
+    <trip id="bike275" type="bike_bicycle" depart="846.79" departLane="best" departSpeed="max" from="862886774#0" to="815093895#2"/>
+    <trip id="bike276" type="bike_bicycle" depart="849.87" departLane="best" departSpeed="max" from="-1303174799" to="8645388#2"/>
+    <trip id="bike277" type="bike_bicycle" depart="852.95" departLane="best" from="8647670#3" to="747090068#4"/>
+    <trip id="bike279" type="bike_bicycle" depart="859.10" departLane="best" from="8645083#3" to="1115616600"/>
+    <trip id="bike280" type="bike_bicycle" depart="862.18" departLane="best" from="1223509838#0" to="1115616624"/>
+    <trip id="bike282" type="bike_bicycle" depart="868.34" departLane="best" from="8647670#2" to="8647432#1"/>
+    <trip id="bike283" type="bike_bicycle" depart="871.42" departLane="best" departSpeed="max" from="-1317705793" to="8865425#5"/>
+    <trip id="bike284" type="bike_bicycle" depart="874.50" departLane="best" from="-815093895#1" to="8643916#1"/>
+    <trip id="bike285" type="bike_bicycle" depart="877.58" departLane="best" departSpeed="max" from="8637744#0" to="138827709#1"/>
+    <trip id="bike287" type="bike_bicycle" depart="883.74" departLane="best" from="-8644931#1" to="8647066#1"/>
+    <trip id="bike289" type="bike_bicycle" depart="889.90" departLane="best" from="1281777361#0" to="-8640788#0"/>
+    <trip id="bike290" type="bike_bicycle" depart="892.98" departLane="best" from="8644931#0" to="8648326#0"/>
+    <trip id="bike292" type="bike_bicycle" depart="899.13" departLane="best" from="-8649468#3" to="8648025#0"/>
+    <trip id="bike293" type="bike_bicycle" depart="902.21" departLane="best" from="138827726#1" to="788015186#1"/>
+    <trip id="bike294" type="bike_bicycle" depart="905.29" departLane="best" departSpeed="max" from="1115616585#0" to="-1115616585#0"/>
+    <trip id="bike295" type="bike_bicycle" depart="908.37" departLane="best" from="8647670#3" to="-863038354#0"/>
+    <trip id="bike296" type="bike_bicycle" depart="911.45" departLane="best" from="-817361891#2" to="8646916#1"/>
+    <trip id="bike297" type="bike_bicycle" depart="914.53" departLane="best" from="-985552044#4" to="8649580#1"/>
+    <trip id="bike298" type="bike_bicycle" depart="917.61" departLane="best" from="8636684#4" to="-943802147#1"/>
+    <trip id="bike299" type="bike_bicycle" depart="920.69" departLane="best" from="-104210747#2" to="-871799064"/>
+    <trip id="bike300" type="bike_bicycle" depart="923.77" departLane="best" from="1241149233#1" to="-8639801#2"/>
+    <trip id="bike301" type="bike_bicycle" depart="926.85" departLane="best" from="289468264#2" to="-8644931#0"/>
+    <trip id="bike302" type="bike_bicycle" depart="929.93" departLane="best" departSpeed="max" from="862886774#0" to="-816934280#4"/>
+    <trip id="bike303" type="bike_bicycle" depart="933.01" departLane="best" from="380662068" to="8646564#0"/>
+    <trip id="bike304" type="bike_bicycle" depart="936.09" departLane="best" from="380662069#0" to="-8644188#1"/>
+    <trip id="bike305" type="bike_bicycle" depart="939.16" departLane="best" from="862886774#1" to="1106843296"/>
+    <trip id="bike306" type="bike_bicycle" depart="942.24" departLane="best" from="537378993#1" to="380662074#0"/>
+    <trip id="bike307" type="bike_bicycle" depart="945.32" departLane="best" from="426456601#1" to="138827669#1"/>
+    <trip id="bike308" type="bike_bicycle" depart="948.40" departLane="best" departSpeed="max" from="8640929#2" to="1113193581#1"/>
+    <trip id="bike309" type="bike_bicycle" depart="951.48" departLane="best" from="8636684#5" to="8865420#3"/>
+    <trip id="bike310" type="bike_bicycle" depart="954.56" departLane="best" from="8640929#2" to="-63104562#3"/>
+    <trip id="bike312" type="bike_bicycle" depart="960.72" departLane="best" departSpeed="max" from="426456618#0" to="8644957#1"/>
+    <trip id="bike313" type="bike_bicycle" depart="963.80" departLane="best" from="-815093895#0" to="-8641950#1"/>
+    <trip id="bike314" type="bike_bicycle" depart="966.88" departLane="best" from="289468262#0" to="8640516#1"/>
+    <trip id="bike315" type="bike_bicycle" depart="969.96" departLane="best" from="8865427#2" to="426484925#2"/>
+    <trip id="bike316" type="bike_bicycle" depart="973.04" departLane="best" departSpeed="max" from="-8647156#1" to="426456571#0"/>
+    <trip id="bike317" type="bike_bicycle" depart="976.12" departLane="best" from="-815747924#0" to="8644931#2"/>
+    <trip id="bike318" type="bike_bicycle" depart="979.19" departLane="best" departSpeed="max" from="-815093880#1" to="-1112835160#1"/>
+    <trip id="bike319" type="bike_bicycle" depart="982.27" departLane="best" departSpeed="max" from="426456618#0" to="-8866322#2"/>
+    <trip id="bike320" type="bike_bicycle" depart="985.35" departLane="best" from="8865427#0" to="538554380#0"/>
+    <trip id="bike321" type="bike_bicycle" depart="988.43" departLane="best" from="863038355#0" to="-658046484#0"/>
+    <trip id="bike322" type="bike_bicycle" depart="991.51" departLane="best" from="-8648727#2" to="401265367#1"/>
+    <trip id="bike323" type="bike_bicycle" depart="994.59" departLane="best" from="8648789#3" to="63104564#2"/>
+    <trip id="bike324" type="bike_bicycle" depart="997.67" departLane="best" departSpeed="max" from="139937095" to="138827726#2"/>
+    <trip id="bike325" type="bike_bicycle" depart="1000.75" departLane="best" departSpeed="max" from="-815093894#1" to="-1115616615#0"/>
+    <trip id="bike326" type="bike_bicycle" depart="1003.83" departLane="best" from="8652409#6" to="380662075#2"/>
+    <trip id="bike327" type="bike_bicycle" depart="1006.91" departLane="best" from="8647066#0" to="1284186043#3"/>
+    <trip id="bike329" type="bike_bicycle" depart="1013.07" departLane="best" departSpeed="max" from="-1115616595#1" to="-816934280#1"/>
+    <trip id="bike330" type="bike_bicycle" depart="1016.15" departLane="best" departSpeed="max" from="468490261#0" to="1106843295#0"/>
+    <trip id="bike331" type="bike_bicycle" depart="1019.22" departLane="best" from="-985552044#10" to="-63104562#0"/>
+    <trip id="bike332" type="bike_bicycle" depart="1022.30" departLane="best" departSpeed="max" from="8642149#0" to="750675235#1"/>
+    <trip id="bike333" type="bike_bicycle" depart="1025.38" departLane="best" departSpeed="max" from="8645264#0" to="8644931#0"/>
+    <trip id="bike334" type="bike_bicycle" depart="1028.46" departLane="best" from="426456571#0" to="199586487#2"/>
+    <trip id="bike335" type="bike_bicycle" depart="1031.54" departLane="best" from="-1302402603#1" to="8648769"/>
+    <trip id="bike337" type="bike_bicycle" depart="1037.70" departLane="best" from="747090074" to="788015186#1"/>
+    <trip id="bike338" type="bike_bicycle" depart="1040.78" departLane="best" departSpeed="max" from="8640674#0" to="-871799064"/>
+    <trip id="bike339" type="bike_bicycle" depart="1043.86" departLane="best" from="816934280#3" to="-8640929#4"/>
+    <trip id="bike340" type="bike_bicycle" depart="1046.94" departLane="best" from="823316157" to="-817361891#2"/>
+    <trip id="bike341" type="bike_bicycle" depart="1050.02" departLane="best" departSpeed="max" from="-788015186#1" to="1302402604#4"/>
+    <trip id="bike342" type="bike_bicycle" depart="1053.10" departLane="best" from="-103553906#0" to="199586487#2"/>
+    <trip id="bike343" type="bike_bicycle" depart="1056.18" departLane="best" departSpeed="max" from="591493144#0" to="103553906#0"/>
+    <trip id="bike344" type="bike_bicycle" depart="1059.25" departLane="best" departSpeed="max" from="-862889528#1" to="8638991#1"/>
+    <trip id="bike345" type="bike_bicycle" depart="1062.33" departLane="best" from="8636684#5" to="217801058#1"/>
+    <trip id="bike346" type="bike_bicycle" depart="1065.41" departLane="best" departSpeed="max" from="862879202#0" to="8651340#0"/>
+    <trip id="bike347" type="bike_bicycle" depart="1068.49" departLane="best" from="8645199#3" to="815093895#0"/>
+    <trip id="bike348" type="bike_bicycle" depart="1071.57" departLane="best" from="823316163#0" to="8652204#1"/>
+    <trip id="bike349" type="bike_bicycle" depart="1074.65" departLane="best" from="-1181032038#0" to="533511492#1"/>
+    <trip id="bike350" type="bike_bicycle" depart="1077.73" departLane="best" from="816934280#2" to="8650674#1"/>
+    <trip id="bike351" type="bike_bicycle" depart="1080.81" departLane="best" from="8647351#1" to="-1281777218#0"/>
+    <trip id="bike352" type="bike_bicycle" depart="1083.89" departLane="best" departSpeed="max" from="-708051357#1" to="1106843297#1"/>
+    <trip id="bike353" type="bike_bicycle" depart="1086.97" departLane="best" from="8640929#4" to="-63104562#0"/>
+    <trip id="bike354" type="bike_bicycle" depart="1090.05" departLane="best" from="-8647670#1" to="63106577#1"/>
+    <trip id="bike355" type="bike_bicycle" depart="1093.13" departLane="best" departSpeed="max" from="862879202#0" to="8638252#2"/>
+    <trip id="bike356" type="bike_bicycle" depart="1096.21" departLane="best" from="8652430#0" to="426456577"/>
+    <trip id="bike357" type="bike_bicycle" depart="1099.28" departLane="best" from="380662069#1" to="1302402604#2"/>
+    <trip id="bike358" type="bike_bicycle" depart="1102.36" departLane="best" from="1115273723#1" to="138827688#1"/>
+    <trip id="bike359" type="bike_bicycle" depart="1105.44" departLane="best" from="-8865420#4" to="8649414#0"/>
+    <trip id="bike361" type="bike_bicycle" depart="1111.60" departLane="best" departSpeed="max" from="8647456#0" to="63104564#3"/>
+    <trip id="bike362" type="bike_bicycle" depart="1114.68" departLane="best" from="871799064" to="99809128#2"/>
+    <trip id="bike363" type="bike_bicycle" depart="1117.76" departLane="best" from="825494585#3" to="8865420#1"/>
+    <trip id="bike364" type="bike_bicycle" depart="1120.84" departLane="best" from="1115273723#1" to="8644647#0"/>
+    <trip id="bike365" type="bike_bicycle" depart="1123.92" departLane="best" departSpeed="max" from="139937095" to="817361888"/>
+    <trip id="bike366" type="bike_bicycle" depart="1127.00" departLane="best" from="8651226#0" to="-863038354#0"/>
+    <trip id="bike367" type="bike_bicycle" depart="1130.08" departLane="best" departSpeed="max" from="538554381#0" to="815603050#1"/>
+    <trip id="bike368" type="bike_bicycle" depart="1133.16" departLane="best" from="380662068" to="-289468264#3"/>
+    <trip id="bike369" type="bike_bicycle" depart="1136.24" departLane="best" from="103553906#2" to="-1115273723#1"/>
+    <trip id="bike370" type="bike_bicycle" depart="1139.31" departLane="best" departSpeed="max" from="823316168#0" to="8648727#2"/>
+    <trip id="bike371" type="bike_bicycle" depart="1142.39" departLane="best" from="-944116814" to="8636684#4"/>
+    <trip id="bike374" type="bike_bicycle" depart="1151.63" departLane="best" from="138827669#2" to="-1112835160#1"/>
+    <trip id="bike376" type="bike_bicycle" depart="1157.79" departLane="best" from="1115616617#0" to="426456630#1"/>
+    <trip id="bike377" type="bike_bicycle" depart="1160.87" departLane="best" from="970425316#2" to="823316160"/>
+    <trip id="bike379" type="bike_bicycle" depart="1167.03" departLane="best" departSpeed="max" from="-815093895#2" to="1115616615#1"/>
+    <trip id="bike380" type="bike_bicycle" depart="1170.11" departLane="best" from="8641560#1" to="815093895#1"/>
+    <trip id="bike381" type="bike_bicycle" depart="1173.19" departLane="best" from="8641950#1" to="-8640674#0"/>
+    <trip id="bike382" type="bike_bicycle" depart="1176.27" departLane="best" from="426484913#1" to="8651714#0"/>
+    <trip id="bike383" type="bike_bicycle" depart="1179.34" departLane="best" from="1284186043#1" to="8637728#2"/>
+    <trip id="bike385" type="bike_bicycle" depart="1185.50" departLane="best" from="63106623#1" to="8647432#1"/>
+    <trip id="bike386" type="bike_bicycle" depart="1188.58" departLane="best" from="63106577#0" to="537307165#1"/>
+    <trip id="bike387" type="bike_bicycle" depart="1191.66" departLane="best" from="426484925#2" to="-380662067#2"/>
+    <trip id="bike388" type="bike_bicycle" depart="1194.74" departLane="best" from="985552043#0" to="8651161#0"/>
+    <trip id="bike389" type="bike_bicycle" depart="1197.82" departLane="best" from="138827717#0" to="537307165#1"/>
+    <trip id="bike390" type="bike_bicycle" depart="1200.90" departLane="best" from="943802147#1" to="426456571#0"/>
+    <trip id="bike391" type="bike_bicycle" depart="1203.98" departLane="best" from="8638352#1" to="426456606#0"/>
+    <trip id="bike392" type="bike_bicycle" depart="1207.06" departLane="best" departSpeed="max" from="-8645556#1" to="8647670#1"/>
+    <trip id="bike393" type="bike_bicycle" depart="1210.14" departLane="best" from="929580947#1" to="8648025#0"/>
+    <trip id="bike394" type="bike_bicycle" depart="1213.22" departLane="best" from="426484925#2" to="1181032038#1"/>
+    <trip id="bike395" type="bike_bicycle" depart="1216.30" departLane="best" from="8651325#3" to="426456606#0"/>
+    <trip id="bike396" type="bike_bicycle" depart="1219.37" departLane="best" from="-8649468#0" to="8648789#3"/>
+    <trip id="bike397" type="bike_bicycle" depart="1222.45" departLane="best" from="8646020#0" to="8646541#1"/>
+    <trip id="bike398" type="bike_bicycle" depart="1225.53" departLane="best" from="1123326681#0" to="8652204#1"/>
+    <trip id="bike400" type="bike_bicycle" depart="1231.69" departLane="best" departSpeed="max" from="-8647156#1" to="104210747#5"/>
+    <trip id="bike401" type="bike_bicycle" depart="1234.77" departLane="best" from="591217313#0" to="-8644931#1"/>
+    <trip id="bike402" type="bike_bicycle" depart="1237.85" departLane="best" from="380662067#1" to="-814380634"/>
+    <trip id="bike403" type="bike_bicycle" depart="1240.93" departLane="best" from="426456625#1" to="1115616595#1"/>
+    <trip id="bike404" type="bike_bicycle" depart="1244.01" departLane="best" from="426484925#2" to="533511492#1"/>
+    <trip id="bike405" type="bike_bicycle" depart="1247.09" departLane="best" from="138827679#0" to="1112835160#7"/>
+    <trip id="bike406" type="bike_bicycle" depart="1250.17" departLane="best" departSpeed="max" from="-815093895#2" to="-8637728#2"/>
+    <trip id="bike407" type="bike_bicycle" depart="1253.25" departLane="best" from="-533466405" to="-8646506#0"/>
+    <trip id="bike408" type="bike_bicycle" depart="1256.33" departLane="best" from="8644931#0" to="-1115616595#0"/>
+    <trip id="bike409" type="bike_bicycle" depart="1259.40" departLane="best" departSpeed="max" from="8640929#2" to="8638991#0"/>
+    <trip id="bike411" type="bike_bicycle" depart="1265.56" departLane="best" from="823316159#1" to="8647384"/>
+    <trip id="bike413" type="bike_bicycle" depart="1271.72" departLane="best" departSpeed="max" from="-1113193581#1" to="426456589"/>
+    <trip id="bike414" type="bike_bicycle" depart="1274.80" departLane="best" from="591493143#0" to="8649414#1"/>
+    <trip id="bike415" type="bike_bicycle" depart="1277.88" departLane="best" from="8648789#4" to="138827726#2"/>
+    <trip id="bike416" type="bike_bicycle" depart="1280.96" departLane="best" from="426456589" to="289462997#2"/>
+    <trip id="bike417" type="bike_bicycle" depart="1284.04" departLane="best" from="8639327#0" to="1302402604#4"/>
+    <trip id="bike419" type="bike_bicycle" depart="1290.20" departLane="best" departSpeed="max" from="139937095" to="8865426#9"/>
+    <trip id="bike420" type="bike_bicycle" depart="1293.28" departLane="best" departSpeed="max" from="-985552044#11" to="8636684#1"/>
+    <trip id="bike421" type="bike_bicycle" depart="1296.36" departLane="best" from="816934280#4" to="8648326#0"/>
+    <trip id="bike422" type="bike_bicycle" depart="1299.43" departLane="best" from="8647849#0" to="8648769"/>
+    <trip id="bike423" type="bike_bicycle" depart="1302.51" departLane="best" departSpeed="max" from="1115616585#0" to="1112835160#3"/>
+    <trip id="bike424" type="bike_bicycle" depart="1305.59" departLane="best" from="8638991#1" to="-8644931#1"/>
+    <trip id="bike425" type="bike_bicycle" depart="1308.67" departLane="best" from="8648789#3" to="-1115616587"/>
+    <trip id="bike427" type="bike_bicycle" depart="1314.83" departLane="best" from="8651325#2" to="985552044#7"/>
+    <trip id="bike428" type="bike_bicycle" depart="1317.91" departLane="best" from="8640929#3" to="138827709#1"/>
+    <trip id="bike429" type="bike_bicycle" depart="1320.99" departLane="best" departSpeed="max" from="-1303174798#1" to="815603050#1"/>
+    <trip id="bike431" type="bike_bicycle" depart="1327.15" departLane="best" departSpeed="max" from="862888312#0" to="8650619#1"/>
+    <trip id="bike432" type="bike_bicycle" depart="1330.23" departLane="best" from="-1115616587" to="-8646816#1"/>
+    <trip id="bike433" type="bike_bicycle" depart="1333.31" departLane="best" departSpeed="max" from="-8648025#1" to="1123326681#2"/>
+    <trip id="bike434" type="bike_bicycle" depart="1336.39" departLane="best" from="1177983702" to="-8651340#1"/>
+    <trip id="bike435" type="bike_bicycle" depart="1339.46" departLane="best" from="485292838#0" to="8646564#0"/>
+    <trip id="bike436" type="bike_bicycle" depart="1342.54" departLane="best" departSpeed="max" from="-749812082#2" to="-1302402604#1"/>
+    <trip id="bike437" type="bike_bicycle" depart="1345.62" departLane="best" from="8648789#1" to="815093880#1"/>
+    <trip id="bike438" type="bike_bicycle" depart="1348.70" departLane="best" from="-8639232" to="8651161#0"/>
+    <trip id="bike439" type="bike_bicycle" depart="1351.78" departLane="best" from="-533466405" to="289468264#0"/>
+    <trip id="bike441" type="bike_bicycle" depart="1357.94" departLane="best" from="-104210747#1" to="8647038#2"/>
+    <trip id="bike443" type="bike_bicycle" depart="1364.10" departLane="best" from="63106577#0" to="1126704040#1"/>
+    <trip id="bike444" type="bike_bicycle" depart="1367.18" departLane="best" from="103553906#0" to="63106623#1"/>
+    <trip id="bike446" type="bike_bicycle" depart="1373.34" departLane="best" from="8640788#0" to="8648025#0"/>
+    <trip id="bike448" type="bike_bicycle" depart="1379.49" departLane="best" from="289462997#2" to="-8647350#4"/>
+    <trip id="bike449" type="bike_bicycle" depart="1382.57" departLane="best" from="-533466405" to="63104564#2"/>
+    <trip id="bike450" type="bike_bicycle" depart="1385.65" departLane="best" from="-985552044#0" to="103553906#3"/>
+    <trip id="bike452" type="bike_bicycle" depart="1391.81" departLane="best" departSpeed="max" from="-8645556#1" to="591493143#0"/>
+    <trip id="bike453" type="bike_bicycle" depart="1394.89" departLane="best" from="846628946#1" to="-8641950#3"/>
+    <trip id="bike454" type="bike_bicycle" depart="1397.97" departLane="best" from="-1115616588#2" to="750675235#1"/>
+    <trip id="bike455" type="bike_bicycle" depart="1401.05" departLane="best" from="380662074#0" to="8650619#1"/>
+    <trip id="bike456" type="bike_bicycle" depart="1404.13" departLane="best" from="-8647350#4" to="8646916#1"/>
+    <trip id="bike457" type="bike_bicycle" depart="1407.21" departLane="best" from="63106577#1" to="1115616604#2"/>
+    <trip id="bike459" type="bike_bicycle" depart="1413.37" departLane="best" from="826634235" to="-8639801#3"/>
+    <trip id="bike460" type="bike_bicycle" depart="1416.45" departLane="best" departSpeed="max" from="823316156#0" to="-944109700#2"/>
+    <trip id="bike461" type="bike_bicycle" depart="1419.52" departLane="best" departSpeed="max" from="798941675#0" to="8650619#1"/>
+    <trip id="bike462" type="bike_bicycle" depart="1422.60" departLane="best" from="816934280#1" to="1111328431#1"/>
+    <trip id="bike463" type="bike_bicycle" depart="1425.68" departLane="best" from="1284186043#3" to="63104587#3"/>
+    <trip id="bike464" type="bike_bicycle" depart="1428.76" departLane="best" from="-8639801#2" to="-289468264#1"/>
+    <trip id="bike465" type="bike_bicycle" depart="1431.84" departLane="best" departSpeed="max" from="-8648025#1" to="8642454#0"/>
+    <trip id="bike466" type="bike_bicycle" depart="1434.92" departLane="best" departSpeed="max" from="-788015186#1" to="815093880#0"/>
+    <trip id="bike468" type="bike_bicycle" depart="1441.08" departLane="best" from="426456601#1" to="8651161#1"/>
+    <trip id="bike470" type="bike_bicycle" depart="1447.24" departLane="best" from="8647350#1" to="380662081#1"/>
+    <trip id="bike471" type="bike_bicycle" depart="1450.32" departLane="best" from="8646520#3" to="8642281#2"/>
+    <trip id="bike472" type="bike_bicycle" depart="1453.40" departLane="best" departSpeed="max" from="-985552044#11" to="-537303955#0"/>
+    <trip id="bike473" type="bike_bicycle" depart="1456.48" departLane="best" from="8865425#5" to="-817025769#0"/>
+    <trip id="bike474" type="bike_bicycle" depart="1459.55" departLane="best" from="8865426#1" to="8648769"/>
+    <trip id="bike475" type="bike_bicycle" depart="1462.63" departLane="best" from="8639327#1" to="943802147#1"/>
+    <trip id="bike476" type="bike_bicycle" depart="1465.71" departLane="best" from="8865426#12" to="8647038#2"/>
+    <trip id="bike477" type="bike_bicycle" depart="1468.79" departLane="best" from="-1112835160#3" to="8646541#1"/>
+    <trip id="bike478" type="bike_bicycle" depart="1471.87" departLane="best" departSpeed="max" from="-1042974152" to="479734838#1"/>
+    <trip id="bike479" type="bike_bicycle" depart="1474.95" departLane="best" from="138827669#2" to="-825494585#7"/>
+    <trip id="bike480" type="bike_bicycle" depart="1478.03" departLane="best" from="825494585#3" to="63106577#0"/>
+    <trip id="bike481" type="bike_bicycle" depart="1481.11" departLane="best" from="8647066#0" to="8652409#4"/>
+    <trip id="bike482" type="bike_bicycle" depart="1484.19" departLane="best" from="-138827709#0" to="-8646506#0"/>
+    <trip id="bike483" type="bike_bicycle" depart="1487.27" departLane="best" from="-1112835160#4" to="8649630#8"/>
+    <trip id="bike484" type="bike_bicycle" depart="1490.35" departLane="best" departSpeed="max" from="468490261#0" to="8651161#2"/>
+    <trip id="bike485" type="bike_bicycle" depart="1493.43" departLane="best" from="-871799067#1" to="-1115616624"/>
+    <trip id="bike486" type="bike_bicycle" depart="1496.51" departLane="best" from="8647066#1" to="8650674#2"/>
+    <trip id="bike487" type="bike_bicycle" depart="1499.58" departLane="best" departSpeed="max" from="-8649414#1" to="1302402604#2"/>
+    <trip id="bike489" type="bike_bicycle" depart="1505.74" departLane="best" from="-8649468#2" to="401265367#3"/>
+    <trip id="bike491" type="bike_bicycle" depart="1511.90" departLane="best" from="468490261#1" to="217801058#1"/>
+    <trip id="bike492" type="bike_bicycle" depart="1514.98" departLane="best" from="825494585#2" to="-8641950#2"/>
+    <trip id="bike493" type="bike_bicycle" depart="1518.06" departLane="best" departSpeed="max" from="8652508#0" to="1317705793"/>
+    <trip id="bike494" type="bike_bicycle" depart="1521.14" departLane="best" from="8640674#1" to="-817025769#0"/>
+    <trip id="bike495" type="bike_bicycle" depart="1524.22" departLane="best" from="1123326681#0" to="-41940341#0"/>
+    <trip id="bike496" type="bike_bicycle" depart="1527.30" departLane="best" from="289468264#2" to="1302402604#2"/>
+    <trip id="bike497" type="bike_bicycle" depart="1530.38" departLane="best" from="825494585#6" to="-1115616585#2"/>
+    <trip id="bike499" type="bike_bicycle" depart="1536.54" departLane="best" from="871799064" to="8648635"/>
+    <trip id="bike500" type="bike_bicycle" depart="1539.61" departLane="best" departSpeed="max" from="-1303174798#1" to="862879202#1"/>
+    <trip id="bike501" type="bike_bicycle" depart="1542.69" departLane="best" from="426456582#0" to="929580949"/>
+    <trip id="bike502" type="bike_bicycle" depart="1545.77" departLane="best" from="1106843295#1" to="1284186043#1"/>
+    <trip id="bike504" type="bike_bicycle" depart="1551.93" departLane="best" from="8647670#1" to="217801058#1"/>
+    <trip id="bike505" type="bike_bicycle" depart="1555.01" departLane="best" from="823316159#0" to="816934280#1"/>
+    <trip id="bike506" type="bike_bicycle" depart="1558.09" departLane="best" from="63104562#2" to="-1115616609#1"/>
+    <trip id="bike507" type="bike_bicycle" depart="1561.17" departLane="best" from="8645199#2" to="8648025#0"/>
+    <trip id="bike510" type="bike_bicycle" depart="1570.41" departLane="best" from="816934280#3" to="8641560#4"/>
+    <trip id="bike511" type="bike_bicycle" depart="1573.49" departLane="best" from="8648789#1" to="1112835163"/>
+    <trip id="bike512" type="bike_bicycle" depart="1576.57" departLane="best" from="537303955#1" to="8650349#3"/>
+    <trip id="bike513" type="bike_bicycle" depart="1579.64" departLane="best" from="-103553906#0" to="8648769"/>
+    <trip id="bike514" type="bike_bicycle" depart="1582.72" departLane="best" from="533511492#1" to="749812082#1"/>
+    <trip id="bike515" type="bike_bicycle" depart="1585.80" departLane="best" from="8640788#0" to="-862886774#0"/>
+    <trip id="bike516" type="bike_bicycle" depart="1588.88" departLane="best" from="823316163#0" to="-1115273723#0"/>
+    <trip id="bike517" type="bike_bicycle" depart="1591.96" departLane="best" departSpeed="max" from="-1111328431#1" to="8646541#0"/>
+    <trip id="bike518" type="bike_bicycle" depart="1595.04" departLane="best" from="8638991#1" to="1112835161#0"/>
+    <trip id="bike519" type="bike_bicycle" depart="1598.12" departLane="best" departSpeed="max" from="-788015186#1" to="-1115616615#0"/>
+    <trip id="bike520" type="bike_bicycle" depart="1601.20" departLane="best" from="8640674#1" to="426484925#2"/>
+    <trip id="bike521" type="bike_bicycle" depart="1604.28" departLane="best" departSpeed="max" from="8640929#2" to="380662075#0"/>
+    <trip id="bike522" type="bike_bicycle" depart="1607.36" departLane="best" from="-8644931#2" to="426456625#2"/>
+    <trip id="bike523" type="bike_bicycle" depart="1610.44" departLane="best" from="-138827709#0" to="426456594#0"/>
+    <trip id="bike525" type="bike_bicycle" depart="1616.60" departLane="best" from="8645083#3" to="8649873#0"/>
+    <trip id="bike526" type="bike_bicycle" depart="1619.67" departLane="best" from="420495586#3" to="289468262#0"/>
+    <trip id="bike527" type="bike_bicycle" depart="1622.75" departLane="best" departSpeed="max" from="8865426#0" to="-1115616623"/>
+    <trip id="bike528" type="bike_bicycle" depart="1625.83" departLane="best" departSpeed="max" from="217801058#0" to="1284186043#3"/>
+    <trip id="bike530" type="bike_bicycle" depart="1631.99" departLane="best" from="8641560#1" to="1281777362#1"/>
+    <trip id="bike531" type="bike_bicycle" depart="1635.07" departLane="best" from="-1181032038#0" to="779927697"/>
+    <trip id="bike532" type="bike_bicycle" depart="1638.15" departLane="best" from="-1115616613" to="-943802146#0"/>
+    <trip id="bike533" type="bike_bicycle" depart="1641.23" departLane="best" from="-815093894#0" to="-537303955#1"/>
+    <trip id="bike534" type="bike_bicycle" depart="1644.31" departLane="best" from="-8866322#2" to="985552044#11"/>
+    <trip id="bike535" type="bike_bicycle" depart="1647.39" departLane="best" from="426456601#1" to="217801058#1"/>
+    <trip id="bike536" type="bike_bicycle" depart="1650.47" departLane="best" from="63106577#0" to="-41940341#0"/>
+    <trip id="bike537" type="bike_bicycle" depart="1653.55" departLane="best" from="8636684#4" to="8650337#1"/>
+    <trip id="bike538" type="bike_bicycle" depart="1656.63" departLane="best" from="817361875#1" to="8645199#2"/>
+    <trip id="bike539" type="bike_bicycle" depart="1659.70" departLane="best" from="-8639232" to="-8641560#4"/>
+    <trip id="bike540" type="bike_bicycle" depart="1662.78" departLane="best" from="138798811" to="8644931#3"/>
+    <trip id="bike541" type="bike_bicycle" depart="1665.86" departLane="best" departSpeed="max" from="-985552044#11" to="217801058#1"/>
+    <trip id="bike543" type="bike_bicycle" depart="1672.02" departLane="best" from="1188194571#1" to="823316163#0"/>
+    <trip id="bike544" type="bike_bicycle" depart="1675.10" departLane="best" departSpeed="max" from="1115273723#0" to="-816934280#4"/>
+    <trip id="bike545" type="bike_bicycle" depart="1678.18" departLane="best" from="-8651340#1" to="-1196041856"/>
+    <trip id="bike546" type="bike_bicycle" depart="1681.26" departLane="best" from="943802147#1" to="-380662067#2"/>
+    <trip id="bike549" type="bike_bicycle" depart="1690.50" departLane="best" from="538554381#2" to="566655046#1"/>
+    <trip id="bike550" type="bike_bicycle" depart="1693.58" departLane="best" from="944116814" to="-63106577#0"/>
+    <trip id="bike551" type="bike_bicycle" depart="1696.66" departLane="best" departSpeed="max" from="104210747#1" to="823316163#0"/>
+    <trip id="bike552" type="bike_bicycle" depart="1699.73" departLane="best" from="8640929#5" to="8649873#0"/>
+    <trip id="bike553" type="bike_bicycle" depart="1702.81" departLane="best" from="8639232" to="8865426#9"/>
+    <trip id="bike554" type="bike_bicycle" depart="1705.89" departLane="best" from="63104564#2" to="1115616604#2"/>
+    <trip id="bike555" type="bike_bicycle" depart="1708.97" departLane="best" from="-537307165#1" to="-8641560#1"/>
+    <trip id="bike556" type="bike_bicycle" depart="1712.05" departLane="best" from="-817361891#1" to="-8644647#0"/>
+    <trip id="bike557" type="bike_bicycle" depart="1715.13" departLane="best" from="-1323781936#3" to="8648025#0"/>
+    <trip id="bike558" type="bike_bicycle" depart="1718.21" departLane="best" from="-1112835160#4" to="8644957#1"/>
+    <trip id="bike559" type="bike_bicycle" depart="1721.29" departLane="best" from="533600032#1" to="8647066#1"/>
+    <trip id="bike560" type="bike_bicycle" depart="1724.37" departLane="best" from="8647456#6" to="817361875#1"/>
+    <trip id="bike561" type="bike_bicycle" depart="1727.45" departLane="best" from="8647038#1" to="798941673#1"/>
+    <trip id="bike562" type="bike_bicycle" depart="1730.53" departLane="best" from="815603050#3" to="-1115273723#0"/>
+    <trip id="bike564" type="bike_bicycle" depart="1736.69" departLane="best" from="-8644188#1" to="-863038354#0"/>
+    <trip id="bike565" type="bike_bicycle" depart="1739.76" departLane="best" from="8636684#5" to="1111328431#1"/>
+    <trip id="bike566" type="bike_bicycle" depart="1742.84" departLane="best" from="-985552044#4" to="103553906#3"/>
+    <trip id="bike567" type="bike_bicycle" depart="1745.92" departLane="best" from="8648789#1" to="591493143#0"/>
+    <trip id="bike568" type="bike_bicycle" depart="1749.00" departLane="best" from="-1115616613" to="-816291664#0"/>
+    <trip id="bike569" type="bike_bicycle" depart="1752.08" departLane="best" from="-815093894#0" to="-1115616585#1"/>
+    <trip id="bike570" type="bike_bicycle" depart="1755.16" departLane="best" departSpeed="max" from="8640929#2" to="-8641560#4"/>
+    <trip id="bike571" type="bike_bicycle" depart="1758.24" departLane="best" from="1223509838#2" to="1115616588#2"/>
+    <trip id="bike572" type="bike_bicycle" depart="1761.32" departLane="best" from="-1112835160#6" to="-8639801#3"/>
+    <trip id="bike573" type="bike_bicycle" depart="1764.40" departLane="best" from="8644931#1" to="591493143#1"/>
+    <trip id="bike574" type="bike_bicycle" depart="1767.48" departLane="best" from="-1241149233#1" to="-1115616616#1"/>
+    <trip id="bike575" type="bike_bicycle" depart="1770.56" departLane="best" departSpeed="max" from="-63104587#3" to="815093880#1"/>
+    <trip id="bike576" type="bike_bicycle" depart="1773.64" departLane="best" from="825494585#5" to="8865420#4"/>
+    <trip id="bike578" type="bike_bicycle" depart="1779.79" departLane="best" from="-1302402603#1" to="8865420#5"/>
+    <trip id="bike579" type="bike_bicycle" depart="1782.87" departLane="best" from="8641399#5" to="533511492#1"/>
+    <trip id="bike580" type="bike_bicycle" depart="1785.95" departLane="best" from="1223509838#2" to="985552044#10"/>
+    <trip id="bike582" type="bike_bicycle" depart="1792.11" departLane="best" from="823316163#0" to="-1115616609#1"/>
+    <trip id="bike583" type="bike_bicycle" depart="1795.19" departLane="best" from="1115616609#1" to="747090068#3"/>
+    <trip id="bike584" type="bike_bicycle" depart="1798.27" departLane="best" from="103553906#4" to="1042974152"/>
+    <trip id="bike586" type="bike_bicycle" depart="1804.43" departLane="best" from="8640929#5" to="1112835163"/>
+    <trip id="bike587" type="bike_bicycle" depart="1807.51" departLane="best" from="103553906#4" to="8642281#2"/>
+    <trip id="bike588" type="bike_bicycle" depart="1810.59" departLane="best" departSpeed="max" from="-788015186#1" to="1166056604#1"/>
+    <trip id="bike589" type="bike_bicycle" depart="1813.67" departLane="best" from="8637728#1" to="426456577"/>
+    <trip id="bike590" type="bike_bicycle" depart="1816.75" departLane="best" from="8647432#1" to="8647066#0"/>
+    <trip id="bike591" type="bike_bicycle" depart="1819.82" departLane="best" from="-1115616617#0" to="8648789#1"/>
+    <trip id="bike592" type="bike_bicycle" depart="1822.90" departLane="best" from="-1115616585#2" to="1112835160#5"/>
+    <trip id="bike593" type="bike_bicycle" depart="1825.98" departLane="best" from="8651325#2" to="8648789#2"/>
+    <trip id="bike594" type="bike_bicycle" depart="1829.06" departLane="best" from="537303956#0" to="63104564#1"/>
+    <trip id="bike595" type="bike_bicycle" depart="1832.14" departLane="best" departSpeed="max" from="8638120#0" to="1317061159"/>
+    <trip id="bike596" type="bike_bicycle" depart="1835.22" departLane="best" departSpeed="max" from="-217801050#2" to="-1115616609#1"/>
+    <trip id="bike597" type="bike_bicycle" depart="1838.30" departLane="best" from="8866322#1" to="8646962#1"/>
+    <trip id="bike598" type="bike_bicycle" depart="1841.38" departLane="best" from="747090068#3" to="8647456#6"/>
+    <trip id="bike599" type="bike_bicycle" depart="1844.46" departLane="best" from="8651325#1" to="-289468264#0"/>
+    <trip id="bike600" type="bike_bicycle" depart="1847.54" departLane="best" from="8647456#3" to="8648025#0"/>
+    <trip id="bike601" type="bike_bicycle" depart="1850.62" departLane="best" from="591217313#1" to="426484920"/>
+    <trip id="bike602" type="bike_bicycle" depart="1853.70" departLane="best" from="1115616609#1" to="1111965193"/>
+    <trip id="bike603" type="bike_bicycle" depart="1856.77" departLane="best" from="-985552044#4" to="-1115273723#1"/>
+    <trip id="bike605" type="bike_bicycle" depart="1862.93" departLane="best" departSpeed="max" from="-217801050#2" to="426456601#1"/>
+    <trip id="bike607" type="bike_bicycle" depart="1869.09" departLane="best" from="8639350#1" to="8647351#7"/>
+    <trip id="bike608" type="bike_bicycle" depart="1872.17" departLane="best" from="8646816#1" to="8647350#1"/>
+    <trip id="bike609" type="bike_bicycle" depart="1875.25" departLane="best" from="537303955#1" to="-8639801#2"/>
+    <trip id="bike610" type="bike_bicycle" depart="1878.33" departLane="best" from="63104564#3" to="8644931#2"/>
+    <trip id="bike613" type="bike_bicycle" depart="1887.57" departLane="best" from="8641399#5" to="-8644931#2"/>
+    <trip id="bike614" type="bike_bicycle" depart="1890.65" departLane="best" from="1317061159" to="747090068#0"/>
+    <trip id="bike615" type="bike_bicycle" depart="1893.73" departLane="best" from="468490261#1" to="815603050#3"/>
+    <trip id="bike617" type="bike_bicycle" depart="1899.88" departLane="best" departSpeed="max" from="798941674#0" to="-816934280#2"/>
+    <trip id="bike619" type="bike_bicycle" depart="1906.04" departLane="best" from="-8649468#0" to="-8866322#2"/>
+    <trip id="bike620" type="bike_bicycle" depart="1909.12" departLane="best" departSpeed="max" from="-1115616600" to="426456601#1"/>
+    <trip id="bike621" type="bike_bicycle" depart="1912.20" departLane="best" from="8651340#0" to="217801050#1"/>
+    <trip id="bike622" type="bike_bicycle" depart="1915.28" departLane="best" from="1115616604#0" to="8647456#6"/>
+    <trip id="bike623" type="bike_bicycle" depart="1918.36" departLane="best" from="-1115616621" to="8648789#3"/>
+    <trip id="bike624" type="bike_bicycle" depart="1921.44" departLane="best" from="8647941#1" to="798941673#1"/>
+    <trip id="bike626" type="bike_bicycle" depart="1927.60" departLane="best" from="426487624#3" to="8646541#2"/>
+    <trip id="bike629" type="bike_bicycle" depart="1936.83" departLane="best" from="-8865420#3" to="380662074#2"/>
+    <trip id="bike630" type="bike_bicycle" depart="1939.91" departLane="best" departSpeed="max" from="-566655046#1" to="-1115616623"/>
+    <trip id="bike631" type="bike_bicycle" depart="1942.99" departLane="best" departSpeed="max" from="-1317705793" to="8650349#2"/>
+    <trip id="bike632" type="bike_bicycle" depart="1946.07" departLane="best" from="103553904#1" to="8639350#1"/>
+    <trip id="bike633" type="bike_bicycle" depart="1949.15" departLane="best" from="380662081#1" to="-862879202#0"/>
+    <trip id="bike635" type="bike_bicycle" depart="1955.31" departLane="best" from="1284186043#2" to="-426484913#3"/>
+    <trip id="bike636" type="bike_bicycle" depart="1958.39" departLane="best" from="63106577#1" to="1123326681#0"/>
+    <trip id="bike637" type="bike_bicycle" depart="1961.47" departLane="best" departSpeed="max" from="-8647156#1" to="1302402604#2"/>
+    <trip id="bike638" type="bike_bicycle" depart="1964.55" departLane="best" departSpeed="max" from="-985552044#11" to="747090068#2"/>
+    <trip id="bike639" type="bike_bicycle" depart="1967.63" departLane="best" departSpeed="max" from="8645264#0" to="817361884#0"/>
+    <trip id="bike641" type="bike_bicycle" depart="1973.79" departLane="best" from="826634235" to="985552044#2"/>
+    <trip id="bike642" type="bike_bicycle" depart="1976.86" departLane="best" from="8639327#1" to="-817361891#2"/>
+    <trip id="bike644" type="bike_bicycle" depart="1983.02" departLane="best" departSpeed="max" from="-944497933" to="63104590#4"/>
+    <trip id="bike645" type="bike_bicycle" depart="1986.10" departLane="best" departSpeed="max" from="-508533578" to="-1115616604#0"/>
+    <trip id="bike646" type="bike_bicycle" depart="1989.18" departLane="best" from="8865426#12" to="8638252#1"/>
+    <trip id="bike647" type="bike_bicycle" depart="1992.26" departLane="best" departSpeed="max" from="1115616595#0" to="747090068#0"/>
+    <trip id="bike648" type="bike_bicycle" depart="1995.34" departLane="best" from="8652409#2" to="1111328431#1"/>
+    <trip id="bike649" type="bike_bicycle" depart="1998.42" departLane="best" from="1115273723#1" to="8646541#2"/>
+    <trip id="bike651" type="bike_bicycle" depart="2004.58" departLane="best" from="8647351#2" to="-8641560#2"/>
+    <trip id="bike652" type="bike_bicycle" depart="2007.66" departLane="best" from="846628946#1" to="426487624#1"/>
+    <trip id="bike653" type="bike_bicycle" depart="2010.74" departLane="best" from="816934280#1" to="1323781936#3"/>
+    <trip id="bike654" type="bike_bicycle" depart="2013.82" departLane="best" from="-1112835159#1" to="1115616615#1"/>
+    <trip id="bike655" type="bike_bicycle" depart="2016.89" departLane="best" departSpeed="max" from="-815093880#1" to="-8641560#2"/>
+    <trip id="bike658" type="bike_bicycle" depart="2026.13" departLane="best" from="-1115616621" to="8647941#3"/>
+    <trip id="bike659" type="bike_bicycle" depart="2029.21" departLane="best" departSpeed="max" from="-1303174799" to="8645388#1"/>
+    <trip id="bike660" type="bike_bicycle" depart="2032.29" departLane="best" departSpeed="max" from="8647456#0" to="8649630#5"/>
+    <trip id="bike661" type="bike_bicycle" depart="2035.37" departLane="best" departSpeed="max" from="-1113193581#1" to="1115616586#1"/>
+    <trip id="bike662" type="bike_bicycle" depart="2038.45" departLane="best" from="8642281#2" to="-814380634"/>
+    <trip id="bike663" type="bike_bicycle" depart="2041.53" departLane="best" from="1115273723#1" to="-825494585#2"/>
+    <trip id="bike667" type="bike_bicycle" depart="2053.85" departLane="best" from="825494585#7" to="8647350#4"/>
+    <trip id="bike668" type="bike_bicycle" depart="2056.92" departLane="best" from="1302402604#1" to="985552044#7"/>
+    <trip id="bike669" type="bike_bicycle" depart="2060.00" departLane="best" from="8640929#4" to="199586487#2"/>
+    <trip id="bike670" type="bike_bicycle" depart="2063.08" departLane="best" departSpeed="max" from="426456618#0" to="1111328431#1"/>
+    <trip id="bike672" type="bike_bicycle" depart="2069.24" departLane="best" departSpeed="max" from="8647456#0" to="1115616620#1"/>
+    <trip id="bike673" type="bike_bicycle" depart="2072.32" departLane="best" departSpeed="max" from="8652508#0" to="970425316#1"/>
+    <trip id="bike674" type="bike_bicycle" depart="2075.40" departLane="best" from="138827717#0" to="-985552044#0"/>
+    <trip id="bike675" type="bike_bicycle" depart="2078.48" departLane="best" from="1115616585#2" to="426487624#1"/>
+    <trip id="bike676" type="bike_bicycle" depart="2081.56" departLane="best" from="8865426#1" to="8647351#6"/>
+    <trip id="bike678" type="bike_bicycle" depart="2087.72" departLane="best" from="8640788#0" to="816934280#1"/>
+    <trip id="bike679" type="bike_bicycle" depart="2090.80" departLane="best" from="8648789#4" to="538554380#1"/>
+    <trip id="bike680" type="bike_bicycle" depart="2093.88" departLane="best" departSpeed="max" from="-1303174799" to="8648025#0"/>
+    <trip id="bike681" type="bike_bicycle" depart="2096.95" departLane="best" from="8647670#3" to="985552044#7"/>
+    <trip id="bike682" type="bike_bicycle" depart="2100.03" departLane="best" departSpeed="max" from="8642149#0" to="8865420#5"/>
+    <trip id="bike684" type="bike_bicycle" depart="2106.19" departLane="best" from="-1281777364" to="-8652508#1"/>
+    <trip id="bike685" type="bike_bicycle" depart="2109.27" departLane="best" from="825494585#7" to="217801050#1"/>
+    <trip id="bike686" type="bike_bicycle" depart="2112.35" departLane="best" from="103553906#4" to="-1115273723#0"/>
+    <trip id="bike687" type="bike_bicycle" depart="2115.43" departLane="best" departSpeed="max" from="-1115616595#1" to="426456589"/>
+    <trip id="bike688" type="bike_bicycle" depart="2118.51" departLane="best" from="8637728#2" to="985552044#11"/>
+    <trip id="bike689" type="bike_bicycle" depart="2121.59" departLane="best" departSpeed="max" from="1115273723#0" to="-1115616585#0"/>
+    <trip id="bike690" type="bike_bicycle" depart="2124.67" departLane="best" departSpeed="max" from="8651965" to="8647891#1"/>
+    <trip id="bike691" type="bike_bicycle" depart="2127.75" departLane="best" from="816934280#4" to="8646541#2"/>
+    <trip id="bike692" type="bike_bicycle" depart="2130.83" departLane="best" departSpeed="max" from="485292838#0" to="1031513328"/>
+    <trip id="bike694" type="bike_bicycle" depart="2136.98" departLane="best" departSpeed="max" from="485292838#0" to="-8638991#0"/>
+    <trip id="bike695" type="bike_bicycle" depart="2140.06" departLane="best" from="1317061159" to="103553906#2"/>
+    <trip id="bike697" type="bike_bicycle" depart="2146.22" departLane="best" departSpeed="max" from="8647456#0" to="-537303955#1"/>
+    <trip id="bike698" type="bike_bicycle" depart="2149.30" departLane="best" from="8639350#1" to="426487624#3"/>
+    <trip id="bike699" type="bike_bicycle" depart="2152.38" departLane="best" departSpeed="max" from="-138827709#1" to="1031513328"/>
+    <trip id="bike700" type="bike_bicycle" depart="2155.46" departLane="best" departSpeed="max" from="-8649414#1" to="1115616610#1"/>
+    <trip id="bike701" type="bike_bicycle" depart="2158.54" departLane="best" from="1154670875#1" to="8646564#1"/>
+    <trip id="bike702" type="bike_bicycle" depart="2161.62" departLane="best" from="138827679#1" to="-468490261#1"/>
+    <trip id="bike704" type="bike_bicycle" depart="2167.78" departLane="best" departSpeed="max" from="-1111328431#1" to="426456637"/>
+    <trip id="bike706" type="bike_bicycle" depart="2173.94" departLane="best" from="1160123819" to="798941673#1"/>
+    <trip id="bike707" type="bike_bicycle" depart="2177.01" departLane="best" from="-8639232" to="1303174799"/>
+    <trip id="bike708" type="bike_bicycle" depart="2180.09" departLane="best" from="823316157" to="-217801058#0"/>
+    <trip id="bike709" type="bike_bicycle" depart="2183.17" departLane="best" from="8865427#0" to="-1196041856"/>
+    <trip id="bike710" type="bike_bicycle" depart="2186.25" departLane="best" from="426456589" to="426456601#1"/>
+    <trip id="bike711" type="bike_bicycle" depart="2189.33" departLane="best" from="970425316#2" to="538554380#0"/>
+    <trip id="bike712" type="bike_bicycle" depart="2192.41" departLane="best" departSpeed="max" from="1115616590" to="380662072#0"/>
+    <trip id="bike713" type="bike_bicycle" depart="2195.49" departLane="best" from="-815093895#1" to="-944109700#2"/>
+    <trip id="bike714" type="bike_bicycle" depart="2198.57" departLane="best" from="8640929#4" to="1112835160#3"/>
+    <trip id="bike715" type="bike_bicycle" depart="2201.65" departLane="best" departSpeed="max" from="8645264#0" to="1115616595#1"/>
+    <trip id="bike716" type="bike_bicycle" depart="2204.73" departLane="best" from="8639801#2" to="815093895#2"/>
+    <trip id="bike718" type="bike_bicycle" depart="2210.89" departLane="best" departSpeed="max" from="-944497933" to="-1115616604#0"/>
+    <trip id="bike719" type="bike_bicycle" depart="2213.97" departLane="best" from="-426456738#2" to="8647351#1"/>
+    <trip id="bike721" type="bike_bicycle" depart="2220.12" departLane="best" from="138827726#1" to="8636684#5"/>
+    <trip id="bike722" type="bike_bicycle" depart="2223.20" departLane="best" from="-815093880#0" to="8647350#1"/>
+    <trip id="bike723" type="bike_bicycle" depart="2226.28" departLane="best" from="-1115616610#1" to="8645556#1"/>
+    <trip id="bike724" type="bike_bicycle" depart="2229.36" departLane="best" from="138827679#2" to="103553906#2"/>
+    <trip id="bike725" type="bike_bicycle" depart="2232.44" departLane="best" departSpeed="max" from="-1115616586#1" to="-8639801#4"/>
+    <trip id="bike726" type="bike_bicycle" depart="2235.52" departLane="best" from="-1115616585#2" to="8652204#1"/>
+    <trip id="bike727" type="bike_bicycle" depart="2238.60" departLane="best" departSpeed="max" from="41940341#0" to="985552043#0"/>
+    <trip id="bike728" type="bike_bicycle" depart="2241.68" departLane="best" from="426456649#0" to="8649468#2"/>
+    <trip id="bike729" type="bike_bicycle" depart="2244.76" departLane="best" from="8641399#1" to="8638991#0"/>
+    <trip id="bike731" type="bike_bicycle" depart="2250.92" departLane="best" departSpeed="max" from="8648527#0" to="1113193581#1"/>
+    <trip id="bike733" type="bike_bicycle" depart="2257.07" departLane="best" from="8649630#5" to="8641950#2"/>
+    <trip id="bike736" type="bike_bicycle" depart="2266.31" departLane="best" from="380662074#1" to="8651358#1"/>
+    <trip id="bike737" type="bike_bicycle" depart="2269.39" departLane="best" from="420495586#2" to="8646962#1"/>
+    <trip id="bike738" type="bike_bicycle" depart="2272.47" departLane="best" from="8639350#1" to="1302402604#1"/>
+    <trip id="bike739" type="bike_bicycle" depart="2275.55" departLane="best" from="63104564#3" to="8647432#1"/>
+    <trip id="bike740" type="bike_bicycle" depart="2278.63" departLane="best" from="426456738#1" to="1112835160#7"/>
+    <trip id="bike741" type="bike_bicycle" depart="2281.71" departLane="best" from="-1181032038#0" to="823316159#1"/>
+    <trip id="bike742" type="bike_bicycle" depart="2284.79" departLane="best" departSpeed="max" from="-8649468#3" to="749812082#1"/>
+    <trip id="bike744" type="bike_bicycle" depart="2290.95" departLane="best" departSpeed="max" from="103554256#0" to="-1115616595#0"/>
+    <trip id="bike745" type="bike_bicycle" depart="2294.03" departLane="best" from="8648789#1" to="1115616604#2"/>
+    <trip id="bike746" type="bike_bicycle" depart="2297.10" departLane="best" from="-8644931#1" to="-8866322#2"/>
+    <trip id="bike747" type="bike_bicycle" depart="2300.18" departLane="best" from="929580947#1" to="-871799064"/>
+    <trip id="bike749" type="bike_bicycle" depart="2306.34" departLane="best" from="1112835160#1" to="8646962#1"/>
+    <trip id="bike750" type="bike_bicycle" depart="2309.42" departLane="best" from="834856246" to="8865420#1"/>
+    <trip id="bike751" type="bike_bicycle" depart="2312.50" departLane="best" from="-533466405" to="750675235#1"/>
+    <trip id="bike752" type="bike_bicycle" depart="2315.58" departLane="best" from="8645083#2" to="-1115616586#0"/>
+    <trip id="bike753" type="bike_bicycle" depart="2318.66" departLane="best" from="-1115616615#0" to="-8646020#0"/>
+    <trip id="bike754" type="bike_bicycle" depart="2321.74" departLane="best" from="-1112835160#3" to="1181032038#0"/>
+    <trip id="bike755" type="bike_bicycle" depart="2324.82" departLane="best" from="-8649468#0" to="749812082#2"/>
+    <trip id="bike756" type="bike_bicycle" depart="2327.90" departLane="best" from="834856246" to="871799067#1"/>
+    <trip id="bike757" type="bike_bicycle" depart="2330.98" departLane="best" from="1112835160#8" to="8644957#1"/>
+    <trip id="bike758" type="bike_bicycle" depart="2334.06" departLane="best" from="985552043#0" to="426487627#0"/>
+    <trip id="bike759" type="bike_bicycle" depart="2337.13" departLane="best" from="-1115616610#1" to="817361884#1"/>
+    <trip id="bike760" type="bike_bicycle" depart="2340.21" departLane="best" from="8640674#1" to="533466405"/>
+    <trip id="bike762" type="bike_bicycle" depart="2346.37" departLane="best" from="-1115616588#0" to="566655046#1"/>
+    <trip id="bike763" type="bike_bicycle" depart="2349.45" departLane="best" from="8641950#2" to="-8651965"/>
+    <trip id="bike764" type="bike_bicycle" depart="2352.53" departLane="best" from="1302402604#2" to="985552044#7"/>
+    <trip id="bike765" type="bike_bicycle" depart="2355.61" departLane="best" from="-8647350#4" to="8651226#0"/>
+    <trip id="bike766" type="bike_bicycle" depart="2358.69" departLane="best" from="380662068" to="63106577#0"/>
+    <trip id="bike767" type="bike_bicycle" depart="2361.77" departLane="best" from="8647891#1" to="217801050#1"/>
+    <trip id="bike768" type="bike_bicycle" depart="2364.85" departLane="best" from="8650337#1" to="185734373#1"/>
+    <trip id="bike769" type="bike_bicycle" depart="2367.93" departLane="best" from="1281777218#1" to="850681883"/>
+    <trip id="bike770" type="bike_bicycle" depart="2371.01" departLane="best" from="8647456#6" to="1112835160#5"/>
+    <trip id="bike771" type="bike_bicycle" depart="2374.09" departLane="best" from="103553906#2" to="1181032038#0"/>
+    <trip id="bike772" type="bike_bicycle" depart="2377.16" departLane="best" from="426456637" to="8650333#0"/>
+    <trip id="bike773" type="bike_bicycle" depart="2380.24" departLane="best" from="8647849#0" to="8639327#1"/>
+    <trip id="bike777" type="bike_bicycle" depart="2392.56" departLane="best" departSpeed="max" from="485292838#0" to="8646541#1"/>
+    <trip id="bike778" type="bike_bicycle" depart="2395.64" departLane="best" from="-1112835160#5" to="538554380#0"/>
+    <trip id="bike779" type="bike_bicycle" depart="2398.72" departLane="best" from="-1112835160#5" to="8647038#2"/>
+    <trip id="bike780" type="bike_bicycle" depart="2401.80" departLane="best" from="426484925#2" to="798941673#0"/>
+    <trip id="bike781" type="bike_bicycle" depart="2404.88" departLane="best" from="-1281777218#0" to="1111328431#1"/>
+    <trip id="bike782" type="bike_bicycle" depart="2407.96" departLane="best" from="99809128#2" to="-8639801#1"/>
+    <trip id="bike783" type="bike_bicycle" depart="2411.04" departLane="best" from="426456589" to="8645199#2"/>
+    <trip id="bike784" type="bike_bicycle" depart="2414.12" departLane="best" from="8647066#1" to="1281777362#1"/>
+    <trip id="bike785" type="bike_bicycle" depart="2417.19" departLane="best" from="8865426#8" to="-816934280#2"/>
+    <trip id="bike786" type="bike_bicycle" depart="2420.27" departLane="best" from="1323781936#1" to="846628946#1"/>
+    <trip id="bike787" type="bike_bicycle" depart="2423.35" departLane="best" from="103553906#0" to="8649580#1"/>
+    <trip id="bike789" type="bike_bicycle" depart="2429.51" departLane="best" from="-815093894#0" to="8865425#1"/>
+    <trip id="bike790" type="bike_bicycle" depart="2432.59" departLane="best" from="1241149233#1" to="8650688#1"/>
+    <trip id="bike791" type="bike_bicycle" depart="2435.67" departLane="best" departSpeed="max" from="-1115616600" to="63106577#1"/>
+    <trip id="bike792" type="bike_bicycle" depart="2438.75" departLane="best" from="63104562#2" to="-825494585#5"/>
+    <trip id="bike793" type="bike_bicycle" depart="2441.83" departLane="best" from="-8865420#4" to="-8639232"/>
+    <trip id="bike794" type="bike_bicycle" depart="2444.91" departLane="best" from="103553906#1" to="8652409#4"/>
+    <trip id="bike796" type="bike_bicycle" depart="2451.07" departLane="best" from="8640788#0" to="815603050#3"/>
+    <trip id="bike797" type="bike_bicycle" depart="2454.15" departLane="best" from="426484920" to="-658046484#0"/>
+    <trip id="bike798" type="bike_bicycle" depart="2457.22" departLane="best" from="-8649468#0" to="426487635#0"/>
+    <trip id="bike800" type="bike_bicycle" depart="2463.38" departLane="best" from="8652409#6" to="-817025769#0"/>
+    <trip id="bike801" type="bike_bicycle" depart="2466.46" departLane="best" departSpeed="max" from="823316156#0" to="-8639801#3"/>
+    <trip id="bike803" type="bike_bicycle" depart="2472.62" departLane="best" from="468490261#1" to="8647456#12"/>
+    <trip id="bike804" type="bike_bicycle" depart="2475.70" departLane="best" from="-1112835160#7" to="-1115616609#1"/>
+    <trip id="bike805" type="bike_bicycle" depart="2478.78" departLane="best" from="815603050#1" to="63104587#1"/>
+    <trip id="bike806" type="bike_bicycle" depart="2481.86" departLane="best" from="817361875#1" to="8645199#1"/>
+    <trip id="bike808" type="bike_bicycle" depart="2488.02" departLane="best" from="380662074#1" to="815093895#2"/>
+    <trip id="bike809" type="bike_bicycle" depart="2491.10" departLane="best" from="-8647670#2" to="8865420#5"/>
+    <trip id="bike810" type="bike_bicycle" depart="2494.18" departLane="best" from="289462997#2" to="8647038#3"/>
+    <trip id="bike811" type="bike_bicycle" depart="2497.25" departLane="best" from="426487624#3" to="104210747#2"/>
+    <trip id="bike812" type="bike_bicycle" depart="2500.33" departLane="best" from="1115616616#1" to="-1115616623"/>
+    <trip id="bike814" type="bike_bicycle" depart="2506.49" departLane="best" from="-816934280#0" to="750675235#1"/>
+    <trip id="bike815" type="bike_bicycle" depart="2509.57" departLane="best" departSpeed="max" from="-8651358#1" to="8639801#1"/>
+    <trip id="bike816" type="bike_bicycle" depart="2512.65" departLane="best" from="8639801#3" to="8648769"/>
+    <trip id="bike817" type="bike_bicycle" depart="2515.73" departLane="best" from="8865427#0" to="-814380634"/>
+    <trip id="bike818" type="bike_bicycle" depart="2518.81" departLane="best" from="-1112835160#7" to="566655046#1"/>
+    <trip id="bike819" type="bike_bicycle" depart="2521.89" departLane="best" from="-871799067#1" to="380662069#0"/>
+    <trip id="bike820" type="bike_bicycle" depart="2524.97" departLane="best" from="-8644188#1" to="-8648727#2"/>
+    <trip id="bike822" type="bike_bicycle" depart="2531.13" departLane="best" departSpeed="max" from="1115616586#0" to="798941673#1"/>
+    <trip id="bike824" type="bike_bicycle" depart="2537.28" departLane="best" from="-63106577#1" to="1112835163"/>
+    <trip id="bike825" type="bike_bicycle" depart="2540.36" departLane="best" from="-537307165#1" to="1112835159#1"/>
+    <trip id="bike826" type="bike_bicycle" depart="2543.44" departLane="best" departSpeed="max" from="8642149#0" to="426456571#0"/>
+    <trip id="bike827" type="bike_bicycle" depart="2546.52" departLane="best" from="409161400#1" to="426456571#0"/>
+    <trip id="bike830" type="bike_bicycle" depart="2555.76" departLane="best" from="8865426#1" to="-8641560#4"/>
+    <trip id="bike831" type="bike_bicycle" depart="2558.84" departLane="best" departSpeed="max" from="103554256#0" to="1115616613"/>
+    <trip id="bike832" type="bike_bicycle" depart="2561.92" departLane="best" from="380662069#2" to="8649630#4"/>
+    <trip id="bike833" type="bike_bicycle" depart="2565.00" departLane="best" departSpeed="max" from="817361883#0" to="380662072#0"/>
+    <trip id="bike834" type="bike_bicycle" depart="2568.08" departLane="best" from="426456618#1" to="8648025#1"/>
+    <trip id="bike835" type="bike_bicycle" depart="2571.16" departLane="best" from="1241149233#0" to="8649630#4"/>
+    <trip id="bike837" type="bike_bicycle" depart="2577.31" departLane="best" from="-1112835160#3" to="1284186043#3"/>
+    <trip id="bike838" type="bike_bicycle" depart="2580.39" departLane="best" from="533466403#0" to="-8639232"/>
+    <trip id="bike839" type="bike_bicycle" depart="2583.47" departLane="best" from="426487627#1" to="1281777362#1"/>
+    <trip id="bike841" type="bike_bicycle" depart="2589.63" departLane="best" departSpeed="max" from="-8646916#1" to="533600032#1"/>
+    <trip id="bike843" type="bike_bicycle" depart="2595.79" departLane="best" from="8865427#0" to="-1281777218#1"/>
+    <trip id="bike845" type="bike_bicycle" depart="2601.95" departLane="best" from="8652409#3" to="-8644188#1"/>
+    <trip id="bike847" type="bike_bicycle" depart="2608.11" departLane="best" from="380662075#0" to="-1115616609#1"/>
+    <trip id="bike848" type="bike_bicycle" depart="2611.19" departLane="best" departSpeed="max" from="485292838#0" to="-1115273723#1"/>
+    <trip id="bike850" type="bike_bicycle" depart="2617.34" departLane="best" from="63106577#0" to="426456637"/>
+    <trip id="bike851" type="bike_bicycle" depart="2620.42" departLane="best" from="943802147#1" to="798941673#1"/>
+    <trip id="bike853" type="bike_bicycle" depart="2626.58" departLane="best" departSpeed="max" from="8640674#0" to="104210747#5"/>
+    <trip id="bike854" type="bike_bicycle" depart="2629.66" departLane="best" from="-985552044#10" to="8647456#18"/>
+    <trip id="bike855" type="bike_bicycle" depart="2632.74" departLane="best" from="426456606#0" to="8639232"/>
+    <trip id="bike856" type="bike_bicycle" depart="2635.82" departLane="best" from="-8649414#0" to="8647351#5"/>
+    <trip id="bike857" type="bike_bicycle" depart="2638.90" departLane="best" from="-1112835160#5" to="-825494585#7"/>
+    <trip id="bike858" type="bike_bicycle" depart="2641.98" departLane="best" from="929580947#1" to="63106577#0"/>
+    <trip id="bike859" type="bike_bicycle" depart="2645.06" departLane="best" from="8646020#0" to="8640516#1"/>
+    <trip id="bike860" type="bike_bicycle" depart="2648.14" departLane="best" departSpeed="max" from="862879202#0" to="-1115273723#0"/>
+    <trip id="bike862" type="bike_bicycle" depart="2654.30" departLane="best" from="8645083#3" to="8645556#1"/>
+    <trip id="bike863" type="bike_bicycle" depart="2657.37" departLane="best" from="-537307165#1" to="-8639801#3"/>
+    <trip id="bike865" type="bike_bicycle" depart="2663.53" departLane="best" departSpeed="max" from="798941675#0" to="815093880#1"/>
+    <trip id="bike866" type="bike_bicycle" depart="2666.61" departLane="best" from="8647456#15" to="-814380634"/>
+    <trip id="bike868" type="bike_bicycle" depart="2672.77" departLane="best" departSpeed="max" from="8652508#0" to="-468490261#1"/>
+    <trip id="bike869" type="bike_bicycle" depart="2675.85" departLane="best" departSpeed="max" from="-1111965193" to="1112835159#1"/>
+    <trip id="bike870" type="bike_bicycle" depart="2678.93" departLane="best" from="63104562#0" to="863038355#0"/>
+    <trip id="bike871" type="bike_bicycle" depart="2682.01" departLane="best" departSpeed="max" from="1115616623" to="8645388#4"/>
+    <trip id="bike872" type="bike_bicycle" depart="2685.09" departLane="best" from="8651325#2" to="8649468#0"/>
+    <trip id="bike874" type="bike_bicycle" depart="2691.25" departLane="best" departSpeed="max" from="485292838#0" to="-8640788#0"/>
+    <trip id="bike875" type="bike_bicycle" depart="2694.33" departLane="best" from="-8866322#2" to="823316160"/>
+    <trip id="bike876" type="bike_bicycle" depart="2697.40" departLane="best" from="426456589" to="1112835159#1"/>
+    <trip id="bike878" type="bike_bicycle" depart="2703.56" departLane="best" from="-1032022089" to="1115616610#0"/>
+    <trip id="bike879" type="bike_bicycle" depart="2706.64" departLane="best" from="8643916#1" to="-8639801#3"/>
+    <trip id="bike880" type="bike_bicycle" depart="2709.72" departLane="best" from="815603050#4" to="8636684#1"/>
+    <trip id="bike881" type="bike_bicycle" depart="2712.80" departLane="best" from="63106623#1" to="-8638991#2"/>
+    <trip id="bike883" type="bike_bicycle" depart="2718.96" departLane="best" departSpeed="max" from="-850681883" to="8865427#5"/>
+    <trip id="bike884" type="bike_bicycle" depart="2722.04" departLane="best" from="-8648727#2" to="1032022089"/>
+    <trip id="bike885" type="bike_bicycle" depart="2725.12" departLane="best" from="816934280#3" to="8638991#0"/>
+    <trip id="bike886" type="bike_bicycle" depart="2728.20" departLane="best" from="8652508#1" to="1115616600"/>
+    <trip id="bike887" type="bike_bicycle" depart="2731.28" departLane="best" departSpeed="max" from="8651975#0" to="8646564#2"/>
+    <trip id="bike888" type="bike_bicycle" depart="2734.36" departLane="best" departSpeed="max" from="-8645556#1" to="-63104587#2"/>
+    <trip id="bike889" type="bike_bicycle" depart="2737.43" departLane="best" from="825626963#1" to="1160123819"/>
+    <trip id="bike890" type="bike_bicycle" depart="2740.51" departLane="best" from="929580947#1" to="8647351#7"/>
+    <trip id="bike891" type="bike_bicycle" depart="2743.59" departLane="best" from="8865420#1" to="8647038#2"/>
+    <trip id="bike892" type="bike_bicycle" depart="2746.67" departLane="best" from="-8647670#3" to="1031513328"/>
+    <trip id="bike893" type="bike_bicycle" depart="2749.75" departLane="best" from="8638252#4" to="1115616595#1"/>
+    <trip id="bike894" type="bike_bicycle" depart="2752.83" departLane="best" from="-1302402603#1" to="-8651340#1"/>
+    <trip id="bike895" type="bike_bicycle" depart="2755.91" departLane="best" departSpeed="max" from="217801058#0" to="8640516#0"/>
+    <trip id="bike896" type="bike_bicycle" depart="2758.99" departLane="best" from="426456625#1" to="8652204#1"/>
+    <trip id="bike898" type="bike_bicycle" depart="2765.15" departLane="best" from="747090068#1" to="63106623#0"/>
+    <trip id="bike899" type="bike_bicycle" depart="2768.23" departLane="best" from="-8639801#2" to="-825494585#3"/>
+    <trip id="bike902" type="bike_bicycle" depart="2777.46" departLane="best" from="8638991#0" to="-426456571#1"/>
+    <trip id="bike903" type="bike_bicycle" depart="2780.54" departLane="best" from="8643791#1" to="103553906#2"/>
+    <trip id="bike904" type="bike_bicycle" depart="2783.62" departLane="best" from="426484920" to="8651714#3"/>
+    <trip id="bike905" type="bike_bicycle" depart="2786.70" departLane="best" from="1115616620#0" to="8652204#1"/>
+    <trip id="bike906" type="bike_bicycle" depart="2789.78" departLane="best" from="-8649468#0" to="380662075#2"/>
+    <trip id="bike908" type="bike_bicycle" depart="2795.94" departLane="best" from="-8865420#3" to="-816934280#4"/>
+    <trip id="bike909" type="bike_bicycle" depart="2799.02" departLane="best" from="8650638#4" to="-289468264#1"/>
+    <trip id="bike910" type="bike_bicycle" depart="2802.10" departLane="best" from="533600032#1" to="-468490261#1"/>
+    <trip id="bike911" type="bike_bicycle" depart="2805.18" departLane="best" from="8639327#0" to="8652409#1"/>
+    <trip id="bike913" type="bike_bicycle" depart="2811.34" departLane="best" from="8649526#0" to="-862886774#0"/>
+    <trip id="bike914" type="bike_bicycle" depart="2814.42" departLane="best" from="8651325#1" to="985552044#7"/>
+    <trip id="bike917" type="bike_bicycle" depart="2823.65" departLane="best" from="8651714#3" to="8650337#1"/>
+    <trip id="bike918" type="bike_bicycle" depart="2826.73" departLane="best" from="-104210747#1" to="591493143#2"/>
+    <trip id="bike919" type="bike_bicycle" depart="2829.81" departLane="best" from="1323781936#3" to="944495317#0"/>
+    <trip id="bike920" type="bike_bicycle" depart="2832.89" departLane="best" from="8647350#1" to="985552043#0"/>
+    <trip id="bike922" type="bike_bicycle" depart="2839.05" departLane="best" from="8652409#3" to="8648326#0"/>
+    <trip id="bike923" type="bike_bicycle" depart="2842.13" departLane="best" departSpeed="max" from="138863692#0" to="8638991#1"/>
+    <trip id="bike924" type="bike_bicycle" depart="2845.21" departLane="best" from="-185734373#1" to="-825494585#3"/>
+    <trip id="bike925" type="bike_bicycle" depart="2848.29" departLane="best" from="138827688#1" to="8651340#0"/>
+    <trip id="bike927" type="bike_bicycle" depart="2854.45" departLane="best" departSpeed="max" from="8645264#0" to="591493143#2"/>
+    <trip id="bike928" type="bike_bicycle" depart="2857.52" departLane="best" from="8641560#2" to="-862886774#0"/>
+    <trip id="bike929" type="bike_bicycle" depart="2860.60" departLane="best" from="8647941#2" to="8650337#1"/>
+    <trip id="bike930" type="bike_bicycle" depart="2863.68" departLane="best" from="8647351#1" to="426456637"/>
+    <trip id="bike931" type="bike_bicycle" depart="2866.76" departLane="best" from="-1281777218#0" to="-825494585#3"/>
+    <trip id="bike932" type="bike_bicycle" depart="2869.84" departLane="best" from="-815093895#0" to="-817025769#0"/>
+    <trip id="bike933" type="bike_bicycle" depart="2872.92" departLane="best" from="-8865420#5" to="-8648727#2"/>
+    <trip id="bike934" type="bike_bicycle" depart="2876.00" departLane="best" from="8641950#2" to="-8646816#1"/>
+    <trip id="bike935" type="bike_bicycle" depart="2879.08" departLane="best" from="8641399#1" to="8865420#3"/>
+    <trip id="bike936" type="bike_bicycle" depart="2882.16" departLane="best" departSpeed="max" from="-8649414#1" to="8640516#0"/>
+    <trip id="bike937" type="bike_bicycle" depart="2885.24" departLane="best" from="-104210747#5" to="-817361891#1"/>
+    <trip id="bike938" type="bike_bicycle" depart="2888.32" departLane="best" departSpeed="max" from="862888312#0" to="-1115616623"/>
+    <trip id="bike939" type="bike_bicycle" depart="2891.40" departLane="best" from="-289468264#3" to="1106843297#1"/>
+    <trip id="bike940" type="bike_bicycle" depart="2894.48" departLane="best" from="1115616617#1" to="426456589"/>
+    <trip id="bike942" type="bike_bicycle" depart="2900.63" departLane="best" from="-8651340#1" to="537307165#1"/>
+    <trip id="bike943" type="bike_bicycle" depart="2903.71" departLane="best" from="8651226#0" to="103553906#3"/>
+    <trip id="bike944" type="bike_bicycle" depart="2906.79" departLane="best" from="747090068#0" to="-8641950#3"/>
+    <trip id="bike945" type="bike_bicycle" depart="2909.87" departLane="best" from="-426487635#0" to="-816934280#4"/>
+    <trip id="bike946" type="bike_bicycle" depart="2912.95" departLane="best" from="8640929#3" to="750675235#1"/>
+    <trip id="bike947" type="bike_bicycle" depart="2916.03" departLane="best" from="1123326681#2" to="-537303955#1"/>
+    <trip id="bike949" type="bike_bicycle" depart="2922.19" departLane="best" from="823316159#1" to="-8641950#2"/>
+    <trip id="bike951" type="bike_bicycle" depart="2928.35" departLane="best" from="8648789#3" to="1323781936#3"/>
+    <trip id="bike952" type="bike_bicycle" depart="2931.43" departLane="best" from="-1302402603#0" to="8638352#1"/>
+    <trip id="bike953" type="bike_bicycle" depart="2934.51" departLane="best" from="-1115616624" to="591217313#1"/>
+    <trip id="bike954" type="bike_bicycle" depart="2937.58" departLane="best" from="-1115616610#0" to="537260529#1"/>
+    <trip id="bike955" type="bike_bicycle" depart="2940.66" departLane="best" from="8651714#0" to="63104564#1"/>
+    <trip id="bike956" type="bike_bicycle" depart="2943.74" departLane="best" departSpeed="max" from="-566655046#1" to="1112835163"/>
+    <trip id="bike957" type="bike_bicycle" depart="2946.82" departLane="best" from="420495586#3" to="-537303955#1"/>
+    <trip id="bike958" type="bike_bicycle" depart="2949.90" departLane="best" from="-816934280#1" to="63104590#4"/>
+    <trip id="bike959" type="bike_bicycle" depart="2952.98" departLane="best" from="-1302402603#0" to="426456601#1"/>
+    <trip id="bike961" type="bike_bicycle" depart="2959.14" departLane="best" departSpeed="max" from="409161400#0" to="289462997#2"/>
+    <trip id="bike962" type="bike_bicycle" depart="2962.22" departLane="best" from="1115616604#0" to="289468264#1"/>
+    <trip id="bike964" type="bike_bicycle" depart="2968.38" departLane="best" from="1115616609#1" to="8647351#5"/>
+    <trip id="bike965" type="bike_bicycle" depart="2971.46" departLane="best" departSpeed="max" from="8640929#2" to="63104587#3"/>
+    <trip id="bike966" type="bike_bicycle" depart="2974.54" departLane="best" departSpeed="max" from="-1115616586#1" to="1115616595#1"/>
+    <trip id="bike967" type="bike_bicycle" depart="2977.61" departLane="best" from="-1115616610#1" to="985552044#11"/>
+    <trip id="bike968" type="bike_bicycle" depart="2980.69" departLane="best" departSpeed="max" from="8651975#0" to="-1241149233#0"/>
+    <trip id="bike969" type="bike_bicycle" depart="2983.77" departLane="best" departSpeed="max" from="8651975#0" to="-1115616585#1"/>
+    <trip id="bike970" type="bike_bicycle" depart="2986.85" departLane="best" from="1115616621" to="8645199#2"/>
+    <trip id="bike971" type="bike_bicycle" depart="2989.93" departLane="best" from="8642281#1" to="929580949"/>
+    <trip id="bike972" type="bike_bicycle" depart="2993.01" departLane="best" from="816934280#1" to="1317705793"/>
+    <trip id="bike973" type="bike_bicycle" depart="2996.09" departLane="best" from="-985552044#0" to="1181032038#0"/>
+    <trip id="bike974" type="bike_bicycle" depart="2999.17" departLane="best" from="815603050#1" to="8650638#4"/>
+    <trip id="bike975" type="bike_bicycle" depart="3002.25" departLane="best" departSpeed="max" from="1115273723#0" to="850681883"/>
+    <trip id="bike976" type="bike_bicycle" depart="3005.33" departLane="best" from="823316159#0" to="500291586#0"/>
+    <trip id="bike977" type="bike_bicycle" depart="3008.41" departLane="best" departSpeed="max" from="817361883#0" to="1115616600"/>
+    <trip id="bike979" type="bike_bicycle" depart="3014.57" departLane="best" from="426456594#2" to="8640532#1"/>
+    <trip id="bike981" type="bike_bicycle" depart="3020.72" departLane="best" from="-1112835160#2" to="104210747#5"/>
+    <trip id="bike982" type="bike_bicycle" depart="3023.80" departLane="best" from="825494585#5" to="-533511492#1"/>
+    <trip id="bike985" type="bike_bicycle" depart="3033.04" departLane="best" from="8646020#0" to="8652409#1"/>
+    <trip id="bike986" type="bike_bicycle" depart="3036.12" departLane="best" from="8639327#2" to="-533466405"/>
+    <trip id="bike988" type="bike_bicycle" depart="3042.28" departLane="best" from="8642281#1" to="8649630#5"/>
+    <trip id="bike989" type="bike_bicycle" depart="3045.36" departLane="best" departSpeed="max" from="-1111328431#1" to="-8640674#1"/>
+    <trip id="bike990" type="bike_bicycle" depart="3048.44" departLane="best" departSpeed="max" from="-1303174799" to="-1115616586#0"/>
+    <trip id="bike991" type="bike_bicycle" depart="3051.52" departLane="best" from="63104562#2" to="63104564#0"/>
+    <trip id="bike992" type="bike_bicycle" depart="3054.59" departLane="best" from="-1115616588#2" to="-8641560#4"/>
+    <trip id="bike993" type="bike_bicycle" depart="3057.67" departLane="best" from="1115616616#1" to="-8646506#0"/>
+    <trip id="bike994" type="bike_bicycle" depart="3060.75" departLane="best" from="825494585#2" to="8648789#3"/>
+    <trip id="bike995" type="bike_bicycle" depart="3063.83" departLane="best" departSpeed="max" from="-1115616600" to="426456594#0"/>
+    <trip id="bike996" type="bike_bicycle" depart="3066.91" departLane="best" from="-8647670#2" to="8647351#5"/>
+    <trip id="bike997" type="bike_bicycle" depart="3069.99" departLane="best" from="8639801#1" to="1112835160#5"/>
+    <trip id="bike998" type="bike_bicycle" depart="3073.07" departLane="best" from="63104564#0" to="871799067#1"/>
+    <trip id="bike999" type="bike_bicycle" depart="3076.15" departLane="best" from="-8865420#2" to="1042974152"/>
+    <trip id="bike1000" type="bike_bicycle" depart="3079.23" departLane="best" from="-533466405" to="823316159#0"/>
+    <trip id="bike1001" type="bike_bicycle" depart="3082.31" departLane="best" from="-871799067#1" to="1042974152"/>
+    <trip id="bike1002" type="bike_bicycle" depart="3085.39" departLane="best" from="1115616609#1" to="-871799064"/>
+    <trip id="bike1003" type="bike_bicycle" depart="3088.47" departLane="best" from="-8649468#2" to="8650688#1"/>
+    <trip id="bike1004" type="bike_bicycle" depart="3091.55" departLane="best" departSpeed="max" from="798941674#0" to="138827669#2"/>
+    <trip id="bike1005" type="bike_bicycle" depart="3094.62" departLane="best" from="380662069#2" to="8865427#5"/>
+    <trip id="bike1006" type="bike_bicycle" depart="3097.70" departLane="best" from="8652409#6" to="-825494585#5"/>
+    <trip id="bike1007" type="bike_bicycle" depart="3100.78" departLane="best" from="8645199#3" to="1112835160#5"/>
+    <trip id="bike1008" type="bike_bicycle" depart="3103.86" departLane="best" from="1123326681#2" to="-816934280#1"/>
+    <trip id="bike1009" type="bike_bicycle" depart="3106.94" departLane="best" from="1115273723#1" to="8643916#1"/>
+    <trip id="bike1011" type="bike_bicycle" depart="3113.10" departLane="best" departSpeed="max" from="-8649414#1" to="8638991#3"/>
+    <trip id="bike1012" type="bike_bicycle" depart="3116.18" departLane="best" from="8646520#3" to="8651161#2"/>
+    <trip id="bike1013" type="bike_bicycle" depart="3119.26" departLane="best" departSpeed="max" from="468490261#0" to="8865426#8"/>
+    <trip id="bike1014" type="bike_bicycle" depart="3122.34" departLane="best" from="426487629#0" to="815093894#0"/>
+    <trip id="bike1015" type="bike_bicycle" depart="3125.42" departLane="best" from="-8639801#2" to="-8640674#0"/>
+    <trip id="bike1016" type="bike_bicycle" depart="3128.50" departLane="best" from="816934280#1" to="8651325#3"/>
+    <trip id="bike1017" type="bike_bicycle" depart="3131.58" departLane="best" from="8647456#9" to="-380662067#2"/>
+    <trip id="bike1018" type="bike_bicycle" depart="3134.65" departLane="best" from="8639327#2" to="8638991#0"/>
+    <trip id="bike1019" type="bike_bicycle" depart="3137.73" departLane="best" from="-8644931#0" to="-825494585#7"/>
+    <trip id="bike1020" type="bike_bicycle" depart="3140.81" departLane="best" from="-63104587#2" to="8649468#2"/>
+    <trip id="bike1021" type="bike_bicycle" depart="3143.89" departLane="best" departSpeed="max" from="-815093895#2" to="8644931#3"/>
+    <trip id="bike1022" type="bike_bicycle" depart="3146.97" departLane="best" from="8639327#1" to="538645519#1"/>
+    <trip id="bike1023" type="bike_bicycle" depart="3150.05" departLane="best" departSpeed="max" from="217801058#0" to="8649414#1"/>
+    <trip id="bike1024" type="bike_bicycle" depart="3153.13" departLane="best" departSpeed="max" from="-944497933" to="8865420#5"/>
+    <trip id="bike1025" type="bike_bicycle" depart="3156.21" departLane="best" departSpeed="max" from="-1111328431#1" to="8652409#1"/>
+    <trip id="bike1026" type="bike_bicycle" depart="3159.29" departLane="best" from="8865425#5" to="537307165#1"/>
+    <trip id="bike1027" type="bike_bicycle" depart="3162.37" departLane="best" from="99809128#2" to="380662077#0"/>
+    <trip id="bike1028" type="bike_bicycle" depart="3165.45" departLane="best" from="-8639801#2" to="749812082#2"/>
+    <trip id="bike1029" type="bike_bicycle" depart="3168.53" departLane="best" from="-816934280#1" to="8651161#2"/>
+    <trip id="bike1030" type="bike_bicycle" depart="3171.61" departLane="best" from="426484925#2" to="8645556#1"/>
+    <trip id="bike1031" type="bike_bicycle" depart="3174.68" departLane="best" from="-1115616585#1" to="426487635#1"/>
+    <trip id="bike1032" type="bike_bicycle" depart="3177.76" departLane="best" from="1106843296" to="-8652430#0"/>
+    <trip id="bike1033" type="bike_bicycle" depart="3180.84" departLane="best" departSpeed="max" from="409161400#0" to="420495586#3"/>
+    <trip id="bike1034" type="bike_bicycle" depart="3183.92" departLane="best" departSpeed="max" from="-1303174798#1" to="944109700#2"/>
+    <trip id="bike1035" type="bike_bicycle" depart="3187.00" departLane="best" departSpeed="max" from="139937095" to="8647891#1"/>
+    <trip id="bike1037" type="bike_bicycle" depart="3193.16" departLane="best" from="1117928632#0" to="566655046#1"/>
+    <trip id="bike1039" type="bike_bicycle" depart="3199.32" departLane="best" from="8641950#2" to="8652204#1"/>
+    <trip id="bike1040" type="bike_bicycle" depart="3202.40" departLane="best" departSpeed="max" from="537378993#0" to="1303174799"/>
+    <trip id="bike1041" type="bike_bicycle" depart="3205.48" departLane="best" from="63104562#0" to="1113193581#1"/>
+    <trip id="bike1042" type="bike_bicycle" depart="3208.56" departLane="best" departSpeed="max" from="1115616585#0" to="8647456#9"/>
+    <trip id="bike1043" type="bike_bicycle" depart="3211.64" departLane="best" from="380662074#2" to="-817361891#2"/>
+    <trip id="bike1044" type="bike_bicycle" depart="3214.71" departLane="best" from="426487624#3" to="-8651340#1"/>
+    <trip id="bike1045" type="bike_bicycle" depart="3217.79" departLane="best" from="8647038#3" to="8865425#1"/>
+    <trip id="bike1047" type="bike_bicycle" depart="3223.95" departLane="best" from="-749812082#1" to="8646564#2"/>
+    <trip id="bike1048" type="bike_bicycle" depart="3227.03" departLane="best" departSpeed="max" from="-749812082#2" to="8639801#2"/>
+    <trip id="bike1049" type="bike_bicycle" depart="3230.11" departLane="best" from="289468264#2" to="8651226#0"/>
+    <trip id="bike1050" type="bike_bicycle" depart="3233.19" departLane="best" from="426456637" to="816934280#1"/>
+    <trip id="bike1051" type="bike_bicycle" depart="3236.27" departLane="best" departSpeed="max" from="-1115616604#2" to="-1115616586#0"/>
+    <trip id="bike1054" type="bike_bicycle" depart="3245.51" departLane="best" from="1115616624" to="8647941#2"/>
+    <trip id="bike1055" type="bike_bicycle" depart="3248.59" departLane="best" departSpeed="max" from="-862889528#1" to="8638991#3"/>
+    <trip id="bike1056" type="bike_bicycle" depart="3251.67" departLane="best" from="-104210747#1" to="426456594#3"/>
+    <trip id="bike1057" type="bike_bicycle" depart="3254.74" departLane="best" from="-1112835161#0" to="815093880#1"/>
+    <trip id="bike1058" type="bike_bicycle" depart="3257.82" departLane="best" from="380662068" to="814689601#1"/>
+    <trip id="bike1060" type="bike_bicycle" depart="3263.98" departLane="best" from="103553906#3" to="537307165#1"/>
+    <trip id="bike1061" type="bike_bicycle" depart="3267.06" departLane="best" from="-104210747#5" to="426487627#0"/>
+    <trip id="bike1062" type="bike_bicycle" depart="3270.14" departLane="best" departSpeed="max" from="-8645556#1" to="929580949"/>
+    <trip id="bike1063" type="bike_bicycle" depart="3273.22" departLane="best" departSpeed="max" from="-1111328431#1" to="8647350#4"/>
+    <trip id="bike1064" type="bike_bicycle" depart="3276.30" departLane="best" from="825494585#5" to="8647066#0"/>
+    <trip id="bike1065" type="bike_bicycle" depart="3279.38" departLane="best" from="8641560#1" to="426487635#1"/>
+    <trip id="bike1068" type="bike_bicycle" depart="3288.62" departLane="best" from="8646816#1" to="-871799064"/>
+    <trip id="bike1069" type="bike_bicycle" depart="3291.70" departLane="best" from="-1115616610#0" to="1123326681#0"/>
+    <trip id="bike1070" type="bike_bicycle" depart="3294.77" departLane="best" from="1115616620#0" to="591217313#1"/>
+    <trip id="bike1072" type="bike_bicycle" depart="3300.93" departLane="best" from="846628946#0" to="8648025#1"/>
+    <trip id="bike1073" type="bike_bicycle" depart="3304.01" departLane="best" departSpeed="max" from="817361883#0" to="8648727#2"/>
+    <trip id="bike1074" type="bike_bicycle" depart="3307.09" departLane="best" from="8641950#1" to="-380662067#2"/>
+    <trip id="bike1076" type="bike_bicycle" depart="3313.25" departLane="best" departSpeed="max" from="-1115616600" to="-104210747#1"/>
+    <trip id="bike1078" type="bike_bicycle" depart="3319.41" departLane="best" from="1281777218#1" to="-8646506#0"/>
+    <trip id="bike1079" type="bike_bicycle" depart="3322.49" departLane="best" from="485292838#0" to="8648727#2"/>
+    <trip id="bike1080" type="bike_bicycle" depart="3325.57" departLane="best" from="-1302402604#2" to="426487624#3"/>
+    <trip id="bike1081" type="bike_bicycle" depart="3328.65" departLane="best" from="-1115616585#2" to="-8640929#6"/>
+    <trip id="bike1082" type="bike_bicycle" depart="3331.73" departLane="best" from="-8648727#0" to="8649630#9"/>
+    <trip id="bike1083" type="bike_bicycle" depart="3334.80" departLane="best" from="-185734373#1" to="1115616610#0"/>
+    <trip id="bike1084" type="bike_bicycle" depart="3337.88" departLane="best" from="-1115616620#0" to="8651358#1"/>
+    <trip id="bike1085" type="bike_bicycle" depart="3340.96" departLane="best" from="8650349#1" to="591217313#0"/>
+    <trip id="bike1086" type="bike_bicycle" depart="3344.04" departLane="best" departSpeed="max" from="-1112835161#1" to="8651714#3"/>
+    <trip id="bike1088" type="bike_bicycle" depart="3350.20" departLane="best" from="591217313#0" to="8643791#1"/>
+    <trip id="bike1089" type="bike_bicycle" depart="3353.28" departLane="best" from="8638252#2" to="1284186043#1"/>
+    <trip id="bike1090" type="bike_bicycle" depart="3356.36" departLane="best" from="-1115616621" to="-825494585#3"/>
+    <trip id="bike1091" type="bike_bicycle" depart="3359.44" departLane="best" from="-8639232" to="8647670#1"/>
+    <trip id="bike1092" type="bike_bicycle" depart="3362.52" departLane="best" departSpeed="max" from="1115616590" to="8650337#1"/>
+    <trip id="bike1093" type="bike_bicycle" depart="3365.60" departLane="best" from="-944495317#0" to="-8644188#1"/>
+    <trip id="bike1094" type="bike_bicycle" depart="3368.68" departLane="best" departSpeed="max" from="-508533578" to="972626709#4"/>
+    <trip id="bike1095" type="bike_bicycle" depart="3371.76" departLane="best" from="8639327#1" to="426456661#1"/>
+    <trip id="bike1096" type="bike_bicycle" depart="3374.83" departLane="best" from="8865427#0" to="-1115616616#1"/>
+    <trip id="bike1097" type="bike_bicycle" depart="3377.91" departLane="best" from="-1281777364" to="-944109700#2"/>
+    <trip id="bike1098" type="bike_bicycle" depart="3380.99" departLane="best" from="-985552044#4" to="8645199#2"/>
+    <trip id="bike1099" type="bike_bicycle" depart="3384.07" departLane="best" from="-8865420#2" to="1281777361#1"/>
+    <trip id="bike1100" type="bike_bicycle" depart="3387.15" departLane="best" from="8644188#1" to="-1115616585#0"/>
+    <trip id="bike1101" type="bike_bicycle" depart="3390.23" departLane="best" departSpeed="max" from="-8645556#1" to="985552044#10"/>
+    <trip id="bike1102" type="bike_bicycle" depart="3393.31" departLane="best" from="380662067#1" to="1115616610#1"/>
+    <trip id="bike1103" type="bike_bicycle" depart="3396.39" departLane="best" from="8652409#6" to="138827688#1"/>
+    <trip id="bike1104" type="bike_bicycle" depart="3399.47" departLane="best" from="823316159#0" to="823316159#1"/>
+    <trip id="bike1105" type="bike_bicycle" depart="3402.55" departLane="best" from="1241149233#1" to="815093880#1"/>
+    <trip id="bike1107" type="bike_bicycle" depart="3408.71" departLane="best" departSpeed="max" from="-1181032038#1" to="-817025769#0"/>
+    <trip id="bike1108" type="bike_bicycle" depart="3411.79" departLane="best" from="8638252#1" to="815603050#1"/>
+    <trip id="bike1109" type="bike_bicycle" depart="3414.86" departLane="best" departSpeed="max" from="8640674#0" to="1112835160#3"/>
+    <trip id="bike1110" type="bike_bicycle" depart="3417.94" departLane="best" from="1323781936#1" to="103553906#2"/>
+    <trip id="bike1112" type="bike_bicycle" depart="3424.10" departLane="best" from="-8644931#1" to="815093880#0"/>
+    <trip id="bike1113" type="bike_bicycle" depart="3427.18" departLane="best" departSpeed="max" from="-815093895#2" to="199586487#2"/>
+    <trip id="bike1114" type="bike_bicycle" depart="3430.26" departLane="best" from="426487627#0" to="1302402604#2"/>
+    <trip id="bike1115" type="bike_bicycle" depart="3433.34" departLane="best" from="1112835160#5" to="-1115616609#1"/>
+    <trip id="bike1116" type="bike_bicycle" depart="3436.42" departLane="best" from="380662069#0" to="747090068#2"/>
+    <trip id="bike1117" type="bike_bicycle" depart="3439.50" departLane="best" from="-8865420#5" to="1181032038#1"/>
+    <trip id="bike1118" type="bike_bicycle" depart="3442.58" departLane="best" from="-8648025#0" to="-1196041856"/>
+    <trip id="bike1123" type="bike_bicycle" depart="3457.97" departLane="best" departSpeed="max" from="-8649414#1" to="401265367#3"/>
+    <trip id="bike1124" type="bike_bicycle" depart="3461.05" departLane="best" from="-1115616610#1" to="138827709#1"/>
+    <trip id="bike1126" type="bike_bicycle" depart="3467.21" departLane="best" from="-1115616621" to="500291586#0"/>
+    <trip id="bike1128" type="bike_bicycle" depart="3473.37" departLane="best" departSpeed="max" from="591493144#0" to="-8639801#1"/>
+    <trip id="bike1129" type="bike_bicycle" depart="3476.45" departLane="best" from="1323781936#1" to="1106843295#1"/>
+    <trip id="bike1130" type="bike_bicycle" depart="3479.53" departLane="best" from="8652508#1" to="-1115273723#1"/>
+    <trip id="bike1131" type="bike_bicycle" depart="3482.61" departLane="best" from="747090074" to="8647038#2"/>
+    <trip id="bike1132" type="bike_bicycle" depart="3485.69" departLane="best" from="944109700#2" to="1115616585#2"/>
+    <trip id="bike1133" type="bike_bicycle" depart="3488.77" departLane="best" from="8646816#1" to="8648769"/>
+    <trip id="bike1134" type="bike_bicycle" depart="3491.85" departLane="best" from="8865427#0" to="815093895#1"/>
+    <trip id="bike1135" type="bike_bicycle" depart="3494.92" departLane="best" from="8865420#1" to="-8652508#1"/>
+    <trip id="bike1136" type="bike_bicycle" depart="3498.00" departLane="best" departSpeed="max" from="-816314830#1" to="-1112835160#1"/>
+    <trip id="bike1137" type="bike_bicycle" depart="3501.08" departLane="best" departSpeed="max" from="8865426#0" to="8865426#9"/>
+    <trip id="bike1138" type="bike_bicycle" depart="3504.16" departLane="best" from="-8647670#3" to="8636684#5"/>
+    <trip id="bike1139" type="bike_bicycle" depart="3507.24" departLane="best" from="380662068" to="63104564#3"/>
+    <trip id="bike1140" type="bike_bicycle" depart="3510.32" departLane="best" from="-8639801#2" to="1126704040#1"/>
+    <trip id="bike1141" type="bike_bicycle" depart="3513.40" departLane="best" from="8646962#0" to="-1241149233#1"/>
+    <trip id="bike1142" type="bike_bicycle" depart="3516.48" departLane="best" departSpeed="max" from="-217801050#2" to="591217313#0"/>
+    <trip id="bike1143" type="bike_bicycle" depart="3519.56" departLane="best" from="591493143#2" to="533600032#1"/>
+    <trip id="bike1145" type="bike_bicycle" depart="3525.72" departLane="best" from="879039476#0" to="-289468264#1"/>
+    <trip id="bike1146" type="bike_bicycle" depart="3528.80" departLane="best" departSpeed="max" from="8637744#0" to="138827726#1"/>
+    <trip id="bike1147" type="bike_bicycle" depart="3531.88" departLane="best" from="-8647670#3" to="8636684#1"/>
+    <trip id="bike1148" type="bike_bicycle" depart="3534.95" departLane="best" from="8651714#0" to="8646564#2"/>
+    <trip id="bike1149" type="bike_bicycle" depart="3538.03" departLane="best" from="1115616621" to="426456571#0"/>
+    <trip id="bike1150" type="bike_bicycle" depart="3541.11" departLane="best" from="-815093894#0" to="-8647670#3"/>
+    <trip id="bike1151" type="bike_bicycle" depart="3544.19" departLane="best" departSpeed="max" from="823316156#0" to="8639350#1"/>
+    <trip id="bike1152" type="bike_bicycle" depart="3547.27" departLane="best" departSpeed="max" from="8645264#0" to="1281777362#1"/>
+    <trip id="bike1154" type="bike_bicycle" depart="3553.43" departLane="best" from="-1115616613" to="426456594#3"/>
+    <trip id="bike1155" type="bike_bicycle" depart="3556.51" departLane="best" from="8651325#2" to="8636143"/>
+    <trip id="bike1156" type="bike_bicycle" depart="3559.59" departLane="best" from="426456649#0" to="8646541#1"/>
+    <trip id="bike1157" type="bike_bicycle" depart="3562.67" departLane="best" from="1106843296" to="8650333#3"/>
+    <trip id="bike1159" type="bike_bicycle" depart="3568.83" departLane="best" from="1241149233#1" to="8645199#2"/>
+    <trip id="bike1160" type="bike_bicycle" depart="3571.91" departLane="best" departSpeed="max" from="823316156#0" to="1115616610#0"/>
+    <trip id="bike1161" type="bike_bicycle" depart="3574.98" departLane="best" from="816934280#2" to="-1115616604#0"/>
+    <trip id="bike1163" type="bike_bicycle" depart="3581.14" departLane="best" from="-1115616612" to="8643791#1"/>
+    <trip id="bike1164" type="bike_bicycle" depart="3584.22" departLane="best" from="8865426#1" to="138827679#2"/>
+    <trip id="bike1165" type="bike_bicycle" depart="3587.30" departLane="best" from="-104210747#2" to="8651750#2"/>
+    <trip id="bike1166" type="bike_bicycle" depart="3590.38" departLane="best" from="401265367#3" to="426456661#1"/>
+    <trip id="bike1167" type="bike_bicycle" depart="3593.46" departLane="best" departSpeed="max" from="537378993#0" to="63104564#3"/>
+    <trip id="bike1168" type="bike_bicycle" depart="3596.54" departLane="best" from="-1302402604#2" to="-1241149233#0"/>
+</routes>
