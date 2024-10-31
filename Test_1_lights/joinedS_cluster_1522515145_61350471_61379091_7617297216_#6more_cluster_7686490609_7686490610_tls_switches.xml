@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-10-31 13:13:26 by Eclipse SUMO GUI Version 1.21.0
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.net.xml.gz"/>
+        <route-files value="C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.bicycle.trips.xml,C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.bus.trips.xml,C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.motorcycle.trips.xml,C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.passenger.trips.xml,C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.pedestrian.rou.xml,C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.rail_urban.trips.xml,C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.truck.trips.xml"/>
+        <additional-files value="C:\Users\George Jiang\Desktop\additional1.xml"/>
+    </input>
+
+    <output>
+        <fcd-output value="C:\Users\George Jiang\Desktop\routes.xml"/>
+        <summary-output value="C:\Users\George Jiang\Desktop\summary.xml"/>
+        <tripinfo-output value="C:\Users\George Jiang\Desktop\tripinfo.xml"/>
+        <stop-output value="C:\Users\George Jiang\Desktop\stops.xml"/>
+        <collision-output value="C:\Users\George Jiang\Desktop\collisions.xml"/>
+    </output>
+
+    <processing>
+        <ignore-route-errors value="true"/>
+        <tls.actuated.jam-threshold value="30"/>
+    </processing>
+
+    <routing>
+        <device.rerouting.adaptation-steps value="18"/>
+        <device.rerouting.adaptation-interval value="10"/>
+    </routing>
+
+    <report>
+        <verbose value="true"/>
+        <duration-log.statistics value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <gui_only>
+        <gui-settings-file value="C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.view.xml"/>
+    </gui_only>
+
+</sumoConfiguration>
+-->
+
+<tlsSwitches xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tlsswitches_file.xsd">
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w0_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c0_0" begin="0.00" end="5.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w3_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c2_0" begin="0.00" end="5.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w4_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c3_0" begin="0.00" end="5.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w6_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c4_0" begin="0.00" end="5.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_0" toLane="817361875#1_0" begin="0.00" end="10.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_0" toLane="1106843297#1_0" begin="0.00" end="10.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_0" toLane="426456601#1_0" begin="0.00" end="10.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_1" toLane="817361875#1_0" begin="0.00" end="10.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_1" toLane="1106843297#1_1" begin="0.00" end="10.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_2" toLane="1106843297#1_2" begin="0.00" end="10.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_2" toLane="426456601#1_1" begin="0.00" end="10.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="-823316156#1_0" begin="0.00" end="10.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316163#0_0" toLane="823316157_0" begin="0.00" end="10.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316163#0_1" toLane="823316157_1" begin="0.00" end="10.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w0_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c0_0" begin="15.00" end="20.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w1_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c1_0" begin="15.00" end="20.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w4_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c3_0" begin="15.00" end="20.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w5_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c5_0" begin="15.00" end="20.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_7686490609_7686490610_w1_0" toLane=":cluster_7686490609_7686490610_c0_0" begin="15.00" end="20.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="426456611#0_0" toLane="426456601#1_0" begin="15.00" end="25.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="426456611#0_1" toLane="426456601#1_1" begin="15.00" end="25.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="426456611#0_2" toLane="817361875#1_0" begin="15.00" end="25.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="426456611#0_2" toLane="1106843297#1_2" begin="15.00" end="25.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="823316157_0" begin="15.00" end="25.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="823316158_0" begin="15.00" end="25.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="-823316156#1_0" begin="15.00" end="25.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w1_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c1_0" begin="29.00" end="34.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w3_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c2_0" begin="29.00" end="34.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w6_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c4_0" begin="29.00" end="34.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w5_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c5_0" begin="29.00" end="34.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_7686490609_7686490610_w1_0" toLane=":cluster_7686490609_7686490610_c0_0" begin="29.00" end="34.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="929580947#1_0" toLane="1106843297#1_0" begin="29.00" end="39.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="929580947#1_0" toLane="1106843297#1_1" begin="29.00" end="39.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="929580947#1_0" toLane="426456601#1_1" begin="29.00" end="39.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="8639350#7_0" toLane="426456601#1_0" begin="29.00" end="39.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="8639350#7_0" toLane="817361875#1_0" begin="29.00" end="39.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="8639350#7_0" toLane="1106843297#1_0" begin="29.00" end="39.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="8639350#7_0" toLane="1106843297#1_2" begin="29.00" end="39.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="823316157_0" begin="29.00" end="39.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="823316158_0" begin="29.00" end="39.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="-823316156#1_0" begin="29.00" end="39.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w0_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c0_0" begin="43.00" end="54.00" duration="11.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w3_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c2_0" begin="43.00" end="54.00" duration="11.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w4_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c3_0" begin="43.00" end="54.00" duration="11.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w6_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c4_0" begin="43.00" end="54.00" duration="11.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_0" toLane="817361875#1_0" begin="43.00" end="59.00" duration="16.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_0" toLane="1106843297#1_0" begin="43.00" end="59.00" duration="16.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_0" toLane="426456601#1_0" begin="43.00" end="59.00" duration="16.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_1" toLane="817361875#1_0" begin="43.00" end="59.00" duration="16.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_1" toLane="1106843297#1_1" begin="43.00" end="59.00" duration="16.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_2" toLane="1106843297#1_2" begin="43.00" end="59.00" duration="16.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_2" toLane="426456601#1_1" begin="43.00" end="59.00" duration="16.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="-823316156#1_0" begin="43.00" end="59.00" duration="16.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316163#0_0" toLane="823316157_0" begin="43.00" end="59.00" duration="16.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316163#0_1" toLane="823316157_1" begin="43.00" end="59.00" duration="16.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w0_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c0_0" begin="64.00" end="69.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w1_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c1_0" begin="64.00" end="69.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w4_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c3_0" begin="64.00" end="69.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w5_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c5_0" begin="64.00" end="69.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_7686490609_7686490610_w1_0" toLane=":cluster_7686490609_7686490610_c0_0" begin="64.00" end="69.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="426456611#0_0" toLane="426456601#1_0" begin="64.00" end="74.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="426456611#0_1" toLane="426456601#1_1" begin="64.00" end="74.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="426456611#0_2" toLane="817361875#1_0" begin="64.00" end="74.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="426456611#0_2" toLane="1106843297#1_2" begin="64.00" end="74.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="823316157_0" begin="64.00" end="74.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="823316158_0" begin="64.00" end="74.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="-823316156#1_0" begin="64.00" end="74.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w1_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c1_0" begin="78.00" end="83.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w3_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c2_0" begin="78.00" end="83.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w6_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c4_0" begin="78.00" end="83.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w5_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c5_0" begin="78.00" end="83.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_7686490609_7686490610_w1_0" toLane=":cluster_7686490609_7686490610_c0_0" begin="78.00" end="83.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="929580947#1_0" toLane="1106843297#1_0" begin="78.00" end="88.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="929580947#1_0" toLane="1106843297#1_1" begin="78.00" end="88.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="929580947#1_0" toLane="426456601#1_1" begin="78.00" end="88.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="8639350#7_0" toLane="426456601#1_0" begin="78.00" end="88.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="8639350#7_0" toLane="817361875#1_0" begin="78.00" end="88.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="8639350#7_0" toLane="1106843297#1_0" begin="78.00" end="88.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="8639350#7_0" toLane="1106843297#1_2" begin="78.00" end="88.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="823316157_0" begin="78.00" end="88.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="823316158_0" begin="78.00" end="88.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="-823316156#1_0" begin="78.00" end="88.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w0_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c0_0" begin="92.00" end="97.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w3_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c2_0" begin="92.00" end="97.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w4_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c3_0" begin="92.00" end="97.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_w6_0" toLane=":cluster_1522515145_61350471_61379091_7617297216_#6more_c4_0" begin="92.00" end="97.00" duration="5.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_0" toLane="817361875#1_0" begin="92.00" end="102.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_0" toLane="1106843297#1_0" begin="92.00" end="102.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_0" toLane="426456601#1_0" begin="92.00" end="102.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_1" toLane="817361875#1_0" begin="92.00" end="102.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_1" toLane="1106843297#1_1" begin="92.00" end="102.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_2" toLane="1106843297#1_2" begin="92.00" end="102.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316159#1_2" toLane="426456601#1_1" begin="92.00" end="102.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316156#0_0" toLane="-823316156#1_0" begin="92.00" end="102.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316163#0_0" toLane="823316157_0" begin="92.00" end="102.00" duration="10.00"/>
+   <tlsSwitch id="joinedS_cluster_1522515145_61350471_61379091_7617297216_#6more_cluster_7686490609_7686490610" programID="0" fromLane="823316163#0_1" toLane="823316157_1" begin="92.00" end="102.00" duration="10.00"/>
+</tlsSwitches>

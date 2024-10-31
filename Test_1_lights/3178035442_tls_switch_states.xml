@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-10-31 13:13:26 by Eclipse SUMO GUI Version 1.21.0
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.net.xml.gz"/>
+        <route-files value="C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.bicycle.trips.xml,C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.bus.trips.xml,C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.motorcycle.trips.xml,C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.passenger.trips.xml,C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.pedestrian.rou.xml,C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.rail_urban.trips.xml,C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.truck.trips.xml"/>
+        <additional-files value="C:\Users\George Jiang\Desktop\additional1.xml"/>
+    </input>
+
+    <output>
+        <fcd-output value="C:\Users\George Jiang\Desktop\routes.xml"/>
+        <summary-output value="C:\Users\George Jiang\Desktop\summary.xml"/>
+        <tripinfo-output value="C:\Users\George Jiang\Desktop\tripinfo.xml"/>
+        <stop-output value="C:\Users\George Jiang\Desktop\stops.xml"/>
+        <collision-output value="C:\Users\George Jiang\Desktop\collisions.xml"/>
+    </output>
+
+    <processing>
+        <ignore-route-errors value="true"/>
+        <tls.actuated.jam-threshold value="30"/>
+    </processing>
+
+    <routing>
+        <device.rerouting.adaptation-steps value="18"/>
+        <device.rerouting.adaptation-interval value="10"/>
+    </routing>
+
+    <report>
+        <verbose value="true"/>
+        <duration-log.statistics value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <gui_only>
+        <gui-settings-file value="C:\Users\George Jiang\Desktop\../../../../Windows/system32/2024-10-29-20-01-42/osm.view.xml"/>
+    </gui_only>
+
+</sumoConfiguration>
+-->
+
+<tlsStates xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tlsstates_file.xsd">
+    <tlsState time="0.00" id="3178035442" programID="0" phase="0" state="GGGr"/>
+    <tlsState time="5.00" id="3178035442" programID="0" phase="1" state="yyyr"/>
+    <tlsState time="8.00" id="3178035442" programID="0" phase="2" state="rrrG"/>
+    <tlsState time="13.00" id="3178035442" programID="0" phase="3" state="rrrr"/>
+    <tlsState time="18.00" id="3178035442" programID="0" phase="0" state="GGGr"/>
+    <tlsState time="23.00" id="3178035442" programID="0" phase="1" state="yyyr"/>
+    <tlsState time="26.00" id="3178035442" programID="0" phase="2" state="rrrG"/>
+    <tlsState time="31.00" id="3178035442" programID="0" phase="3" state="rrrr"/>
+    <tlsState time="36.00" id="3178035442" programID="0" phase="0" state="GGGr"/>
+    <tlsState time="41.00" id="3178035442" programID="0" phase="1" state="yyyr"/>
+    <tlsState time="44.00" id="3178035442" programID="0" phase="2" state="rrrG"/>
+    <tlsState time="49.00" id="3178035442" programID="0" phase="3" state="rrrr"/>
+    <tlsState time="54.00" id="3178035442" programID="0" phase="0" state="GGGr"/>
+    <tlsState time="59.00" id="3178035442" programID="0" phase="1" state="yyyr"/>
+    <tlsState time="62.00" id="3178035442" programID="0" phase="2" state="rrrG"/>
+    <tlsState time="67.00" id="3178035442" programID="0" phase="3" state="rrrr"/>
+    <tlsState time="72.00" id="3178035442" programID="0" phase="0" state="GGGr"/>
+    <tlsState time="77.00" id="3178035442" programID="0" phase="1" state="yyyr"/>
+    <tlsState time="80.00" id="3178035442" programID="0" phase="2" state="rrrG"/>
+    <tlsState time="85.00" id="3178035442" programID="0" phase="3" state="rrrr"/>
+    <tlsState time="90.00" id="3178035442" programID="0" phase="0" state="GGGr"/>
+    <tlsState time="95.00" id="3178035442" programID="0" phase="1" state="yyyr"/>
+    <tlsState time="98.00" id="3178035442" programID="0" phase="2" state="rrrG"/>
+</tlsStates>
