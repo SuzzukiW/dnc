@@ -1,21 +1,26 @@
-dqn:
-  learning_rate: 0.001
-  gamma: 0.99
-  epsilon_start: 1.0
-  epsilon_end: 0.01
-  epsilon_decay: 0.995
-  memory_size: 10000
-  batch_size: 32
-  target_update: 10
-  hidden_size: 128
+# DQN Agent Configuration
+learning_rate: 0.001
+gamma: 0.99  # Discount factor
+epsilon_start: 1.0  # Starting exploration rate
+epsilon_min: 0.01  # Minimum exploration rate
+epsilon_decay: 0.995  # Exploration rate decay
+memory_size: 100000  # Replay buffer size
+batch_size: 64
 
-training:
-  episodes: 1000
-  max_steps: 500
-  eval_interval: 10
-  save_interval: 100
-  
-checkpoint:
-  save_dir: "models/checkpoints"
-  load_checkpoint: false
-  checkpoint_path: ""
+# Neural Network Architecture
+network:
+  hidden_layers: [128, 64]
+  activation: "relu"
+  optimizer: "adam"
+
+# Training parameters
+target_update_frequency: 100  # Episodes between target network updates
+gradient_clip: 1.0
+learning_starts: 1000  # Number of steps before starting training
+update_frequency: 1  # Number of steps between updates
+
+# Multi-agent specific
+communication:
+  enabled: true
+  share_radius: 1  # Number of intersections to share information with
+  message_dimension: 32  # Size of message vectors

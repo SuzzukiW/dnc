@@ -38,12 +38,12 @@
     </gui_only>
 
 </sumoConfiguration>
--->
+
 
 <tlsSwitches xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tlsswitches_file.xsd">
    <tlsSwitch id="11728768465" programID="0" fromLane="-508533578_0" toLane="-1302402603#1_0" begin="0.00" end="5.00" duration="5.00"/>
    <tlsSwitch id="11728768465" programID="0" fromLane="-508533578_0" toLane="1302402603#2_0" begin="0.00" end="5.00" duration="5.00"/>
-   <tlsSwitch id="11728768465" programID="0" fromLane="1302402603#1_0" toLane="1302402603#2_0" begin="0.00" end="5.00" d-->
+   <tlsSwitch id="11728768465" programID="0" fromLane="1302402603#1_0" toLane="1302402603#2_0" begin="0.00" end="5.00" duration="5.00"/>
 
 <tlsSwitches xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tlsswitches_file.xsd">
    <tlsSwitch id="11728768465" programID="0" fromLane="-508533578_0" toLane="-1302402603#1_0" begin="0.00" end="5.00" duration="5.00"/>

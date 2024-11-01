@@ -38,7 +38,7 @@
     </gui_only>
 
 </sumoConfiguration>
--->
+
 
 <summary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/summary_file.xsd">
     <step time="0.00" loaded="9" inserted="3" running="3" waiting="1" ended="0" arrived="0" collisions="0" teleports="0" halting="2" stopped="0" meanWaitingTime="0.00" meanTravelTime="-1.00" meanSpeed="3.73" meanSpeedRelative="0.33" duration="6"/>
@@ -107,7 +107,7 @@
     <step time="63.00" loaded="263" inserted="80" running="80" waiting="0" ended="0" arrived="0" collisions="0" teleports="0" halting="20" stopped="0" meanWaitingTime="1.15" meanTravelTime="-1.00" meanSpeed="5.59" meanSpeedRelative="0.50" duration="5"/>
     <step time="64.00" loaded="263" inserted="80" running="80" waiting="0" ended="0" arrived="0" collisions="0" teleports="0" halting="18" stopped="0" meanWaitingTime="1.15" meanTravelTime="-1.00" meanSpeed="5.78" meanSpeedRelative="0.52" duration="6"/>
     <step time="65.00" loaded="263" inserted="83" running="83" waiting="0" ended="0" arrived="0" collisions="0" teleports="0" halting="24" stopped="0" meanWaitingTime="1.14" meanTravelTime="-1.00" meanSpeed="5.59" meanSpeedRelative="0.50" duration="5"/>
-    <step time="66.00" loaded="263" inserted="84" running="84" waiting="0263" inserted="80" running="80" waiting="0" ended="0" arrived="0" collisions="0" teleports="0" halting="18" stopped="0" meanWaitingTime="1.15" meanTravelTime="-1.00" meanSpeed="5.78" meanSpeedRelative="0.52" duration="7"/>
+    <step time="66.00" loaded="263" inserted="84" running="84" waiting="0" inserted="80" running="80" waiting="0" ended="0" arrived="0" collisions="0" teleports="0" halting="18" stopped="0" meanWaitingTime="1.15" meanTravelTime="-1.00" meanSpeed="5.78" meanSpeedRelative="0.52" duration="7"/>
     <step time="65.00" loaded="263" inserted="83" running="83" waiting="0" ended="0" arrived="0" collisions="0" teleports="0" halting="24" stopped="0" meanWaitingTime="1.14" meanTravelTime="-1.00" meanSpeed="5.59" meanSpeedRelative="0.50" duration="6"/>
     <step time="66.00" loaded="263" inserted="84" running="84" waiting="0" ended="0" arrived="0" collisions="0" teleports="0" halting="19" stopped="0" meanWaitingTime="1.14" meanTravelTime="-1.00" meanSpeed="5.66" meanSpeedRelative="0.51" duration="8"/>
 </summary>

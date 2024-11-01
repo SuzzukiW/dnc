@@ -38,13 +38,13 @@
     </gui_only>
 
 </sumoConfiguration>
--->
+
 
 <tripinfos xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tripinfo_file.xsd">
     <personinfo id="ped67" depart="49.00" type="ped_pedestrian" speedFactor="1.07" duration="25.00" waitingTime="0.00" timeLoss="4.36" traveltime="25.00">
         <walk depart="49.00" departPos="0.00" arrival="74.00" arrivalPos="16.54" duration="25.00" routeLength="30.68" timeLoss="4.36" maxSpeed="1.49"/>
     </personinfo>
-    <tripinfo id="veh42" depart="44.00" departLane="-8642454#1_0" departPos="5.10" departSpeed="11.08" departDelay="0.27" arrival="91.00" arrivalLane="426487627#0_1" arrivalPos="0.21" arrivalSpeed="10.04" duration="47</tripinfos>
+    <tripinfo id="veh42" depart="44.00" departLane="-8642454#1_0" departPos="5.10" departSpeed="11.08" departDelay="0.27" arrival="91.00" arrivalLane="426487627#0_1" arrivalPos="0.21" arrivalSpeed="10.04" duration="47"/></tripinfos>
 th="428.81" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="7.37" rerouteNo="1" devices="tripinfo_veh42 routing_veh42 fcd_veh42" vType="veh_passenger" speedFactor="0.99" vaporized=""/>
     <tripinfo id="motorcycle12" depart="60.00" departLane="8865426#0_0" departPos="0.20" departSpeed="11.03" departDelay="0.03" arrival="93.00" arrivalLane="380662075#2_0" arrivalPos="14.30" arrivalSpeed="10.26" duration="33.00" routeLength="293.50" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="5.94" rerouteNo="1" devices="tripinfo_motorcycle12 routing_motorcycle12 fcd_motorcycle12" vType="motorcycle_motorcycle" speedFactor="0.99" vaporized=""/>
     <personinfo id="ped6" depart="5.00" type="ped_pedestrian" speedFactor="1.13" duration="90.00" waitingTime="0.00" timeLoss="12.88" traveltime="90.00">
