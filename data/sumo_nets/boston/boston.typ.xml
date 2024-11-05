@@ -1,8 +1,0 @@
-<types>
-    <type id="highway.motorway" numLanes="3" speed="27.78" priority="13" oneway="true" />
-    <type id="highway.trunk" numLanes="3" speed="22.22" priority="12" />
-    <type id="highway.primary" numLanes="2" speed="13.89" priority="11" />
-    <type id="highway.secondary" numLanes="2" speed="11.11" priority="10" />
-    <type id="highway.tertiary" numLanes="1" speed="8.33" priority="9" />
-    <type id="highway.residential" numLanes="1" speed="8.33" priority="8" />
-</types>
