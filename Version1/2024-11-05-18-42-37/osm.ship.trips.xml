@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-11-05 18:45:49.617422 by osmWebWizard.py v1_21_0+0000-d7b3b481c43
+<configuration>
+    <net-file value="C:\Windows\system32\2024-11-05-18-42-37\osm.net.xml.gz"/>
+    <output-trip-file value="C:\Windows\system32\2024-11-05-18-42-37\osm.ship.trips.xml"/>
+    <route-file value="C:\Windows\system32\2024-11-05-18-42-37\osm.ship.rou.xml"/>
+    <prefix value="ship"/>
+    <fringe-start-attributes value="departSpeed=&quot;max&quot;"/>
+    <vehicle-class value="ship"/>
+    <fringe-factor value="3"/>
+    <vclass value="ship"/>
+    <validate value="True"/>
+    <insertion-density value="1.0"/>
+</configuration>
+-->
+
+<!-- generated on 2024-11-05 18:45:49 by Eclipse SUMO duarouter Version 1.21.0
+<duarouterConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
+
+    <input>
+        <net-file value="C:\Windows\system32\2024-11-05-18-42-37\osm.net.xml.gz"/>
+        <route-files value="C:\Windows\system32\2024-11-05-18-42-37\osm.ship.trips.xml"/>
+    </input>
+
+    <output>
+        <output-file value="C:\Windows\system32\2024-11-05-18-42-37\osm.ship.trips.xml.tmp"/>
+        <alternatives-output value="NUL"/>
+        <write-trips value="true"/>
+    </output>
+
+    <time>
+        <begin value="0.0"/>
+        <end value="3600.0"/>
+    </time>
+
+    <report>
+        <no-warnings value="true"/>
+        <ignore-errors value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+</duarouterConfiguration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="ship_ship" vClass="ship"/>
+    <trip id="ship0" type="ship_ship" depart="0.00" departSpeed="max" from="816330918" to="-1096316166"/>
+    <trip id="ship1" type="ship_ship" depart="401.35" departSpeed="max" from="-99102379" to="-420861561"/>
+    <trip id="ship2" type="ship_ship" depart="802.69" departSpeed="max" from="99102366" to="1185546972"/>
+    <trip id="ship3" type="ship_ship" depart="1204.04" departSpeed="max" from="99102435" to="-1096316166"/>
+    <trip id="ship4" type="ship_ship" depart="1605.38" departSpeed="max" from="1096316166" to="-1096316166"/>
+    <trip id="ship5" type="ship_ship" depart="2006.73" departSpeed="max" from="-666959477" to="-99102435"/>
+    <trip id="ship7" type="ship_ship" depart="2809.42" departSpeed="max" from="816330918" to="-99102435"/>
+    <trip id="ship8" type="ship_ship" depart="3210.76" departSpeed="max" from="-666959477" to="-99270540"/>
+</routes>

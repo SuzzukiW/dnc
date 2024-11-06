@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-11-05 18:52:09 by Eclipse SUMO GUI Version 1.21.0
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.net.xml.gz"/>
+        <route-files value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.bicycle.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.bus.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.motorcycle.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.passenger.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.pedestrian.rou.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.rail.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.rail_urban.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.ship.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.truck.trips.xml"/>
+        <additional-files value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.poly.xml.gz"/>
+    </input>
+
+    <output>
+        <fcd-output value="C:\Users\George Jiang\Desktop\Version 1\routes.xml"/>
+        <summary-output value="C:\Users\George Jiang\Desktop\Version 1\summary.xml"/>
+        <tripinfo-output value="C:\Users\George Jiang\Desktop\Version 1\tripinfo.xml"/>
+        <stop-output value="C:\Users\George Jiang\Desktop\Version 1\stops.xml"/>
+        <collision-output value="C:\Users\George Jiang\Desktop\Version 1\collisions.xml"/>
+    </output>
+
+    <processing>
+        <ignore-route-errors value="true"/>
+        <tls.actuated.jam-threshold value="30"/>
+    </processing>
+
+    <routing>
+        <device.rerouting.adaptation-steps value="18"/>
+        <device.rerouting.adaptation-interval value="10"/>
+    </routing>
+
+    <report>
+        <verbose value="true"/>
+        <duration-log.statistics value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <gui_only>
+        <gui-settings-file value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.view.xml"/>
+    </gui_only>
+
+</sumoConfiguration>
+-->
+
+<collisions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/collision_file.xsd">
+    <collision time="390.00" type="sharedLane" lane="8842602_0" pos="95.81" collider="bike374" victim="ped595" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.12"/>
+    <collision time="391.00" type="sharedLane" lane="8842602_0" pos="96.33" collider="bike374" victim="ped678" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="1.01" victimSpeed="0.57"/>
+    <collision time="615.00" type="sharedLane" lane="8842602_0" pos="95.26" collider="bike531" victim="ped724" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.42"/>
+    <collision time="644.00" type="sharedLane" lane="8842602_0" pos="95.40" collider="bike491" victim="ped1340" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="1.16" victimSpeed="1.30"/>
+    <collision time="693.00" type="sharedLane" lane="-1030057025_0" pos="3.41" collider="bike834" victim="ped3137" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.06" victimSpeed="1.36"/>
+    <collision time="721.00" type="sharedLane" lane="8842602_0" pos="95.21" collider="bike738" victim="ped799" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.19" victimSpeed="1.48"/>
+    <collision time="723.00" type="sharedLane" lane="8842602_0" pos="95.29" collider="bike738" victim="ped807" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.54"/>
+    <collision time="727.00" type="sharedLane" lane="8842602_0" pos="95.73" collider="bike738" victim="ped1254" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.98" victimSpeed="1.11"/>
+    <collision time="744.00" type="sharedLane" lane="8842602_0" pos="95.45" collider="bike741" victim="ped1715" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.24" victimSpeed="1.24"/>
+    <collision time="825.00" type="sharedLane" lane="8842602_0" pos="95.83" collider="bike836" victim="ped3032" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.98" victimSpeed="1.44"/>
+    <collision time="852.00" type="sharedLane" lane="8647456#15_0" pos="60.38" collider="motorcycle100" victim="ped1588" colliderType="motorcycle_motorcycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.25"/>
+    <collision time="892.00" type="sharedLane" lane="8648074#1_0" pos="50.77" collider="bike933" victim="ped110" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.63" victimSpeed="1.59"/>
+    <collision time="927.00" type="sharedLane" lane="-689216563_0" pos="48.76" collider="bike907" victim="ped2229" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.34"/>
+    <collision time="945.00" type="sharedLane" lane="817407010_0" pos="4.99" collider="bike972" victim="ped392" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.39"/>
+    <collision time="975.00" type="sharedLane" lane="150052469#1_0" pos="7.36" collider="bike913" victim="ped4250" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.42"/>
+    <collision time="995.00" type="sharedLane" lane="8648074#1_0" pos="51.11" collider="bike930" victim="ped929" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.20"/>
+    <collision time="996.00" type="sharedLane" lane="8648074#1_0" pos="50.87" collider="bike930" victim="ped925" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.35"/>
+    <collision time="1019.00" type="sharedLane" lane="150052469#1_0" pos="7.54" collider="bike913" victim="ped4493" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.15"/>
+    <collision time="1131.00" type="sharedLane" lane="8842602_0" pos="96.42" collider="bike1206" victim="ped2872" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.45" victimSpeed="0.93"/>
+    <collision time="1141.00" type="sharedLane" lane="-689216563_0" pos="48.99" collider="bike958" victim="ped5482" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.18"/>
+    <collision time="1188.00" type="sharedLane" lane="-689216563_0" pos="48.98" collider="bike958" victim="ped177" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.31"/>
+    <collision time="1189.00" type="sharedLane" lane="-689216563_0" pos="49.09" collider="bike958" victim="ped4377" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.17"/>
+    <collision time="1229.00" type="sharedLane" lane="8647456#15_0" pos="59.26" collider="motorcycle144" victim="ped950" colliderType="motorcycle_motorcycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.33"/>
+    <collision time="1268.00" type="sharedLane" lane="-150052469#2_0" pos="45.23" collider="bike1327" victim="ped2738" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.31"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4218" victim="veh4192" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4321" victim="veh4218" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4336" victim="veh4321" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4429" victim="veh4336" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4467" victim="veh4429" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4524" victim="veh4467" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4533" victim="veh4524" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4577" victim="veh4533" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4646" victim="veh4577" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4801" victim="veh4646" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4867" victim="veh4801" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4870" victim="veh4867" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1283.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4870" victim="veh4037" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.09"/>
+    <collision time="1284.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh4192" victim="veh4037" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.11"/>
+    <collision time="1337.00" type="sharedLane" lane="-150052469#2_0" pos="45.36" collider="bike1327" victim="ped580" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.08"/>
+    <collision time="1415.00" type="sharedLane" lane="-1030057025_0" pos="4.27" collider="bike1421" victim="ped5383" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.29"/>
+    <collision time="1429.00" type="sharedLane" lane="-1030057025_0" pos="3.42" collider="bike1421" victim="ped5514" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.13"/>
+    <collision time="1431.00" type="sharedLane" lane="-1030057025_0" pos="3.30" collider="bike1421" victim="ped4865" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.39"/>
+    <collision time="1450.00" type="sharedLane" lane="-1030057025_0" pos="3.53" collider="bike1421" victim="ped6294" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.10"/>
+    <collision time="1480.00" type="sharedLane" lane="-1030057025_0" pos="3.72" collider="bike1421" victim="ped5765" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.23"/>
+    <collision time="1484.00" type="sharedLane" lane="-1030057025_0" pos="1.00" collider="bike1806" victim="ped5181" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.23"/>
+    <collision time="1487.00" type="sharedLane" lane="-1030057025_0" pos="3.54" collider="bike1421" victim="ped6055" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="0.97"/>
+    <collision time="1500.00" type="sharedLane" lane="-344360237#2_0" pos="0.08" collider="bike913" victim="ped6453" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="0.60"/>
+    <collision time="1508.00" type="sharedLane" lane="-1030057025_0" pos="3.30" collider="bike1421" victim="ped2648" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.41"/>
+    <collision time="1513.00" type="sharedLane" lane="-344360237#2_0" pos="0.09" collider="bike913" victim="ped943" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="0.95"/>
+    <collision time="1515.00" type="sharedLane" lane="-344360237#2_0" pos="0.07" collider="bike913" victim="ped4839" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="0.49"/>
+    <collision time="1551.00" type="sharedLane" lane="658046383_0" pos="0.03" collider="bike1402" victim="ped7755" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="0.71"/>
+    <collision time="1557.00" type="sharedLane" lane="-344360237#2_0" pos="0.08" collider="bike913" victim="ped1924" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.04"/>
+    <collision time="1589.00" type="collision" lane="814346830#0_1" pos="0.38" collider="bike1762" victim="veh5441" colliderType="bike_bicycle" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1589.00" type="collision" lane="814346830#0_1" pos="0.38" collider="motorcycle1198" victim="veh5743" colliderType="motorcycle_motorcycle" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1589.00" type="collision" lane="814346830#0_1" pos="0.38" collider="motorcycle1198" victim="veh5383" colliderType="motorcycle_motorcycle" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.11"/>
+    <collision time="1589.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh5507" victim="bike1762" colliderType="veh_passenger" victimType="bike_bicycle" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1589.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh5531" victim="veh5507" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1589.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh5677" victim="veh5531" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1589.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh5704" victim="veh5677" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1589.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh5706" victim="veh5704" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1589.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh5743" victim="veh5706" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
+    <collision time="1590.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh5441" victim="veh5383" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.16"/>
+    <collision time="1617.00" type="sharedLane" lane="-150052469#2_0" pos="45.29" collider="bike1297" victim="ped5486" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.34"/>
+    <collision time="1717.00" type="sharedLane" lane="8648074#1_0" pos="51.19" collider="bike2046" victim="ped6066" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.21"/>
+    <collision time="1736.00" type="sharedLane" lane="817407010_0" pos="4.45" collider="bike1026" victim="ped6729" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.14"/>
+    <collision time="1747.00" type="sharedLane" lane="833580410#5_0" pos="8.75" collider="bike1165" victim="ped3901" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.54"/>
+    <collision time="1753.00" type="sharedLane" lane="817407010_0" pos="4.65" collider="bike1026" victim="ped1759" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="0.99"/>
+</collisions>
