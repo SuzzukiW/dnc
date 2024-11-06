@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<net version="1.9">
-    <location netOffset="0.00,0.00" convBoundary="0.00,0.00,200.00,0.00" origBoundary="-10000000000.00,-10000000000.00,10000000000.00,10000000000.00" projParameter="!"/>
-    <edge id="1" from="1" to="2" priority="-1">
-        <lane id="1_0" index="0" speed="13.89" length="200.00" shape="0.00,-1.60 200.00,-1.60"/>
-    </edge>
-    <junction id="1" type="dead_end" x="0.00" y="0.00" incLanes="" intLanes="" shape="0.00,0.00 0.00,-3.20"/>
-    <junction id="2" type="dead_end" x="200.00" y="0.00" incLanes="1_0" intLanes="" shape="200.00,-3.20 200.00,0.00"/>
-</net>
