@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2024-11-05 18:52:09 by Eclipse SUMO GUI Version 1.21.0
+<!-- generated on 2024-11-05 20:30:29 by Eclipse SUMO GUI Version 1.21.0
 <sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
         <net-file value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.net.xml.gz"/>
         <route-files value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.bicycle.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.bus.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.motorcycle.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.passenger.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.pedestrian.rou.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.rail.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.rail_urban.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.ship.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.truck.trips.xml"/>
-        <additional-files value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.poly.xml.gz"/>
+        <additional-files value="C:\Users\George Jiang\Desktop\Version 1\additional.xml"/>
     </input>
 
     <output>
@@ -103,9 +103,4 @@
     <collision time="1589.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh5706" victim="veh5704" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
     <collision time="1589.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh5743" victim="veh5706" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.00"/>
     <collision time="1590.00" type="collision" lane="814346830#0_1" pos="0.38" collider="veh5441" victim="veh5383" colliderType="veh_passenger" victimType="veh_passenger" colliderSpeed="0.00" victimSpeed="0.16"/>
-    <collision time="1617.00" type="sharedLane" lane="-150052469#2_0" pos="45.29" collider="bike1297" victim="ped5486" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.34"/>
-    <collision time="1717.00" type="sharedLane" lane="8648074#1_0" pos="51.19" collider="bike2046" victim="ped6066" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.21"/>
-    <collision time="1736.00" type="sharedLane" lane="817407010_0" pos="4.45" collider="bike1026" victim="ped6729" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.14"/>
-    <collision time="1747.00" type="sharedLane" lane="833580410#5_0" pos="8.75" collider="bike1165" victim="ped3901" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="1.54"/>
-    <collision time="1753.00" type="sharedLane" lane="817407010_0" pos="4.65" collider="bike1026" victim="ped1759" colliderType="bike_bicycle" victimType="ped_pedestrian" colliderSpeed="0.00" victimSpeed="0.99"/>
 </collisions>

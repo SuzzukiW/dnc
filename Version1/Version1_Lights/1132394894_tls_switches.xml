@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-11-05 20:30:29 by Eclipse SUMO GUI Version 1.21.0
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.net.xml.gz"/>
+        <route-files value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.bicycle.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.bus.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.motorcycle.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.passenger.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.pedestrian.rou.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.rail.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.rail_urban.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.ship.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.truck.trips.xml"/>
+        <additional-files value="C:\Users\George Jiang\Desktop\Version 1\additional.xml"/>
+    </input>
+
+    <output>
+        <fcd-output value="C:\Users\George Jiang\Desktop\Version 1\routes.xml"/>
+        <summary-output value="C:\Users\George Jiang\Desktop\Version 1\summary.xml"/>
+        <tripinfo-output value="C:\Users\George Jiang\Desktop\Version 1\tripinfo.xml"/>
+        <stop-output value="C:\Users\George Jiang\Desktop\Version 1\stops.xml"/>
+        <collision-output value="C:\Users\George Jiang\Desktop\Version 1\collisions.xml"/>
+    </output>
+
+    <processing>
+        <ignore-route-errors value="true"/>
+        <tls.actuated.jam-threshold value="30"/>
+    </processing>
+
+    <routing>
+        <device.rerouting.adaptation-steps value="18"/>
+        <device.rerouting.adaptation-interval value="10"/>
+    </routing>
+
+    <report>
+        <verbose value="true"/>
+        <duration-log.statistics value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <gui_only>
+        <gui-settings-file value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.view.xml"/>
+    </gui_only>
+
+</sumoConfiguration>
+-->
+
+<tlsSwitches xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tlsswitches_file.xsd">
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="0.00" end="5.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="0.00" end="5.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="13.00" end="18.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="13.00" end="18.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="26.00" end="31.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="26.00" end="31.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="39.00" end="44.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="39.00" end="44.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="52.00" end="57.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="52.00" end="57.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="65.00" end="70.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="65.00" end="70.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="78.00" end="83.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="78.00" end="83.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="91.00" end="96.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="91.00" end="96.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="104.00" end="109.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="104.00" end="109.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="117.00" end="122.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="117.00" end="122.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="130.00" end="140.00" duration="10.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="130.00" end="140.00" duration="10.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="148.00" end="154.00" duration="6.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="148.00" end="154.00" duration="6.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="162.00" end="167.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="162.00" end="167.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="175.00" end="189.00" duration="14.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="175.00" end="189.00" duration="14.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="197.00" end="202.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="197.00" end="202.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="210.00" end="215.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="210.00" end="215.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="223.00" end="228.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="223.00" end="228.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="236.00" end="241.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="236.00" end="241.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="249.00" end="255.00" duration="6.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="249.00" end="255.00" duration="6.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="263.00" end="276.00" duration="13.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="263.00" end="276.00" duration="13.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="284.00" end="289.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="284.00" end="289.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="297.00" end="302.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="297.00" end="302.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="310.00" end="315.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="310.00" end="315.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="323.00" end="328.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="323.00" end="328.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="336.00" end="341.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="336.00" end="341.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="349.00" end="354.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="349.00" end="354.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="362.00" end="367.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="362.00" end="367.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="375.00" end="380.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="375.00" end="380.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="388.00" end="395.00" duration="7.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="388.00" end="395.00" duration="7.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="403.00" end="412.00" duration="9.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="403.00" end="412.00" duration="9.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="420.00" end="425.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="420.00" end="425.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="433.00" end="438.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="433.00" end="438.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="446.00" end="451.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="446.00" end="451.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="459.00" end="464.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="459.00" end="464.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="472.00" end="477.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="472.00" end="477.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="485.00" end="490.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="485.00" end="490.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="498.00" end="503.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="498.00" end="503.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="511.00" end="516.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="511.00" end="516.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="524.00" end="529.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="524.00" end="529.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="537.00" end="551.00" duration="14.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="537.00" end="551.00" duration="14.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="559.00" end="567.00" duration="8.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="559.00" end="567.00" duration="8.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="575.00" end="580.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="575.00" end="580.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="588.00" end="593.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="588.00" end="593.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="601.00" end="606.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="601.00" end="606.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="614.00" end="619.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="614.00" end="619.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="627.00" end="632.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="627.00" end="632.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="640.00" end="645.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="640.00" end="645.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="653.00" end="658.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="653.00" end="658.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="666.00" end="671.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="666.00" end="671.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="679.00" end="684.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="679.00" end="684.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="692.00" end="699.00" duration="7.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="692.00" end="699.00" duration="7.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="707.00" end="712.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="707.00" end="712.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="720.00" end="727.00" duration="7.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="720.00" end="727.00" duration="7.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="735.00" end="740.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="735.00" end="740.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="748.00" end="753.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="748.00" end="753.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="761.00" end="766.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="761.00" end="766.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="774.00" end="779.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="774.00" end="779.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="787.00" end="792.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="787.00" end="792.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="800.00" end="805.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="800.00" end="805.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="813.00" end="821.00" duration="8.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="813.00" end="821.00" duration="8.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="829.00" end="834.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="829.00" end="834.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="842.00" end="847.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="842.00" end="847.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="855.00" end="860.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="855.00" end="860.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="868.00" end="894.00" duration="26.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="868.00" end="894.00" duration="26.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="902.00" end="907.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="902.00" end="907.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="915.00" end="920.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="915.00" end="920.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="928.00" end="933.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="928.00" end="933.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="941.00" end="946.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="941.00" end="946.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="954.00" end="959.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="954.00" end="959.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="967.00" end="972.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="967.00" end="972.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="980.00" end="985.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="980.00" end="985.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="993.00" end="998.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="993.00" end="998.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1006.00" end="1011.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1006.00" end="1011.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1019.00" end="1024.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1019.00" end="1024.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1032.00" end="1037.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1032.00" end="1037.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1045.00" end="1050.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1045.00" end="1050.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1058.00" end="1063.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1058.00" end="1063.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1071.00" end="1076.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1071.00" end="1076.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1084.00" end="1089.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1084.00" end="1089.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1097.00" end="1102.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1097.00" end="1102.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1110.00" end="1115.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1110.00" end="1115.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1123.00" end="1128.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1123.00" end="1128.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1136.00" end="1141.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1136.00" end="1141.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1149.00" end="1154.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1149.00" end="1154.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1162.00" end="1167.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1162.00" end="1167.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1175.00" end="1180.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1175.00" end="1180.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1188.00" end="1200.00" duration="12.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1188.00" end="1200.00" duration="12.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1208.00" end="1213.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1208.00" end="1213.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1221.00" end="1226.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1221.00" end="1226.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1234.00" end="1239.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1234.00" end="1239.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1247.00" end="1252.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1247.00" end="1252.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1260.00" end="1265.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1260.00" end="1265.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1273.00" end="1278.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1273.00" end="1278.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1286.00" end="1291.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1286.00" end="1291.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1299.00" end="1304.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1299.00" end="1304.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1312.00" end="1317.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1312.00" end="1317.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1325.00" end="1330.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1325.00" end="1330.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1338.00" end="1343.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1338.00" end="1343.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1351.00" end="1356.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1351.00" end="1356.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1364.00" end="1369.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1364.00" end="1369.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1377.00" end="1382.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1377.00" end="1382.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1390.00" end="1395.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1390.00" end="1395.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1403.00" end="1436.00" duration="33.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1403.00" end="1436.00" duration="33.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1444.00" end="1449.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1444.00" end="1449.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1457.00" end="1462.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1457.00" end="1462.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1470.00" end="1475.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1470.00" end="1475.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1483.00" end="1488.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1483.00" end="1488.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1496.00" end="1501.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1496.00" end="1501.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1509.00" end="1517.00" duration="8.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1509.00" end="1517.00" duration="8.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1525.00" end="1530.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1525.00" end="1530.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1538.00" end="1543.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1538.00" end="1543.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1551.00" end="1556.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1551.00" end="1556.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1564.00" end="1569.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1564.00" end="1569.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1577.00" end="1582.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1577.00" end="1582.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1590.00" end="1595.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1590.00" end="1595.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_0" toLane="89641251#2_0" begin="1603.00" end="1608.00" duration="5.00"/>
+   <tlsSwitch id="1132394894" programID="0" fromLane="89641251#0_1" toLane="89641251#2_1" begin="1603.00" end="1608.00" duration="5.00"/>
+</tlsSwitches>

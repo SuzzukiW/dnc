@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-11-05 20:30:30 by Eclipse SUMO GUI Version 1.21.0
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.net.xml.gz"/>
+        <route-files value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.bicycle.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.bus.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.motorcycle.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.passenger.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.pedestrian.rou.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.rail.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.rail_urban.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.ship.trips.xml,C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.truck.trips.xml"/>
+        <additional-files value="C:\Users\George Jiang\Desktop\Version 1\additional.xml"/>
+    </input>
+
+    <output>
+        <fcd-output value="C:\Users\George Jiang\Desktop\Version 1\routes.xml"/>
+        <summary-output value="C:\Users\George Jiang\Desktop\Version 1\summary.xml"/>
+        <tripinfo-output value="C:\Users\George Jiang\Desktop\Version 1\tripinfo.xml"/>
+        <stop-output value="C:\Users\George Jiang\Desktop\Version 1\stops.xml"/>
+        <collision-output value="C:\Users\George Jiang\Desktop\Version 1\collisions.xml"/>
+    </output>
+
+    <processing>
+        <ignore-route-errors value="true"/>
+        <tls.actuated.jam-threshold value="30"/>
+    </processing>
+
+    <routing>
+        <device.rerouting.adaptation-steps value="18"/>
+        <device.rerouting.adaptation-interval value="10"/>
+    </routing>
+
+    <report>
+        <verbose value="true"/>
+        <duration-log.statistics value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <gui_only>
+        <gui-settings-file value="C:\Users\George Jiang\Desktop\Version 1\../../../../Windows/system32/2024-11-05-18-42-37/osm.view.xml"/>
+    </gui_only>
+
+</sumoConfiguration>
+-->
+
+<tlsStates xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tlsstates_file.xsd">
+    <tlsState time="0.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="5.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="10.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="13.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="18.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="23.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="26.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="31.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="36.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="39.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="44.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="49.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="52.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="57.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="62.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="65.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="70.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="75.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="78.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="83.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="88.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="91.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="96.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="101.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="104.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="109.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="114.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="117.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="130.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="135.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="138.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="143.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="148.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="151.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="162.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="167.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="170.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="179.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="184.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="187.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="195.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="200.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="203.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="219.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="224.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="227.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="232.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="237.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="240.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="245.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="250.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="253.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="258.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="263.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="266.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="280.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="285.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="288.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="302.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="307.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="310.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="315.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="320.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="323.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="328.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="333.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="336.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="353.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="358.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="361.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="366.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="371.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="374.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="379.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="384.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="387.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="392.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="397.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="400.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="405.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="410.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="413.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="442.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="447.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="450.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="455.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="460.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="463.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="468.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="473.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="476.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="514.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="519.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="522.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="527.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="532.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="535.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="540.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="545.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="548.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="553.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="558.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="561.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="566.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="571.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="574.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="579.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="584.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="587.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="592.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="597.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="600.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="605.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="610.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="613.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="654.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="659.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="662.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="667.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="672.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="675.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="680.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="685.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="688.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="693.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="698.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="701.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="706.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="711.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="714.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="719.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="724.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="727.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="768.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="773.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="776.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="788.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="793.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="796.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="801.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="806.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="809.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="814.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="819.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="822.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="827.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="832.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="835.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="846.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="851.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="854.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="892.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="897.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="900.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="905.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="910.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="913.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="918.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="923.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="926.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="931.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="936.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="939.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="944.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="949.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="952.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="957.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="962.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="965.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="970.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="975.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="978.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="983.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="988.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="991.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="996.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1001.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1004.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1009.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1014.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1017.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1022.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1027.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1030.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1035.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1040.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1043.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1048.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1053.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1056.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1064.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1069.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1072.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1077.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1082.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1085.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1100.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1105.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1108.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1113.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1118.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1121.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1126.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1131.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1134.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1156.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1161.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1164.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1169.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1174.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1177.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1182.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1187.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1190.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1195.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1200.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1203.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1208.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1213.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1216.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1221.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1226.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1229.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1265.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1270.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1273.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1278.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1283.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1286.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1292.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1297.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1300.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1305.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1310.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1313.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1318.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1323.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1326.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1331.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1336.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1339.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1344.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1349.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1352.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1357.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1362.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1365.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1370.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1375.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1378.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1383.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1388.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1391.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1396.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1401.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1404.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1409.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1414.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1417.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1422.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1427.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1430.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1442.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1447.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1450.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1455.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1460.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1463.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1474.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1479.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1482.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1502.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1507.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1510.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1515.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1520.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1523.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1528.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1533.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1536.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1541.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1546.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1549.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1563.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1568.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1571.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1576.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1581.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1584.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+    <tlsState time="1589.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="1" state="rrrrGgGGgrrrr"/>
+    <tlsState time="1594.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="2" state="rrrryyyyyrrrr"/>
+    <tlsState time="1597.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="3" state="ggGGrrrrrrGrG"/>
+    <tlsState time="1602.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="4" state="ggGGrrrrrrrrr"/>
+    <tlsState time="1607.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="5" state="yyyyrrrrrrrrr"/>
+    <tlsState time="1610.00" id="cluster_61348303_7609433517_7634061874_7634061875_#1more" programID="0" phase="0" state="rrrrGgGGgGrGr"/>
+</tlsStates>
