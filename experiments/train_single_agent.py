@@ -1,4 +1,4 @@
-# experiments/train.py
+# experiments/train_single_agent.py
 
 import os
 import sys
