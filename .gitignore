@@ -1,1 +1,2 @@
-/Version1/routes.xml/
+# Ignore all routes.xml files in subdirectories
+**/routes.xml
