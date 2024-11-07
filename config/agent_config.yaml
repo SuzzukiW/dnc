@@ -1,26 +1,10 @@
 # DQN Agent Configuration
+gamma: 0.95
 learning_rate: 0.001
-gamma: 0.99  # Discount factor
-epsilon_start: 1.0  # Starting exploration rate
-epsilon_min: 0.01  # Minimum exploration rate
-epsilon_decay: 0.995  # Exploration rate decay
-memory_size: 100000  # Replay buffer size
-batch_size: 64
-
-# Neural Network Architecture
-network:
-  hidden_layers: [128, 64]
-  activation: "relu"
-  optimizer: "adam"
-
-# Training parameters
-target_update_frequency: 100  # Episodes between target network updates
-gradient_clip: 1.0
-learning_starts: 1000  # Number of steps before starting training
-update_frequency: 1  # Number of steps between updates
-
-# Multi-agent specific
-communication:
-  enabled: true
-  share_radius: 1  # Number of intersections to share information with
-  message_dimension: 32  # Size of message vectors
+epsilon_start: 1.0
+epsilon_min: 0.01
+epsilon_decay: 0.995
+batch_size: 32
+memory_size: 10000
+hidden_size: 64
+target_update_frequency: 100

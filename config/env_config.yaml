@@ -1,28 +1,12 @@
-# SUMO Environment Configuration
-net_file: "data/sumo_nets/boston/test.net.xml"
-route_file: "data/sumo_nets/boston/test.rou.xml"
-use_gui: false  # Set to true for visualization during training
-num_seconds: 3600  # Simulation duration per episode
-yellow_time: 3
+# Environment Configuration
+net_file: "Version1/2024-11-05-18-42-37/osm.net.xml.gz"
+route_file: "Version1/2024-11-05-18-42-37/osm.passenger.trips.xml"
+out_csv_name: "data/test-1/training_results.csv"
+use_gui: false
+num_seconds: 20000
+max_depart_delay: 100000
+time_to_teleport: -1
+delta_time: 5
+yellow_time: 2
 min_green: 5
 max_green: 50
-
-# State and reward configuration
-state_features:
-  - queue_length
-  - waiting_time
-  - current_phase
-  - incoming_vehicles
-  - outgoing_vehicles
-
-reward_weights:
-  waiting_time: -0.5
-  queue_length: -0.3
-  throughput: 1.0
-  emergency_penalty: -2.0
-
-# Simulation parameters
-delta_time: 5  # Action step time in seconds
-simulation_step: 0.1  # SUMO simulation step size
-max_green_time: 50
-min_green_time: 5

@@ -7,140 +7,133 @@ import torch
 import numpy as np
 from datetime import datetime
 from pathlib import Path
+import logging
+import json
 
 # Add project root to Python path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
-from src.environment.sumo_env import SUMOEnvironment
-from src.agents.dqn_agent import DQNAgent
-from src.utils.logger import Logger
-from src.utils.data_collector import DataCollector
-from src.utils.replay_buffer import ReplayBuffer
+from src.agents import DQNAgent
+from src.environment import SUMOEnvironment
+from src.utils.logger import setup_logger
 
 def load_config(config_path):
+    """Load configuration from YAML file"""
     with open(config_path, 'r') as f:
         return yaml.safe_load(f)
 
-def setup_training(env_config, agent_config):
+def train_dqn(env_config, agent_config, num_episodes=1000):
+    """Train DQN agent on SUMO environment"""
+    
     # Initialize environment
     env = SUMOEnvironment(
         net_file=env_config['net_file'],
         route_file=env_config['route_file'],
-        use_gui=env_config.get('use_gui', False),
-        num_seconds=env_config.get('num_seconds', 3600),
-        yellow_time=env_config.get('yellow_time', 3),
-        min_green=env_config.get('min_green', 5),
-        max_green=env_config.get('max_green', 50)
+        out_csv_name=env_config['out_csv_name'],
+        use_gui=env_config['use_gui'],
+        num_seconds=env_config['num_seconds'],
+        delta_time=env_config['delta_time']
     )
     
-    # Get traffic light IDs and create agents
-    tl_ids = env.get_traffic_light_ids()
-    agents = {}
-    for tl_id in tl_ids:
-        agents[tl_id] = DQNAgent(
-            state_size=env.observation_space.shape[0],
-            action_size=env.action_space.n,
-            learning_rate=agent_config['learning_rate'],
-            gamma=agent_config['gamma'],
-            epsilon=agent_config['epsilon_start'],
-            epsilon_min=agent_config['epsilon_min'],
-            epsilon_decay=agent_config['epsilon_decay'],
-            memory_size=agent_config['memory_size'],
-            batch_size=agent_config['batch_size']
-        )
+    # Initialize agent
+    state_size = env.observation_space.shape[0]
+    action_size = env.action_space.n
+    agent = DQNAgent(state_size, action_size, agent_config)
     
-    return env, agents
-
-def train(env_config_path='config/env_config.yaml', 
-          agent_config_path='config/agent_config.yaml',
-          num_episodes=1000):
+    # Setup logging
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    log_dir = Path("experiments/logs") / timestamp
+    model_dir = Path("experiments/models") / timestamp
+    log_dir.mkdir(parents=True, exist_ok=True)
+    model_dir.mkdir(parents=True, exist_ok=True)
     
-    # Load configurations
-    env_config = load_config(env_config_path)
-    agent_config = load_config(agent_config_path)
+    logger = setup_logger("dqn_training", log_dir / "training.log")
     
-    # Setup environment and agents
-    env, agents = setup_training(env_config, agent_config)
+    # Save configurations
+    with open(log_dir / "env_config.yaml", 'w') as f:
+        yaml.dump(env_config, f)
+    with open(log_dir / "agent_config.yaml", 'w') as f:
+        yaml.dump(agent_config, f)
     
-    # Initialize logger
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    logger = Logger(f"logs/training_{timestamp}")
-    
-    # Initialize data collector
-    data_collector = DataCollector(
-        log_dir=f"logs/training_{timestamp}",
-        metrics=['episode_reward', 'average_waiting_time', 'throughput']
-    )
+    # Training metrics
+    metrics = {
+        'episode_rewards': [],
+        'episode_lengths': [],
+        'average_waiting_times': [],
+        'episode_losses': []
+    }
     
     # Training loop
     for episode in range(num_episodes):
-        state = env.reset()
+        state, _ = env.reset()
         episode_reward = 0
+        episode_losses = []
+        step = 0
         done = False
         
         while not done:
-            # Collect actions from all agents
-            actions = {}
-            for tl_id, agent in agents.items():
-                tl_state = state[tl_id]
-                actions[tl_id] = agent.get_action(tl_state)
+            # Select action
+            action = agent.act(state)
             
-            # Execute actions and get next states
-            next_state, reward, done, info = env.step(actions)
+            # Take action
+            next_state, reward, done, truncated, info = env.step(action)
             
-            # Store experiences in replay buffers and train agents
-            for tl_id, agent in agents.items():
-                agent.store_transition(
-                    state[tl_id],
-                    actions[tl_id],
-                    reward[tl_id],
-                    next_state[tl_id],
-                    done
-                )
-                
-                if len(agent.memory) > agent.batch_size:
-                    agent.train()
+            # Store transition
+            agent.remember(state, action, reward, next_state, done)
+            
+            # Train agent
+            if len(agent.memory) > agent.batch_size:
+                loss = agent.replay()
+                episode_losses.append(loss)
             
             state = next_state
-            episode_reward += sum(reward.values())
+            episode_reward += reward
+            step += 1
+            
+            # Update target network every 100 steps
+            if step % 100 == 0:
+                agent.update_target_network()
         
-        # Collect episode data
-        metrics = {
-            'episode': episode,
-            'episode_reward': episode_reward,
-            'average_waiting_time': info.get('average_waiting_time', 0),
-            'throughput': info.get('throughput', 0),
-            'epsilon': list(agents.values())[0].epsilon  # Track exploration rate
-        }
+        # Log episode metrics
+        metrics['episode_rewards'].append(episode_reward)
+        metrics['episode_lengths'].append(step)
+        metrics['average_waiting_times'].append(-episode_reward/step)  # Convert reward to waiting time
+        metrics['episode_losses'].append(np.mean(episode_losses) if episode_losses else 0)
         
-        # Log metrics
-        data_collector.collect(metrics)
-        logger.log_episode(metrics)
+        # Log progress
+        logger.info(f"Episode {episode+1}/{num_episodes}")
+        logger.info(f"Reward: {episode_reward:.2f}")
+        logger.info(f"Average Loss: {metrics['episode_losses'][-1]:.4f}")
+        logger.info(f"Epsilon: {agent.epsilon:.4f}")
         
         # Save model periodically
-        if episode % 100 == 0:
-            for tl_id, agent in agents.items():
-                save_path = f"models/agent_{tl_id}_episode_{episode}.pth"
-                agent.save_model(save_path)
-        
-        print(f"Episode {episode}/{num_episodes} - "
-              f"Reward: {episode_reward:.2f} - "
-              f"Avg Wait Time: {metrics['average_waiting_time']:.2f} - "
-              f"Throughput: {metrics['throughput']}")
+        if (episode + 1) % 100 == 0:
+            model_path = model_dir / f"dqn_model_episode_{episode+1}.pt"
+            agent.save(model_path)
+            
+            # Save metrics
+            metrics_path = log_dir / f"metrics_episode_{episode+1}.json"
+            with open(metrics_path, 'w') as f:
+                json.dump(metrics, f)
     
-    # Final save
-    for tl_id, agent in agents.items():
-        save_path = f"models/agent_{tl_id}_final.pth"
-        agent.save_model(save_path)
+    # Save final model and metrics
+    agent.save(model_dir / "dqn_model_final.pt")
+    with open(log_dir / "metrics_final.json", 'w') as f:
+        json.dump(metrics, f)
     
     env.close()
-    logger.close()
+    return metrics
+
+def main():
+    # Load configurations
+    env_config = load_config('config/env_config.yaml')
+    agent_config = load_config('config/agent_config.yaml')
+    
+    # Train agent
+    metrics = train_dqn(env_config, agent_config)
+    
+    print("Training completed!")
 
 if __name__ == "__main__":
-    # Ensure necessary directories exist
-    os.makedirs("logs", exist_ok=True)
-    os.makedirs("models", exist_ok=True)
-    
-    # Start training
-    train(num_episodes=1000)
+    main()
