@@ -1,2 +1,29 @@
 # Ignore all routes.xml files in subdirectories
 **/routes.xml
+
+# Ignore all .pt files
+**/*.pt
+
+# Ignore all .pth files
+**/*.pth
+
+# Ignore all .ckpt files
+**/*.ckpt
+
+# Ignore all .h5 files
+**/*.h5
+
+# Ignore all .png files
+**/*.png
+
+# Ignore all .pyc files
+**/*.pyc
+
+# Ignore all .log files
+**/*.log
+
+# Ignore all .json files
+**/*.json
+
+# Ignore all .DS_Store files
+.DS_Store
