@@ -1,0 +1,11 @@
+net_file: "Version1/2024-11-05-18-42-37/osm.net.xml.gz"
+route_file: "Version1/2024-11-05-18-42-37/osm.passenger.trips.xml"
+out_csv_name: "data/test-1/training_results.csv"
+use_gui: true
+num_seconds: 1000
+max_depart_delay: 100000
+time_to_teleport: -1
+delta_time: 5
+yellow_time: 2
+min_green: 5
+max_green: 50

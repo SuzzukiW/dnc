@@ -1,0 +1,11 @@
+batch_size: 128
+communication_mode: shared_experience
+epsilon_decay: 0.995
+epsilon_min: 0.1
+epsilon_start: 1.0
+gamma: 0.95
+hidden_size: 128
+learning_rate: 5.0e-05
+memory_size: 50000
+reward_type: hybrid
+target_update_frequency: 100
