@@ -27,3 +27,32 @@
 
 # Ignore all .DS_Store files
 .DS_Store
+
+# Ignore entire directories for logs, models, and outputs
+logs/
+models/
+outputs/
+checkpoints/
+experiments/outputs/
+experiments/logs/
+experiments/models/
+
+# Additional model and checkpoint file extensions
+**/*.pkl
+**/*.model
+**/*.tar
+**/*.zip
+
+# Ignore virtual environment directories
+venv/
+.env/
+env/
+
+# Ignore cache and temporary files
+__pycache__/
+.cache/
+.tmp/
+*.tmp
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
