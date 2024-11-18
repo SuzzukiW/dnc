@@ -1,14 +1,23 @@
 # config/env_config.yaml
 
 # Environment Configuration
-net_file: "Version1/2024-11-05-18-42-37/osm.net.xml.gz"
-route_file: "Version1/2024-11-05-18-42-37/osm.passenger.trips.xml"
-out_csv_name: "data/test-1/training_results.csv"
-use_gui: false
-num_seconds: 20000
-max_depart_delay: 100000
-time_to_teleport: -1
-delta_time: 5
-yellow_time: 2
-min_green: 5
-max_green: 50
+environment:
+  # Network Files
+  net_file: "Version1/2024-11-05-18-42-37/osm.net.xml.gz"
+  route_file: "Version1/2024-11-05-18-42-37/osm.passenger.trips.xml"
+  out_csv_name: "metrics.csv"
+  
+  # Simulation Parameters
+  use_gui: false
+  num_seconds: 1800  # 30 minutes per episode
+  delta_time: 8      # Decision interval
+  yellow_time: 3
+  min_green: 12
+  max_green: 45
+  
+  # Vehicle Parameters
+  max_depart_delay: 200
+  time_to_teleport: -1  # Disable teleporting
+  
+  # Multi-agent Parameters
+  neighbor_distance: 120  # Distance for considering neighboring intersections

@@ -1,5 +1,4 @@
 # experiments/run_hierarchical.py
-
 #!/usr/bin/env python3
 
 import os

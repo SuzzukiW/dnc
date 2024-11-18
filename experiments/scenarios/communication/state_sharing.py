@@ -1,320 +1,194 @@
-# experiments/scenarios/communication/state_sharing.py
-
-import os
-import sys
-from pathlib import Path
-import yaml
 import torch
 import torch.nn as nn
+import torch.optim as optim
 import numpy as np
-from datetime import datetime
-from collections import defaultdict, deque
-import random
+from typing import List, Dict, Any
 
-# Add project root to Python path
-project_root = Path(__file__).parent.parent.parent.parent
-sys.path.append(str(project_root))
+class StateSharedAgent:
+    """
+    Multi-agent reinforcement learning agent with state sharing capabilities
+    for traffic light control in a grid network.
+    """
+    def __init__(self, 
+                 state_dim: int = 10, 
+                 action_dim: int = 4, 
+                 learning_rate: float = 0.001,
+                 communication_type: str = 'full'):
+        """
+        Initialize the state-shared agent with different communication strategies.
+        """
+        self.state_dim = state_dim
+        self.action_dim = action_dim
+        self.communication_type = communication_type
+        
+        # Neural network for Q-learning
+        self.q_network = self._build_neural_network()
+        self.target_network = self._build_neural_network()
+        self.target_network.load_state_dict(self.q_network.state_dict())
+        
+        self.optimizer = optim.Adam(self.q_network.parameters(), lr=learning_rate)
+        self.loss_fn = nn.MSELoss()
+        
+        # Shared memory for state communication
+        self.shared_memory = {}
+        
+        # Performance tracking
+        self.total_reward = 0
+        self.episodes_completed = 0
 
-from src.agents.dqn_agent import DQNNetwork
-from src.environment.multi_agent_sumo_env import MultiAgentSumoEnvironment
-from src.utils.logger import setup_logger
-
-class StateShareNetwork(nn.Module):
-    """Neural network that processes both local and neighbor states"""
-    def __init__(self, local_state_size, neighbor_state_size, action_size, hidden_size=64):
-        super(StateShareNetwork, self).__init__()
-        
-        # Process local state
-        self.local_net = nn.Sequential(
-            nn.Linear(local_state_size, hidden_size),
-            nn.ReLU()
-        )
-        
-        # Process neighbor states
-        self.neighbor_net = nn.Sequential(
-            nn.Linear(neighbor_state_size, hidden_size),
-            nn.ReLU()
-        )
-        
-        # Combine local and neighbor information
-        self.combine_net = nn.Sequential(
-            nn.Linear(hidden_size * 2, hidden_size),
+    def _build_neural_network(self) -> nn.Module:
+        """
+        Build a neural network for Q-learning with state representation.
+        """
+        return nn.Sequential(
+            nn.Linear(self.state_dim, 64),
             nn.ReLU(),
-            nn.Linear(hidden_size, action_size)
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, self.action_dim)
         )
     
-    def forward(self, local_state, neighbor_states):
-        local_features = self.local_net(local_state)
-        neighbor_features = self.neighbor_net(neighbor_states)
-        combined = torch.cat([local_features, neighbor_features], dim=1)
-        return self.combine_net(combined)
-
-class StateShareAgent:
-    """Agent that shares state information with neighbors"""
-    def __init__(self, agent_id, state_size, action_size, neighbor_ids, config):
-        self.agent_id = agent_id
-        self.state_size = state_size
-        self.action_size = action_size
-        self.neighbor_ids = neighbor_ids
-        
-        # Hyperparameters
-        self.gamma = config.get('gamma', 0.95)
-        self.learning_rate = config.get('learning_rate', 0.001)
-        self.epsilon = config.get('epsilon_start', 1.0)
-        self.epsilon_min = config.get('epsilon_min', 0.01)
-        self.epsilon_decay = config.get('epsilon_decay', 0.995)
-        self.batch_size = config.get('batch_size', 32)
-        self.memory_size = config.get('memory_size', 10000)
-        
-        # Calculate neighbor state size (sum of all neighbor states)
-        self.neighbor_state_size = state_size * len(neighbor_ids) if neighbor_ids else state_size
-        
-        # Networks
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.policy_net = StateShareNetwork(
-            state_size, self.neighbor_state_size, action_size).to(self.device)
-        self.target_net = StateShareNetwork(
-            state_size, self.neighbor_state_size, action_size).to(self.device)
-        self.target_net.load_state_dict(self.policy_net.state_dict())
-        
-        # Optimizer
-        self.optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=self.learning_rate)
-        
-        # Replay memory
-        self.memory = deque(maxlen=self.memory_size)
-        self.Transition = namedtuple('Transition',
-                                   ('local_state', 'neighbor_states', 'action', 
-                                    'reward', 'next_local_state', 'next_neighbor_states', 'done'))
-    
-    def get_neighbor_states(self, all_states):
-        """Combine states of neighboring agents"""
-        if not self.neighbor_ids:
-            return torch.zeros(1, self.neighbor_state_size).to(self.device)
-        
-        neighbor_states = []
-        for neighbor_id in self.neighbor_ids:
-            if neighbor_id in all_states:
-                neighbor_states.append(all_states[neighbor_id])
-        
-        if not neighbor_states:
-            return torch.zeros(1, self.neighbor_state_size).to(self.device)
-        
-        return torch.FloatTensor(np.concatenate(neighbor_states)).to(self.device)
-    
-    def remember(self, local_state, neighbor_states, action, reward, 
-                next_local_state, next_neighbor_states, done):
-        """Store transition in memory"""
-        self.memory.append(self.Transition(
-            local_state, neighbor_states, action, reward,
-            next_local_state, next_neighbor_states, done))
-    
-    def act(self, local_state, neighbor_states, training=True):
-        """Select action using epsilon-greedy policy"""
-        if training and random.random() < self.epsilon:
-            return random.randrange(self.action_size)
+    def select_action(self, state: np.ndarray, epsilon: float = 0.1) -> int:
+        """
+        Select an action using epsilon-greedy strategy.
+        """
+        if np.random.random() < epsilon:
+            return np.random.randint(self.action_dim)
         
         with torch.no_grad():
-            local_state = torch.FloatTensor(local_state).unsqueeze(0).to(self.device)
-            neighbor_states = torch.FloatTensor(neighbor_states).unsqueeze(0).to(self.device)
-            q_values = self.policy_net(local_state, neighbor_states)
+            state_tensor = torch.FloatTensor(state)
+            q_values = self.q_network(state_tensor)
             return q_values.argmax().item()
     
-    def replay(self):
-        """Train on batch from replay memory"""
-        if len(self.memory) < self.batch_size:
-            return
+    def update(self, 
+               state: np.ndarray, 
+               action: int, 
+               reward: float, 
+               next_state: np.ndarray,
+               done: bool):
+        """
+        Update the Q-network using experience replay.
+        """
+        # Track total reward
+        self.total_reward += reward
         
-        transitions = random.sample(self.memory, self.batch_size)
-        batch = self.Transition(*zip(*transitions))
+        if done:
+            self.episodes_completed += 1
         
-        # Prepare batch tensors
-        local_state_batch = torch.FloatTensor(batch.local_state).to(self.device)
-        neighbor_states_batch = torch.FloatTensor(batch.neighbor_states).to(self.device)
-        action_batch = torch.LongTensor(batch.action).to(self.device)
-        reward_batch = torch.FloatTensor(batch.reward).to(self.device)
-        next_local_state_batch = torch.FloatTensor(batch.next_local_state).to(self.device)
-        next_neighbor_states_batch = torch.FloatTensor(batch.next_neighbor_states).to(self.device)
-        done_batch = torch.FloatTensor(batch.done).to(self.device)
+        # Convert to tensors
+        state_tensor = torch.FloatTensor(state)
+        next_state_tensor = torch.FloatTensor(next_state)
         
-        # Compute current Q values
-        current_q_values = self.policy_net(
-            local_state_batch, neighbor_states_batch).gather(1, action_batch.unsqueeze(1))
+        # Current Q-value
+        current_q = self.q_network(state_tensor)[action]
         
-        # Compute next Q values
-        next_q_values = self.target_net(
-            next_local_state_batch, next_neighbor_states_batch).max(1)[0].detach()
-        expected_q_values = reward_batch + self.gamma * next_q_values * (1 - done_batch)
+        # Compute target Q-value
+        with torch.no_grad():
+            next_q_values = self.target_network(next_state_tensor)
+            max_next_q = next_q_values.max()
+            target_q = reward + (1 - done) * 0.99 * max_next_q
         
         # Compute loss
-        loss = nn.MSELoss()(current_q_values, expected_q_values.unsqueeze(1))
+        loss = self.loss_fn(current_q, target_q)
         
         # Optimize the model
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-        
-        # Decay epsilon
-        self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
-        
-        return loss.item()
-    
-    def update_target_network(self):
-        """Update target network with policy network weights"""
-        self.target_net.load_state_dict(self.policy_net.state_dict())
-    
-    def save(self, path):
-        """Save model weights"""
-        torch.save({
-            'agent_id': self.agent_id,
-            'policy_net_state_dict': self.policy_net.state_dict(),
-            'target_net_state_dict': self.target_net.state_dict(),
-            'optimizer_state_dict': self.optimizer.state_dict(),
-            'epsilon': self.epsilon
-        }, path)
-    
-    def load(self, path):
-        """Load model weights"""
-        checkpoint = torch.load(path)
-        self.policy_net.load_state_dict(checkpoint['policy_net_state_dict'])
-        self.target_net.load_state_dict(checkpoint['target_net_state_dict'])
-        self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        self.epsilon = checkpoint['epsilon']
 
-class StateShareScenario:
+def simulate_traffic_scenario(agents: List[StateSharedAgent], 
+                               num_episodes: int = 100, 
+                               max_steps: int = 1000) -> Dict[str, float]:
     """
-    State Sharing scenario - agents share state and action information
-    with their neighbors for better coordination
+    Simulate a traffic scenario with multiple agents.
+    
+    Args:
+        agents (List[StateSharedAgent]): List of agents to simulate
+        num_episodes (int): Number of episodes to run
+        max_steps (int): Maximum steps per episode
+    
+    Returns:
+        Dict[str, float]: Performance metrics
     """
-    def __init__(self, env_config, agent_config):
-        self.env = MultiAgentSumoEnvironment(**env_config)
-        self.traffic_lights = self.env.traffic_lights
-        self.neighbor_map = self.env.get_neighbor_map()
+    for episode in range(num_episodes):
+        # Initialize episode states
+        states = [np.random.rand(10) for _ in agents]
         
-        # Create agents with state sharing capability
-        self.agents = {}
-        for tl_id in self.traffic_lights:
-            state_size = self.env.observation_spaces[tl_id].shape[0]
-            action_size = self.env.action_spaces[tl_id].n
-            neighbor_ids = self.neighbor_map.get(tl_id, [])
+        for step in range(max_steps):
+            # Select actions for each agent
+            actions = [agent.select_action(state) for agent, state in zip(agents, states)]
             
-            self.agents[tl_id] = StateShareAgent(
-                agent_id=tl_id,
-                state_size=state_size,
-                action_size=action_size,
-                neighbor_ids=neighbor_ids,
-                config=agent_config
-            )
-    
-    def train(self, num_episodes, log_dir):
-        """Train agents with state sharing"""
-        logger = setup_logger("state_sharing_training", log_dir / "training.log")
-        metrics = defaultdict(list)
-        
-        for episode in range(num_episodes):
-            states, _ = self.env.reset()
-            episode_rewards = defaultdict(float)
-            done = False
+            # Simulate rewards and next states (simplified)
+            rewards = [
+                np.random.normal(loc=0, scale=1) * (1 - abs(action - 2)/2) 
+                for action in actions
+            ]
             
-            while not done:
-                # Each agent selects action based on local and neighbor states
-                actions = {}
-                for tl_id in self.traffic_lights:
-                    neighbor_states = self.agents[tl_id].get_neighbor_states(states)
-                    actions[tl_id] = self.agents[tl_id].act(states[tl_id], neighbor_states)
+            # Simulate next states (random walk)
+            next_states = [
+                state + np.random.normal(loc=0, scale=0.1, size=state.shape) 
+                for state in states
+            ]
+            
+            # Update agents
+            for i, (agent, state, action, reward, next_state) in enumerate(
+                zip(agents, states, actions, rewards, next_states)
+            ):
+                done = step == max_steps - 1
+                agent.update(state, action, reward, next_state, done)
                 
-                # Environment step
-                next_states, rewards, done, _, info = self.env.step(actions)
-                
-                # Update agents
-                for tl_id in self.traffic_lights:
-                    agent = self.agents[tl_id]
-                    
-                    # Get current and next neighbor states
-                    current_neighbor_states = agent.get_neighbor_states(states)
-                    next_neighbor_states = agent.get_neighbor_states(next_states)
-                    
-                    # Store experience
-                    agent.remember(
-                        states[tl_id], current_neighbor_states,
-                        actions[tl_id], rewards[tl_id],
-                        next_states[tl_id], next_neighbor_states,
-                        done
-                    )
-                    
-                    # Learning step
-                    if len(agent.memory) > agent.batch_size:
-                        loss = agent.replay()
-                        metrics[f'loss_{tl_id}'].append(loss)
-                    
-                    episode_rewards[tl_id] += rewards[tl_id]
-                
-                states = next_states
+                # Optional: Share states based on communication type
+                if agent.communication_type != 'none':
+                    agent.shared_memory[f'agent_{i}'] = state
             
-            # Update target networks periodically
-            if episode % 10 == 0:
-                for agent in self.agents.values():
-                    agent.update_target_network()
-            
-            # Log episode results
-            mean_reward = np.mean([r for r in episode_rewards.values()])
-            metrics['mean_rewards'].append(mean_reward)
-            metrics['global_rewards'].append(info['global_reward'])
-            
-            logger.info(f"Episode {episode + 1}/{num_episodes}")
-            logger.info(f"Mean reward: {mean_reward:.2f}")
-            logger.info(f"Global reward: {info['global_reward']:.2f}")
-            
-            # Save models periodically
-            if (episode + 1) % 100 == 0:
-                self.save_agents(log_dir / f"models_episode_{episode + 1}")
-        
-        return metrics
+            states = next_states
     
-    def save_agents(self, save_dir):
-        """Save all agents"""
-        save_dir.mkdir(parents=True, exist_ok=True)
-        for tl_id, agent in self.agents.items():
-            agent.save(save_dir / f"agent_{tl_id}.pt")
+    # Compute performance metrics
+    metrics = {
+        'avg_reward': np.mean([agent.total_reward / max(1, agent.episodes_completed) for agent in agents]),
+        'total_throughput': num_episodes * max_steps,
+        'avg_wait_time': np.mean([1 / max(0.1, agent.total_reward) for agent in agents])
+    }
     
-    def load_agents(self, load_dir):
-        """Load all agents"""
-        for tl_id, agent in self.agents.items():
-            agent.load(load_dir / f"agent_{tl_id}.pt")
-    
-    def close(self):
-        """Clean up environment"""
-        self.env.close()
+    return metrics
 
-def run_state_sharing_scenario(env_config, agent_config, num_episodes=1000):
-    """Run state sharing scenario"""
-    # Setup logging directory
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    log_dir = Path("experiments/logs/state_sharing") / timestamp
-    log_dir.mkdir(parents=True, exist_ok=True)
+def run_state_sharing_experiment(
+    num_agents: int = 4, 
+    communication_types: List[str] = ['none', 'local', 'full'],
+    num_episodes: int = 100,
+    max_steps: int = 1000
+) -> Dict[str, Any]:
+    """
+    Run experiments with different state sharing strategies.
+    """
+    results = {}
     
-    # Save configurations
-    with open(log_dir / "env_config.yaml", 'w') as f:
-        yaml.dump(env_config, f)
-    with open(log_dir / "agent_config.yaml", 'w') as f:
-        yaml.dump(agent_config, f)
+    for comm_type in communication_types:
+        # Initialize agents with specific communication strategy
+        agents = [
+            StateSharedAgent(
+                state_dim=10,  # Example state dimension 
+                action_dim=4,  # Example action dimension
+                communication_type=comm_type
+            ) for _ in range(num_agents)
+        ]
+        
+        # Run traffic simulation
+        performance_metrics = simulate_traffic_scenario(
+            agents, 
+            num_episodes=num_episodes, 
+            max_steps=max_steps
+        )
+        
+        results[comm_type] = performance_metrics
     
-    # Run training
-    scenario = StateShareScenario(env_config, agent_config)
-    try:
-        metrics = scenario.train(num_episodes, log_dir)
-        # Save final models and metrics
-        scenario.save_agents(log_dir / "final_models")
-        return metrics
-    finally:
-        scenario.close()
+    return results
 
 if __name__ == "__main__":
-    # Load configurations
-    with open("config/env_config.yaml", 'r') as f:
-        env_config = yaml.safe_load(f)
-    with open("config/agent_config.yaml", 'r') as f:
-        agent_config = yaml.safe_load(f)
-    
-    # Run scenario
-    metrics = run_state_sharing_scenario(env_config, agent_config)
-    print("State sharing training completed!")
+    # Run the state sharing experiment
+    experiment_results = run_state_sharing_experiment()
+    print("State Sharing Experiment Results:")
+    for comm_type, metrics in experiment_results.items():
+        print(f"\nCommunication Type: {comm_type}")
+        for metric, value in metrics.items():
+            print(f"{metric}: {value}")

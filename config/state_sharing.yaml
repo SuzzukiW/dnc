@@ -1,0 +1,38 @@
+# config/state_sharing.yaml
+
+environment:
+  use_gui: false
+  num_seconds: 3600
+  delta_time: 5
+  yellow_time: 2
+  min_green: 5
+  max_green: 50
+  max_depart_delay: 100000
+  time_to_teleport: -1
+
+agent:
+  # Learning parameters
+  gamma: 0.95
+  learning_rate: 0.0001
+  batch_size: 32
+  memory_size: 1000000
+  target_update: 10
+  tau: 0.001  # For soft updates
+  
+  # Network architecture
+  state_size: 64  # Added to match environment state size
+  hidden_size: 128
+  max_neighbors: 4  # Maximum number of neighbors to consider
+  
+  # Exploration parameters
+  epsilon_start: 1.0
+  epsilon_min: 0.01
+  epsilon_decay: 0.995
+  
+  # State sharing parameters
+  distance_threshold: 100.0  # Maximum distance for neighbor connections
+  
+  # Training stability
+  prioritized_replay: true
+  double_dqn: true
+  gradient_clip: 1.0

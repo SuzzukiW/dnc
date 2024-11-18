@@ -8,6 +8,7 @@ from gymnasium import Env, spaces
 import sumolib
 from collections import defaultdict
 import networkx as nx
+from typing import Dict, List, Tuple, Optional, Set
 
 class MultiAgentSumoEnvironment(Env):
     """
@@ -30,32 +31,66 @@ class MultiAgentSumoEnvironment(Env):
             print(f"Error getting phases for {tl_id}: {e}")
             return [0]
         
-    def __init__(self, 
-                net_file,
-                route_file,
-                out_csv_name,
-                use_gui=False,
-                num_seconds=20000,
-                max_depart_delay=100000,
-                time_to_teleport=-1,
-                delta_time=5,
-                yellow_time=2,
-                min_green=5,
-                max_green=50,
-                neighbor_distance=100):
+    @property
+    def observation_space_size(self):
+        """Get the size of the observation space"""
+        # All agents have the same observation space size
+        return next(iter(self.observation_spaces.values())).shape[0]
+    
+    @property
+    def action_space_size(self):
+        """Get the size of the action space"""
+        # All agents have the same action space size
+        return next(iter(self.action_spaces.values())).shape[0]
+    
+    def __init__(self,
+                config: Dict = {}):
+        """Initialize environment"""
+        # Extract configuration
+        full_config = config.get('config', config)
         
-        self.net_file = net_file
-        self.route_file = route_file
-        self.out_csv_name = out_csv_name
-        self.use_gui = use_gui
-        self.num_seconds = num_seconds
-        self.delta_time = delta_time
-        self.yellow_time = yellow_time
-        self.min_green = min_green
-        self.max_green = max_green
-        self.max_depart_delay = max_depart_delay
-        self.time_to_teleport = time_to_teleport
-        self.neighbor_distance = neighbor_distance
+        # Handle use_gui separately
+        self.use_gui = full_config.get('use_gui', False)
+        
+        # Set up configuration parameters with defaults
+        self.net_file = full_config.get('net_file', os.path.join('Version1', '2024-11-05-18-42-37', 'osm.net.xml.gz'))
+        self.route_file = full_config.get('route_file', os.path.join('Version1', '2024-11-05-18-42-37', 'osm.passenger.trips.xml'))
+        self.out_csv_name = full_config.get('out_csv_name', 'metrics.csv')
+        self.num_seconds = full_config.get('num_seconds', 1800)
+        self.delta_time = full_config.get('delta_time', 8)
+        self.yellow_time = full_config.get('yellow_time', 3)
+        self.min_green = full_config.get('min_green', 12)
+        self.max_green = full_config.get('max_green', 45)
+        self.max_depart_delay = full_config.get('max_depart_delay', 100000)
+        self.time_to_teleport = full_config.get('time_to_teleport', -1)
+        self.neighbor_distance = full_config.get('neighbor_distance', 100)
+        
+        # Validate network and route files
+        if not os.path.exists(self.net_file):
+            print(f"Warning: Network file {self.net_file} not found. Using default configuration.")
+            self.net_file = os.path.join('Version1', '2024-11-05-18-42-37', 'osm.net.xml.gz')
+        
+        # If network file is gzipped, decompress it
+        if self.net_file.endswith('.gz'):
+            import gzip
+            import shutil
+            
+            # Create a decompressed version of the network file
+            decompressed_net_file = self.net_file.replace('.gz', '')
+            if not os.path.exists(decompressed_net_file):
+                with gzip.open(self.net_file, 'rb') as f_in:
+                    with open(decompressed_net_file, 'wb') as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+            
+            # Use the decompressed file
+            self.net_file = decompressed_net_file
+        
+        if not os.path.exists(self.route_file):
+            print(f"Warning: Route file {self.route_file} not found. Using default configuration.")
+            self.route_file = os.path.join('Version1', '2024-11-05-18-42-37', 'osm.passenger.trips.xml')
+        
+        # Store full configuration
+        self.config = full_config
         
         # SUMO initialization
         if 'SUMO_HOME' in os.environ:
@@ -71,7 +106,16 @@ class MultiAgentSumoEnvironment(Env):
             '-r', self.route_file,
             '--max-depart-delay', str(self.max_depart_delay),
             '--waiting-time-memory', '10000',
-            '--time-to-teleport', str(self.time_to_teleport)
+            '--time-to-teleport', str(self.time_to_teleport),
+            '--no-warnings',  # Suppress warnings
+            '--no-step-log',  # Suppress step logs
+            '--collision.action', 'teleport',  # Handle collisions with teleport
+            '--collision.mingap-factor', '0',  # Reduce minimum gap
+            '--time-to-impatience', '30',  # Reduce time to impatience
+            '--random',  # Add some randomness to vehicle behavior
+            '--device.rerouting.probability', '0.8',  # Enable dynamic rerouting
+            '--device.rerouting.period', '60',  # Rerouting check period
+            '--lanechange.duration', '2',  # Faster lane changes
         ]
         
         # Initialize connection with sumo
@@ -116,15 +160,27 @@ class MultiAgentSumoEnvironment(Env):
                 dtype=np.float32
             )
             
-            # Action space: number of valid phases (minimum 1)
+            # Action space: continuous action space with dimension equal to number of valid phases
             num_actions = max(len(self.valid_phases[tl_id]), 1)
-            self.action_spaces[tl_id] = spaces.Discrete(num_actions)
+            self.action_spaces[tl_id] = spaces.Box(
+                low=-1,
+                high=1,
+                shape=(num_actions,),
+                dtype=np.float32
+            )
         
         # Initialize current phase and yellow phase mapping
         self.current_phase = {tl: self.valid_phases[tl][0] if self.valid_phases[tl] else 0 
                             for tl in self.traffic_lights}
         self.yellow_phase_dict = self._init_yellow_phases()
-    
+        
+        # Initialize reward calculation parameters
+        self.max_queue_length = 10
+        self.max_waiting_time = 100
+        self.max_speed = 50
+        self.max_throughput = 20
+        self.max_pressure = 10
+        
     def _build_neighbor_map(self):
         """Build a map of neighboring traffic lights based on distance"""
         neighbor_map = defaultdict(list)
@@ -145,13 +201,13 @@ class MultiAgentSumoEnvironment(Env):
             
             # Find the junction nodes connected to these lanes
             junctions = set()
-            for lane_id in controlled_lanes:
+            for lane in controlled_lanes:
                 # Skip internal lanes (those starting with ':')
-                if lane_id.startswith(':'):
+                if lane.startswith(':'):
                     continue
                     
                 # Extract edge ID from lane ID (remove lane index)
-                edge_id = lane_id.split('_')[0]
+                edge_id = lane.split('_')[0]
                 try:
                     edge = self.net.getEdge(edge_id)
                     junctions.add(edge.getFromNode().getID())
@@ -241,152 +297,230 @@ class MultiAgentSumoEnvironment(Env):
     def _apply_action(self, traffic_light_id, action):
         """Apply action to a specific traffic light"""
         try:
-            # Get program logic and check if it exists
-            program_logics = traci.trafficlight.getAllProgramLogics(traffic_light_id)
-            if not program_logics:
-                print(f"Warning: No program logic for traffic light {traffic_light_id}")
-                return
-            
-            program = program_logics[0]
-            if not program.phases:
-                print(f"Warning: No phases for traffic light {traffic_light_id}")
-                return
-            
-            # Convert action index to actual phase index
+            # Get program logic
+            program = traci.trafficlight.getAllProgramLogics(traffic_light_id)[0]
             valid_phases = self.valid_phases[traffic_light_id]
-            if not valid_phases:
-                # If no valid phases, try to find any usable phase
-                for i, phase in enumerate(program.phases):
-                    if any(c in 'Gg' for c in phase.state):
-                        valid_phases = [i]
-                        self.valid_phases[traffic_light_id] = valid_phases
-                        break
             
-            # If still no valid phases, use the first available phase
+            # If no valid phases available, use first phase
             if not valid_phases:
                 phase_index = 0
             else:
-                # Ensure action is within valid range
-                action = min(action, len(valid_phases) - 1)
-                phase_index = valid_phases[action]
+                # Convert continuous action to discrete phase selection
+                # Normalize action values to probabilities using softmax
+                action_probs = np.exp(action) / np.sum(np.exp(action))
+                action_idx = np.argmax(action_probs)
+                phase_index = valid_phases[action_idx]
             
             # Ensure phase index is valid
             if phase_index >= len(program.phases):
-                print(f"Warning: Phase index {phase_index} out of range for traffic light {traffic_light_id}")
                 phase_index = 0
-            
-            # Apply yellow phase if changing phases
-            if self.current_phase[traffic_light_id] != phase_index:
-                yellow_phases = self.yellow_phase_dict.get(traffic_light_id, [])
-                if yellow_phases:
-                    try:
-                        yellow_phase = yellow_phases[0]
-                        if yellow_phase < len(program.phases):
-                            traci.trafficlight.setPhase(traffic_light_id, yellow_phase)
-                            for _ in range(self.yellow_time):
-                                traci.simulationStep()
-                    except traci.exceptions.TraCIException as e:
-                        print(f"Warning: Could not set yellow phase for {traffic_light_id}: {e}")
-            
-            # Set new phase
-            try:
+                
+            # Only change phase if it's different from current phase
+            if phase_index != self.current_phase[traffic_light_id]:
+                # Set yellow phase first if transitioning between different phases
+                if self.yellow_phase_dict[traffic_light_id]:
+                    yellow_state = self.yellow_phase_dict[traffic_light_id][self.current_phase[traffic_light_id]]
+                    traci.trafficlight.setRedYellowGreenState(traffic_light_id, yellow_state)
+                    for _ in range(self.yellow_time):
+                        traci.simulationStep()
+                
+                # Set new phase
                 traci.trafficlight.setPhase(traffic_light_id, phase_index)
                 self.current_phase[traffic_light_id] = phase_index
-            except traci.exceptions.TraCIException as e:
-                print(f"Error setting phase {phase_index} for traffic light {traffic_light_id}: {e}")
-                print(f"Available phases: {len(program.phases)}")
-                print(f"Program phases: {[p.state for p in program.phases]}")
-                # Try to find any working phase
-                for i in range(len(program.phases)):
-                    try:
-                        traci.trafficlight.setPhase(traffic_light_id, i)
-                        self.current_phase[traffic_light_id] = i
-                        break
-                    except:
-                        continue
-        
+                
         except Exception as e:
-            print(f"Error handling traffic light {traffic_light_id}: {e}")
-            print(f"Current phases: {self.valid_phases.get(traffic_light_id, [])}")
+            print(f"Error applying action to {traffic_light_id}: {e}")
     
-    def _get_reward(self, traffic_light_id):
-        """Calculate reward for a specific traffic light"""
-        controlled_lanes = traci.trafficlight.getControlledLanes(traffic_light_id)
+    def _calculate_reward(self, tls_id):
+        """Calculate reward for a traffic light"""
+        reward = 0.0
         
-        total_waiting_time = 0
-        total_queue_length = 0
+        # Get traffic light metrics
+        queue_length = self._get_queue_length(tls_id)
+        waiting_time = self._get_waiting_time(tls_id)
+        mean_speed = self._get_mean_speed(tls_id)
+        throughput = self._get_throughput(tls_id)
+        pressure = self._get_traffic_pressure(tls_id)
         
-        for lane in controlled_lanes:
-            total_waiting_time += traci.lane.getWaitingTime(lane)
-            total_queue_length += traci.lane.getLastStepHaltingNumber(lane)
+        # Normalize metrics
+        norm_queue = min(1.0, queue_length / self.max_queue_length)
+        norm_waiting = min(1.0, waiting_time / self.max_waiting_time)
+        norm_speed = mean_speed / self.max_speed if mean_speed > 0 else 0
+        norm_throughput = min(1.0, throughput / self.max_throughput)
+        norm_pressure = min(1.0, pressure / self.max_pressure)
+        
+        # Get reward weights from config, using defaults if not specified
+        weights = self.config.get('reward_weights', {})
+        queue_weight = weights.get('queue_length_weight', -0.4)
+        waiting_weight = weights.get('waiting_time_weight', -0.3)
+        speed_weight = weights.get('speed_reward_weight', 0.3)
+        flow_weight = weights.get('flow_reward_weight', 0.4)
+        phase_weight = weights.get('phase_efficiency_weight', 0.2)
+        neighbor_weight = weights.get('neighbor_reward_weight', 0.2)
+        
+        # Calculate component rewards
+        queue_reward = queue_weight * norm_queue
+        waiting_reward = waiting_weight * norm_waiting
+        speed_reward = speed_weight * norm_speed
+        flow_reward = flow_weight * norm_throughput
+        pressure_reward = -0.2 * norm_pressure
+        
+        # Phase efficiency reward
+        current_phase = traci.trafficlight.getPhase(tls_id)
+        phase_duration = traci.trafficlight.getPhaseDuration(tls_id)
+        env_config = self.config.get('environment', {})
+        max_green = env_config.get('max_green_time', self.max_green)
+        min_green = env_config.get('min_green_time', self.min_green)
+        
+        if phase_duration > max_green:
+            phase_reward = -0.2
+        elif phase_duration < min_green:
+            phase_reward = -0.1
+        else:
+            phase_reward = 0.1
             
-        reward = -(total_waiting_time + total_queue_length)
+        # Neighbor coordination reward
+        neighbor_reward = 0.0
+        neighbors = self._get_neighbor_lights(tls_id)
+        for neighbor in neighbors:
+            if self._phases_are_coordinated(tls_id, neighbor):
+                neighbor_reward += 0.1
+        
+        # Combine rewards
+        reward = (queue_reward + waiting_reward + speed_reward + 
+                 flow_reward + pressure_reward + 
+                 phase_weight * phase_reward + 
+                 neighbor_weight * neighbor_reward)
+        
+        # Apply reward scaling
+        reward_scale = self.config.get('reward_scaling', 0.1)
+        reward *= reward_scale
+        
         return reward
     
-    def _get_global_reward(self):
-        """Calculate global reward across all traffic lights"""
-        total_waiting_time = 0
-        total_queue_length = 0
-        
-        for tl in self.traffic_lights:
-            controlled_lanes = traci.trafficlight.getControlledLanes(tl)
-            for lane in controlled_lanes:
-                total_waiting_time += traci.lane.getWaitingTime(lane)
-                total_queue_length += traci.lane.getLastStepHaltingNumber(lane)
-        
-        return -(total_waiting_time + total_queue_length)
+    def _get_queue_length(self, tls_id):
+        """Get total queue length for a traffic light"""
+        controlled_lanes = traci.trafficlight.getControlledLanes(tls_id)
+        return sum(traci.lane.getLastStepHaltingNumber(lane) for lane in controlled_lanes)
     
-    def reset(self, seed=None):
-        """Reset the environment"""
-        super().reset(seed=seed)
+    def _get_waiting_time(self, tls_id):
+        """Get total waiting time for a traffic light"""
+        controlled_lanes = traci.trafficlight.getControlledLanes(tls_id)
+        return sum(traci.lane.getWaitingTime(lane) for lane in controlled_lanes)
+    
+    def _get_mean_speed(self, tls_id):
+        """Get mean speed for a traffic light"""
+        controlled_lanes = traci.trafficlight.getControlledLanes(tls_id)
+        return sum(traci.lane.getLastStepMeanSpeed(lane) for lane in controlled_lanes) / len(controlled_lanes)
+    
+    def _get_throughput(self, tls_id):
+        """Get throughput for a traffic light"""
+        controlled_lanes = traci.trafficlight.getControlledLanes(tls_id)
+        return sum(traci.lane.getLastStepVehicleNumber(lane) for lane in controlled_lanes)
+    
+    def _get_traffic_pressure(self, tls_id):
+        """Get traffic pressure for a traffic light"""
+        controlled_lanes = traci.trafficlight.getControlledLanes(tls_id)
+        return sum(traci.lane.getLastStepOccupancy(lane) for lane in controlled_lanes)
+    
+    def _get_neighbor_lights(self, tls_id):
+        """Get neighboring traffic lights"""
+        return self.neighbor_map[tls_id]
+    
+    def _phases_are_coordinated(self, tls1, tls2):
+        """Check if two traffic lights have coordinated phases"""
+        phase1 = traci.trafficlight.getPhase(tls1)
+        phase2 = traci.trafficlight.getPhase(tls2)
         
+        # Get vehicle counts in shared lanes
+        shared_lanes = self._get_shared_lanes(tls1, tls2)
+        if not shared_lanes:
+            return True  # No shared lanes means no coordination needed
+            
+        vehicles1 = sum(len(traci.lane.getLastStepVehicleIDs(lane)) 
+                       for lane in shared_lanes[tls1])
+        vehicles2 = sum(len(traci.lane.getLastStepVehicleIDs(lane)) 
+                       for lane in shared_lanes[tls2])
+                       
+        # Check if phases complement each other based on traffic load
+        return abs(vehicles1 - vehicles2) < 5  # Allow small difference
+    
+    def _get_shared_lanes(self, tls1, tls2):
+        """Get shared lanes between two traffic lights"""
+        controlled_lanes1 = traci.trafficlight.getControlledLanes(tls1)
+        controlled_lanes2 = traci.trafficlight.getControlledLanes(tls2)
+        
+        shared_lanes = {}
+        for lane in controlled_lanes1:
+            if lane in controlled_lanes2:
+                shared_lanes[tls1] = [lane]
+                shared_lanes[tls2] = [lane]
+                break
+        
+        return shared_lanes
+    
+    def reset(self, seed=None, return_info=False):
+        """Reset the environment to initial state"""
+        # Set random seed if provided
+        if seed is not None:
+            np.random.seed(seed)
+            random.seed(seed)
+        
+        # Reset simulation
         if traci.isLoaded():
             traci.close()
+        
+        # Restart simulation
         traci.start(self.sumo_cmd)
         
-        self.current_phase = {tl: 0 for tl in self.traffic_lights}
+        # Simulation step to initialize
+        traci.simulationStep()
         
-        # Get initial states for all agents
+        # Get states
         states = {}
-        for tl in self.traffic_lights:
-            states[tl] = self._get_state(tl)
+        for tl_id in self.traffic_lights:
+            # Get state and reward
+            states[tl_id] = self._get_state(tl_id)
         
-        return states, {}
+        # Convert states to numpy arrays
+        states = {tl_id: np.array(state, dtype=np.float32) for tl_id, state in states.items()}
+        
+        # Return based on return_info flag
+        if return_info:
+            return states, {}
+        return states
     
     def step(self, actions):
         """Execute actions for all agents and return results"""
-        # Apply actions for all traffic lights
+        # Apply actions and simulate
         for tl_id, action in actions.items():
             self._apply_action(tl_id, action)
-        
-        # Run simulation for delta_time steps
         for _ in range(self.delta_time):
             traci.simulationStep()
         
-        # Get new states, rewards, and dones for all agents
-        new_states = {}
+        # Get states, rewards, and dones
+        states = {}
         rewards = {}
         dones = {}
-        
-        # Calculate global reward
-        global_reward = self._get_global_reward()
+        info = defaultdict(dict)
         
         for tl_id in self.traffic_lights:
-            new_states[tl_id] = self._get_state(tl_id)
-            rewards[tl_id] = self._get_reward(tl_id)
+            # Get state and reward
+            states[tl_id] = self._get_state(tl_id)
+            rewards[tl_id] = self._calculate_reward(tl_id)
+            
+            # Check if done
             dones[tl_id] = traci.simulation.getTime() >= self.num_seconds
+            
+            # Collect metrics
+            info['waiting_times'][tl_id] = self._get_waiting_time(tl_id)
+            info['queue_lengths'][tl_id] = self._get_queue_length(tl_id)
+            info['speeds'][tl_id] = self._get_mean_speed(tl_id)
         
-        # Additional info
-        info = {
-            'time': traci.simulation.getTime(),
-            'global_reward': global_reward,
-            'total_waiting_time': -global_reward  # Negative since reward is negative of waiting time
-        }
+        # Convert states to numpy arrays for MADDPG
+        states = {tl_id: np.array(state, dtype=np.float32) for tl_id, state in states.items()}
         
-        # All agents are done when simulation ends
-        done = traci.simulation.getTime() >= self.num_seconds
-        
-        return new_states, rewards, done, False, info
+        return states, rewards, dones, info
     
     def close(self):
         """Close the environment"""
@@ -396,3 +530,105 @@ class MultiAgentSumoEnvironment(Env):
     def get_neighbor_map(self):
         """Return the neighbor map for cooperative learning"""
         return self.neighbor_map
+
+    def get_agent_positions(self) -> Dict[str, Tuple[float, float]]:
+        """Get positions of all traffic light agents"""
+        positions = {}
+        
+        # Read SUMO network if not already done
+        if not hasattr(self, 'net'):
+            self.net = sumolib.net.readNet(self.net_file)
+        
+        for tl_id in self.traffic_lights:
+            try:
+                # Get controlled lanes for this traffic light
+                controlled_lanes = traci.trafficlight.getControlledLanes(tl_id)
+                if not controlled_lanes:
+                    continue
+                    
+                # Get position from the first controlled lane
+                lane = controlled_lanes[0]
+                try:
+                    # Get the edge from the lane ID
+                    edge = self.net.getLane(lane).getEdge()
+                    # Use the center of the edge as the traffic light position
+                    pos = edge.getCenter()
+                    positions[tl_id] = (float(pos[0]), float(pos[1]))
+                except:
+                    # If we can't get position from lane, try junction
+                    try:
+                        junctions = self.net.getNode(tl_id)
+                        if junctions:
+                            pos = junctions.getCoord()
+                            positions[tl_id] = (float(pos[0]), float(pos[1]))
+                    except:
+                        # Use default position if all else fails
+                        positions[tl_id] = (0.0, 0.0)
+                        
+            except traci.exceptions.TraCIException:
+                positions[tl_id] = (0.0, 0.0)
+        
+        return positions
+    
+    def calculate_hierarchical_rewards(self, traffic_lights, region_manager):
+        """Calculate hierarchical rewards for traffic lights"""
+        rewards = {}
+        global_factor = 0.2
+        regional_factor = 0.3
+        local_factor = 0.5
+        
+        for tl_id in traffic_lights:
+            # Local metrics
+            controlled_lanes = traci.trafficlight.getControlledLanes(tl_id)
+            waiting_time = self._get_waiting_time(tl_id)
+            queue_length = self._get_queue_length(tl_id)
+            throughput = self._get_throughput(tl_id)
+            
+            # Normalize metrics
+            num_lanes = len(controlled_lanes)
+            normalized_wait = min(1.0, waiting_time / (180.0 * num_lanes))
+            normalized_queue = min(1.0, queue_length / (10.0 * num_lanes))
+            normalized_throughput = min(1.0, throughput / (20.0 * num_lanes))
+            
+            # Calculate local reward
+            local_reward = (
+                -0.4 * normalized_wait
+                -0.3 * normalized_queue
+                +0.3 * normalized_throughput
+            )
+            
+            # Regional component
+            region_ids = region_manager.agent_region_map.get(tl_id, set())
+            if region_ids:
+                region_rewards = []
+                for region_id in region_ids:
+                    coordinator = region_manager.coordinators.get(region_id)
+                    if coordinator:
+                        region_rewards.append(coordinator.get_performance_score())
+                regional_reward = np.mean(region_rewards) if region_rewards else 0.0
+            else:
+                regional_reward = 0.0
+                
+            # Global metrics
+            global_waiting = sum(traci.lane.getWaitingTime(lane) 
+                            for tl in traffic_lights 
+                            for lane in traci.trafficlight.getControlledLanes(tl))
+            global_queue = sum(traci.lane.getLastStepHaltingNumber(lane)
+                            for tl in traffic_lights
+                            for lane in traci.trafficlight.getControlledLanes(tl))
+            total_lanes = sum(len(traci.trafficlight.getControlledLanes(tl)) 
+                            for tl in traffic_lights)
+            
+            global_reward = -(global_waiting + global_queue) / (total_lanes + 1)
+            
+            # Combine rewards
+            rewards[tl_id] = (
+                local_factor * local_reward +
+                regional_factor * regional_reward +
+                global_factor * global_reward
+            )
+            
+            # Scale reward
+            rewards[tl_id] *= 100  # Increase reward magnitude
+        
+        return rewards

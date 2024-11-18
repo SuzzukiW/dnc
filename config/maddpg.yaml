@@ -1,0 +1,30 @@
+# Multi-Agent Deep Deterministic Policy Gradient (MADDPG) Configuration
+
+environment:
+  name: "MultiAgentPetting-v0"  # Example environment name
+  num_agents: 2  # Number of agents in the environment
+
+training:
+  seed: 42  # Random seed for reproducibility
+  n_episodes: 2000  # Total number of training episodes
+  max_timesteps: 1000  # Maximum timesteps per episode
+  batch_size: 128  # Batch size for experience replay
+  buffer_size: 100000  # Size of the replay buffer
+  print_interval: 100  # How often to print training progress
+
+hyperparameters:
+  gamma: 0.99  # Discount factor
+  tau: 0.001  # Soft update parameter for target networks
+  lr_actor: 0.0001  # Learning rate for actor network
+  lr_critic: 0.001  # Learning rate for critic network
+  weight_decay: 0  # L2 weight decay
+  hidden_size: 256  # Number of nodes in hidden layers
+
+noise:
+  mu: 0.0  # Mean of the noise process
+  theta: 0.15  # Noise parameter
+  sigma: 0.2  # Noise parameter
+
+logging:
+  save_dir: "./logs"  # Directory to save training logs
+  save_model_interval: 500  # How often to save model checkpoints

@@ -1,286 +1,201 @@
 # experiments/evaluate/evaluation_metrics.py
 
-import os
-import sys
-from pathlib import Path
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
-from collections import defaultdict
+from pathlib import Path
 import traci
+from collections import defaultdict
 import json
-import yaml
-from datetime import datetime
-
-# Add project root to Python path
-project_root = Path(__file__).parent.parent.parent
-sys.path.append(str(project_root))
-
-from src.environment.multi_agent_sumo_env import MultiAgentSumoEnvironment
 
 class TrafficMetricsEvaluator:
-    """Evaluates traffic control performance using multiple metrics"""
+    """Evaluator for traffic control systems"""
     
     def __init__(self, env, output_dir):
         """
+        Initialize evaluator
+        
         Args:
-            env: SUMO environment instance
-            output_dir: Directory to save evaluation results
+            env: SUMO environment
+            output_dir: Directory for saving results
         """
         self.env = env
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
-        # Initialize metric storage
-        self.metrics = defaultdict(list)
-        self.vehicle_data = defaultdict(dict)
+        # Initialize metrics storage
+        self.reset_metrics()
         
     def reset_metrics(self):
-        """Reset all metrics for new evaluation"""
-        self.metrics = defaultdict(list)
-        self.vehicle_data = defaultdict(dict)
+        """Reset all metrics for new episode"""
+        self.metrics = {
+            'waiting_times': [],
+            'queue_lengths': [],
+            'speeds': [],
+            'throughput': [],
+            'travel_times': [],
+            'emissions': [],
+            'traffic_density': [],
+            'stops_per_vehicle': []
+        }
+        
+        # Per intersection metrics
+        self.intersection_metrics = defaultdict(lambda: {
+            'waiting_times': [],
+            'queue_lengths': [],
+            'throughput': []
+        })
     
     def collect_step_metrics(self):
         """Collect metrics for current simulation step"""
-        # Get all vehicles currently in the simulation
-        vehicle_ids = traci.vehicle.getIDList()
+        # Global metrics
+        total_waiting_time = 0
+        total_queue_length = 0
+        total_vehicles = 0
+        total_speed = 0
+        total_co2 = 0
         
-        # Collect per-vehicle metrics
-        waiting_times = []
-        speeds = []
-        co2_emissions = []
+        # Collect metrics for each intersection
+        for tl_id in self.env.traffic_lights:
+            controlled_lanes = traci.trafficlight.getControlledLanes(tl_id)
+            intersection_waiting = 0
+            intersection_queue = 0
+            intersection_vehicles = 0
+            
+            for lane in controlled_lanes:
+                # Basic metrics
+                waiting_time = traci.lane.getWaitingTime(lane)
+                queue_length = traci.lane.getLastStepHaltingNumber(lane)
+                vehicles = traci.lane.getLastStepVehicleNumber(lane)
+                speed = traci.lane.getLastStepMeanSpeed(lane)
+                
+                # Accumulate for intersection
+                intersection_waiting += waiting_time
+                intersection_queue += queue_length
+                intersection_vehicles += vehicles
+                
+                # Accumulate for global
+                total_waiting_time += waiting_time
+                total_queue_length += queue_length
+                total_vehicles += vehicles
+                total_speed += speed * vehicles  # Weight by number of vehicles
+                
+                # Collect emissions
+                for vehicle_id in traci.lane.getLastStepVehicleIDs(lane):
+                    total_co2 += traci.vehicle.getCO2Emission(vehicle_id)
+            
+            # Store intersection metrics
+            self.intersection_metrics[tl_id]['waiting_times'].append(intersection_waiting)
+            self.intersection_metrics[tl_id]['queue_lengths'].append(intersection_queue)
+            self.intersection_metrics[tl_id]['throughput'].append(intersection_vehicles)
         
-        for vehicle_id in vehicle_ids:
-            # Waiting time
-            wait_time = traci.vehicle.getWaitingTime(vehicle_id)
-            waiting_times.append(wait_time)
+        # Calculate and store global metrics
+        if total_vehicles > 0:
+            avg_speed = total_speed / total_vehicles
+        else:
+            avg_speed = 0
             
-            # Speed
-            speed = traci.vehicle.getSpeed(vehicle_id)
-            speeds.append(speed)
-            
-            # CO2 emissions (in mg/s)
-            co2 = traci.vehicle.getCO2Emission(vehicle_id)
-            co2_emissions.append(co2)
-            
-            # Store individual vehicle data
-            if vehicle_id not in self.vehicle_data:
-                self.vehicle_data[vehicle_id] = {
-                    'enter_time': traci.simulation.getTime(),
-                    'total_wait_time': 0,
-                    'total_co2': 0
-                }
-            
-            # Update vehicle data
-            self.vehicle_data[vehicle_id]['total_wait_time'] += wait_time
-            self.vehicle_data[vehicle_id]['total_co2'] += co2
+        self.metrics['waiting_times'].append(total_waiting_time)
+        self.metrics['queue_lengths'].append(total_queue_length)
+        self.metrics['speeds'].append(avg_speed)
+        self.metrics['throughput'].append(total_vehicles)
+        self.metrics['emissions'].append(total_co2)
         
-        # Calculate step metrics
-        self.metrics['avg_waiting_time'].append(np.mean(waiting_times) if waiting_times else 0)
-        self.metrics['avg_speed'].append(np.mean(speeds) if speeds else 0)
-        self.metrics['total_co2'].append(sum(co2_emissions))
-        self.metrics['vehicles_in_network'].append(len(vehicle_ids))
+        # Calculate traffic density
+        network_length = sum(traci.lane.getLength(lane) 
+                           for tl_id in self.env.traffic_lights
+                           for lane in traci.trafficlight.getControlledLanes(tl_id))
+        density = total_vehicles / (network_length / 1000)  # vehicles per km
+        self.metrics['traffic_density'].append(density)
         
-        # Track throughput (completed trips)
-        arrived = traci.simulation.getArrivedNumber()
-        self.metrics['arrived_vehicles'].append(arrived)
+        # Calculate stops per vehicle
+        total_stops = sum(traci.vehicle.getStopState(vid) > 0 
+                         for vid in traci.vehicle.getIDList())
+        if total_vehicles > 0:
+            stops_per_vehicle = total_stops / total_vehicles
+        else:
+            stops_per_vehicle = 0
+        self.metrics['stops_per_vehicle'].append(stops_per_vehicle)
     
     def calculate_final_metrics(self):
-        """Calculate final metrics after simulation"""
-        # Calculate overall metrics
+        """Calculate final metrics for episode"""
         final_metrics = {
-            # Average metrics over time
-            'mean_waiting_time': np.mean(self.metrics['avg_waiting_time']),
-            'mean_speed': np.mean(self.metrics['avg_speed']),
-            'total_emissions': sum(self.metrics['total_co2']),
-            'total_throughput': sum(self.metrics['arrived_vehicles']),
-            
-            # Peak metrics
-            'peak_waiting_time': max(self.metrics['avg_waiting_time']),
-            'peak_vehicles': max(self.metrics['vehicles_in_network']),
-            
-            # Per-vehicle metrics
-            'avg_trip_duration': np.mean([
-                traci.simulation.getTime() - data['enter_time']
-                for data in self.vehicle_data.values()
-                if 'exit_time' in data
-            ]),
-            'avg_vehicle_total_wait': np.mean([
-                data['total_wait_time']
-                for data in self.vehicle_data.values()
-            ]),
-            'avg_vehicle_emissions': np.mean([
-                data['total_co2']
-                for data in self.vehicle_data.values()
-            ])
+            'mean_waiting_time': np.mean(self.metrics['waiting_times']),
+            'mean_queue_length': np.mean(self.metrics['queue_lengths']),
+            'mean_speed': np.mean(self.metrics['speeds']),
+            'total_throughput': np.sum(self.metrics['throughput']),
+            'mean_density': np.mean(self.metrics['traffic_density']),
+            'total_emissions': np.sum(self.metrics['emissions']),
+            'mean_stops': np.mean(self.metrics['stops_per_vehicle']),
+            'intersection_metrics': {}
         }
+        
+        # Calculate per-intersection metrics
+        for tl_id, metrics in self.intersection_metrics.items():
+            final_metrics['intersection_metrics'][tl_id] = {
+                'mean_waiting_time': np.mean(metrics['waiting_times']),
+                'mean_queue_length': np.mean(metrics['queue_lengths']),
+                'total_throughput': np.sum(metrics['throughput'])
+            }
         
         return final_metrics
     
-    def plot_metrics(self, title_prefix=""):
+    def plot_metrics(self, title="Traffic Metrics"):
         """Plot evaluation metrics"""
-        # Create subplots
         fig, axes = plt.subplots(2, 2, figsize=(15, 12))
-        fig.suptitle(f"{title_prefix} Traffic Control Performance Metrics")
+        fig.suptitle(title)
         
         # Plot waiting times
-        axes[0, 0].plot(self.metrics['avg_waiting_time'])
-        axes[0, 0].set_title('Average Waiting Time')
-        axes[0, 0].set_xlabel('Simulation Step')
+        axes[0, 0].plot(self.metrics['waiting_times'])
+        axes[0, 0].set_title('Total Waiting Time')
+        axes[0, 0].set_xlabel('Step')
         axes[0, 0].set_ylabel('Time (s)')
         
-        # Plot vehicle speeds
-        axes[0, 1].plot(self.metrics['avg_speed'])
-        axes[0, 1].set_title('Average Vehicle Speed')
-        axes[0, 1].set_xlabel('Simulation Step')
-        axes[0, 1].set_ylabel('Speed (m/s)')
+        # Plot queue lengths
+        axes[0, 1].plot(self.metrics['queue_lengths'])
+        axes[0, 1].set_title('Total Queue Length')
+        axes[0, 1].set_xlabel('Step')
+        axes[0, 1].set_ylabel('Vehicles')
         
-        # Plot emissions
-        axes[1, 0].plot(self.metrics['total_co2'])
-        axes[1, 0].set_title('Total CO2 Emissions')
-        axes[1, 0].set_xlabel('Simulation Step')
-        axes[1, 0].set_ylabel('CO2 (mg)')
+        # Plot speeds
+        axes[1, 0].plot(self.metrics['speeds'])
+        axes[1, 0].set_title('Average Speed')
+        axes[1, 0].set_xlabel('Step')
+        axes[1, 0].set_ylabel('Speed (m/s)')
         
         # Plot throughput
-        cumulative_throughput = np.cumsum(self.metrics['arrived_vehicles'])
-        axes[1, 1].plot(cumulative_throughput)
-        axes[1, 1].set_title('Cumulative Throughput')
-        axes[1, 1].set_xlabel('Simulation Step')
-        axes[1, 1].set_ylabel('Number of Vehicles')
+        axes[1, 1].plot(self.metrics['throughput'])
+        axes[1, 1].set_title('Total Throughput')
+        axes[1, 1].set_xlabel('Step')
+        axes[1, 1].set_ylabel('Vehicles')
         
         plt.tight_layout()
         return fig
     
-    def run_evaluation(self, model_path=None, num_episodes=5):
-        """
-        Run full evaluation of traffic control system
-        
-        Args:
-            model_path: Path to trained model weights (if using RL agent)
-            num_episodes: Number of evaluation episodes to run
-        """
-        all_episode_metrics = []
-        
-        for episode in range(num_episodes):
-            self.reset_metrics()
-            states, _ = self.env.reset()
-            done = False
-            
-            while not done:
-                # If using RL model, get actions from model
-                if model_path:
-                    # Load model and get actions
-                    actions = {}  # Replace with actual model inference
-                else:
-                    # Use default SUMO traffic light logic
-                    actions = {}
-                
-                # Take step in environment
-                next_states, rewards, done, _, info = self.env.step(actions)
-                
-                # Collect metrics for this step
-                self.collect_step_metrics()
-            
-            # Calculate final metrics for this episode
-            episode_metrics = self.calculate_final_metrics()
-            all_episode_metrics.append(episode_metrics)
-            
-            # Plot and save metrics for this episode
-            fig = self.plot_metrics(f"Episode {episode + 1}")
-            fig.savefig(self.output_dir / f"metrics_episode_{episode + 1}.png")
-            plt.close(fig)
-        
-        # Calculate and save aggregate metrics across all episodes
-        aggregate_metrics = {
-            metric: {
-                'mean': np.mean([em[metric] for em in all_episode_metrics]),
-                'std': np.std([em[metric] for em in all_episode_metrics])
+    def generate_report(self, metrics, title="Traffic Control Evaluation Report"):
+        """Generate evaluation report"""
+        report = {
+            'title': title,
+            'metrics': metrics,
+            'summary_statistics': {
+                'waiting_time_improvement': None,
+                'throughput_improvement': None,
+                'overall_performance': None
             }
-            for metric in all_episode_metrics[0].keys()
         }
         
-        # Save metrics to file
-        metrics_file = self.output_dir / 'evaluation_metrics.json'
-        with open(metrics_file, 'w') as f:
-            json.dump({
-                'aggregate_metrics': aggregate_metrics,
-                'episode_metrics': all_episode_metrics
-            }, f, indent=4)
-        
-        return aggregate_metrics
-    
-    def generate_report(self, metrics, title="Traffic Control Evaluation Report"):
-        """Generate evaluation report with metrics and visualizations"""
-        report_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        report = f"""
-{title}
-Generated: {report_time}
-
-Performance Metrics (averaged over {len(metrics)} episodes):
-
-1. Traffic Flow Efficiency:
-   - Average Waiting Time: {metrics['mean_waiting_time']['mean']:.2f} ± {metrics['mean_waiting_time']['std']:.2f} seconds
-   - Average Vehicle Speed: {metrics['mean_speed']['mean']:.2f} ± {metrics['mean_speed']['std']:.2f} m/s
-   - Total Throughput: {metrics['total_throughput']['mean']:.2f} ± {metrics['total_throughput']['std']:.2f} vehicles
-
-2. Environmental Impact:
-   - Total CO2 Emissions: {metrics['total_emissions']['mean']:.2f} ± {metrics['total_emissions']['std']:.2f} mg
-
-3. Peak Performance:
-   - Peak Waiting Time: {metrics['peak_waiting_time']['mean']:.2f} ± {metrics['peak_waiting_time']['std']:.2f} seconds
-   - Peak Vehicle Count: {metrics['peak_vehicles']['mean']:.2f} ± {metrics['peak_vehicles']['std']:.2f} vehicles
-
-4. Per-Vehicle Statistics:
-   - Average Trip Duration: {metrics['avg_trip_duration']['mean']:.2f} ± {metrics['avg_trip_duration']['std']:.2f} seconds
-   - Average Total Wait: {metrics['avg_vehicle_total_wait']['mean']:.2f} ± {metrics['avg_vehicle_total_wait']['std']:.2f} seconds
-   - Average Emissions: {metrics['avg_vehicle_emissions']['mean']:.2f} ± {metrics['avg_vehicle_emissions']['std']:.2f} mg
-
-Note: Values are presented as mean ± standard deviation
-"""
+        # Calculate improvements if baseline metrics are available
+        if hasattr(self, 'baseline_metrics'):
+            report['summary_statistics']['waiting_time_improvement'] = (
+                (self.baseline_metrics['mean_waiting_time'] - metrics['mean_waiting_time']['mean']) /
+                self.baseline_metrics['mean_waiting_time'] * 100
+            )
+            report['summary_statistics']['throughput_improvement'] = (
+                (metrics['total_throughput']['mean'] - self.baseline_metrics['total_throughput']) /
+                self.baseline_metrics['total_throughput'] * 100
+            )
         
         # Save report
-        report_file = self.output_dir / 'evaluation_report.txt'
-        with open(report_file, 'w') as f:
-            f.write(report)
+        with open(self.output_dir / 'evaluation_report.json', 'w') as f:
+            json.dump(report, f, indent=4)
         
         return report
-
-def evaluate_model(env_config, model_path=None, num_episodes=5):
-    """
-    Evaluate a traffic control model or baseline
-    
-    Args:
-        env_config: Environment configuration
-        model_path: Path to model weights (optional)
-        num_episodes: Number of evaluation episodes
-    """
-    # Setup environment
-    env = MultiAgentSumoEnvironment(**env_config)
-    
-    # Create evaluator
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    output_dir = Path("experiments/evaluation_results") / timestamp
-    evaluator = TrafficMetricsEvaluator(env, output_dir)
-    
-    try:
-        # Run evaluation
-        metrics = evaluator.run_evaluation(model_path, num_episodes)
-        
-        # Generate and save report
-        report = evaluator.generate_report(metrics)
-        print(report)
-        
-        return metrics, output_dir
-    
-    finally:
-        env.close()
-
-if __name__ == "__main__":
-    # Load environment configuration
-    with open("config/env_config.yaml", 'r') as f:
-        env_config = yaml.safe_load(f)
-    
-    # Evaluate with default SUMO traffic light logic (no model)
-    metrics, output_dir = evaluate_model(env_config, num_episodes=5)
-    print(f"Evaluation results saved to: {output_dir}")

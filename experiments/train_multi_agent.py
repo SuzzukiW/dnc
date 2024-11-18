@@ -103,7 +103,7 @@ def calculate_rewards(env, traffic_lights):
     rewards = {}
     MAX_WAITING_TIME = 150.0  # Reduced back
     MIN_GREEN_UTIL = 0.35
-    MAX_QUEUE_LENGTH = 10     # Back to original
+    MAX_QUEUE_LENGTH = 10
     
     # Get global traffic state
     total_network_vehicles = sum(
@@ -291,6 +291,8 @@ def save_metrics(metrics, path):
         'global_rewards': [float(x) for x in metrics['global_rewards']],
         'mean_waiting_times': [float(x) for x in metrics['mean_waiting_times']],
         'mean_queue_lengths': [float(x) for x in metrics['mean_queue_lengths']],
+        'throughput': [float(x) for x in metrics['throughput']],
+        'traffic_pressure': [float(x) for x in metrics['traffic_pressure']],
         'agent_rewards': {k: [float(x) for x in v] 
                         for k, v in metrics['agent_rewards'].items()},
         'losses': {k: [float(x) for x in v] 
@@ -303,11 +305,28 @@ def save_metrics(metrics, path):
 def train_multi_agent(env_config, agent_config, num_episodes=10):
     """Train multiple cooperative DQN agents with enhanced traffic management"""
     
+    # Ensure network and route files exist or use default paths
+    default_net_file = os.path.join('Version1', '2024-11-05-18-42-37', 'osm.net.xml.gz')
+    default_route_file = os.path.join('Version1', '2024-11-05-18-42-37', 'osm.passenger.trips.xml')
+    
+    if 'net_file' in env_config and not os.path.exists(env_config['net_file']):
+        print(f"Warning: Network file {env_config['net_file']} not found. Using default configuration.")
+        env_config['net_file'] = default_net_file
+    
+    if 'route_file' in env_config and not os.path.exists(env_config['route_file']):
+        print(f"Warning: Route file {env_config['route_file']} not found. Using default configuration.")
+        env_config['route_file'] = default_route_file
+    
     # Ensure GUI is disabled for automated training
     env_config['use_gui'] = False
     
+    # Create a configuration dictionary to pass to the environment
+    filtered_env_config = {
+        'config': env_config
+    }
+    
     # Initialize environment
-    env = MultiAgentSumoEnvironment(**env_config)
+    env = MultiAgentSumoEnvironment(**filtered_env_config)
     
     # Filter valid traffic lights
     valid_traffic_lights = filter_valid_traffic_lights(env)
@@ -339,12 +358,22 @@ def train_multi_agent(env_config, agent_config, num_episodes=10):
     
     # Initialize multi-agent system
     state_size = env.observation_spaces[valid_traffic_lights[0]].shape[0]
-    action_size = env.action_spaces[valid_traffic_lights[0]].n
+    
+    # Modify action size handling for continuous action spaces
+    valid_traffic_lights = filter_valid_traffic_lights(env)
+    
+    # Get the first valid traffic light's action space
+    first_tl = valid_traffic_lights[0]
+    action_space = env.action_spaces[first_tl]
+    
+    # For continuous action spaces, use the shape of the action space
+    action_size = action_space.shape[0]
     
     print("\nAgent Configuration:")
     print(f"State size: {state_size}")
     print(f"Action size: {action_size}")
     
+    # Create agents with continuous action support
     multi_agent_system = MultiAgentDQN(
         state_size=state_size,
         action_size=action_size,
@@ -362,7 +391,16 @@ def train_multi_agent(env_config, agent_config, num_episodes=10):
     model_dir.mkdir(parents=True, exist_ok=True)
     (model_dir / "final_models").mkdir(exist_ok=True)
     
-    logger = setup_logger("multi_agent_training", log_dir / "training.log")
+    logging.basicConfig(
+        level=logging.DEBUG,  # Change to DEBUG to see detailed logs
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_dir / 'multi_agent_training.log'),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+    
+    logger = logging.getLogger("multi_agent_training")
     
     # Initialize metrics
     metrics = {
@@ -379,7 +417,7 @@ def train_multi_agent(env_config, agent_config, num_episodes=10):
     try:
         for episode in range(num_episodes):
             try:
-                states, _ = env.reset()
+                states, _ = env.reset(return_info=True)
                 states = {tl: state for tl, state in states.items() 
                          if tl in valid_traffic_lights}
                 
@@ -422,6 +460,39 @@ def train_multi_agent(env_config, agent_config, num_episodes=10):
                             
                             # Get action for this agent
                             actions[tl_id] = multi_agent_system.agents[tl_id].act(states[tl_id])
+                        
+                        # Apply actions to each traffic light
+                        actions = {}
+                        for tl_id, agent in zip(valid_traffic_lights, multi_agent_system.agents.values()):
+                            # Get continuous action from the agent
+                            action = agent.act(states[tl_id])
+                            
+                            # Clip action to the environment's action space
+                            action_space = env.action_spaces[tl_id]
+                            
+                            # Ensure action matches the action space shape
+                            if isinstance(action, (list, np.ndarray)):
+                                # If action is an array, ensure it matches action space
+                                if len(action) != len(action_space.low):
+                                    # Resize or adjust action to match action space
+                                    action = np.zeros_like(action_space.low)
+                            else:
+                                # If action is a scalar, convert to array
+                                action = np.full_like(action_space.low, action)
+                            
+                            # Clip action to the environment's action space
+                            action = np.clip(action, action_space.low, action_space.high)
+                            
+                            # Debug logging for actions and action spaces
+                            logger.debug(f"Traffic Light {tl_id}:")
+                            logger.debug(f"  State shape: {states[tl_id].shape}")
+                            logger.debug(f"  Action: {action}")
+                            logger.debug(f"  Action type: {type(action)}")
+                            logger.debug(f"  Action space low: {action_space.low}")
+                            logger.debug(f"  Action space high: {action_space.high}")
+                            logger.debug(f"  Action space shape: {action_space.shape}")
+                            
+                            actions[tl_id] = action
                         
                         # Execute actions
                         next_states, raw_rewards, done, _, info = env.step(actions)
@@ -486,30 +557,35 @@ def train_multi_agent(env_config, agent_config, num_episodes=10):
                         break
                 
                 # Calculate episode metrics
-                if episode_rewards:
-                    metrics['mean_rewards'].append(np.mean([r for r in episode_rewards.values()]))
-                    metrics['global_rewards'].append(sum(episode_rewards.values()))
-                    metrics['mean_waiting_times'].append(
-                        np.mean([np.mean(w) for w in episode_waiting_times.values()])
-                    )
-                    metrics['mean_queue_lengths'].append(
-                        np.mean([np.mean(q) for q in episode_queues.values()])
-                    )
-                    metrics['throughput'].append(np.mean(episode_throughput))
-                    metrics['traffic_pressure'].append(
-                        np.mean([np.mean(p) for p in episode_pressure.values()])
-                    )
-                    
-                    # Update per-agent metrics safely
-                    for tl_id in valid_traffic_lights:
-                        metrics['agent_rewards'][tl_id].append(episode_rewards[tl_id])
-                        
-                        valid_losses = [loss for loss in episode_losses[tl_id] if loss is not None]
-                        if valid_losses:
-                            metrics['losses'][tl_id].append(float(np.mean(valid_losses)))
-                        else:
-                            metrics['losses'][tl_id].append(0.0)
+                metrics['mean_rewards'].append(np.mean([r for r in episode_rewards.values()]))
+                metrics['global_rewards'].append(sum(episode_rewards.values()))
+                metrics['mean_waiting_times'].append(
+                    np.mean([np.mean(w) for w in episode_waiting_times.values()])
+                )
+                metrics['mean_queue_lengths'].append(
+                    np.mean([np.mean(q) for q in episode_queues.values()])
+                )
+                metrics['throughput'].append(np.mean(episode_throughput))
+                metrics['traffic_pressure'].append(
+                    np.mean([np.mean(p) for p in episode_pressure.values()])
+                )
                 
+                # Update per-agent metrics safely
+                for tl_id in valid_traffic_lights:
+                    metrics['agent_rewards'][tl_id].append(episode_rewards[tl_id])
+                    
+                    valid_losses = [loss for loss in episode_losses[tl_id] if loss is not None]
+                    if valid_losses:
+                        metrics['losses'][tl_id].append(float(np.mean(valid_losses)))
+                    else:
+                        metrics['losses'][tl_id].append(0.0)
+                
+                # Initialize metrics if empty to prevent IndexError
+                for key in ['mean_rewards', 'global_rewards', 'mean_waiting_times', 
+                            'mean_queue_lengths', 'throughput', 'traffic_pressure']:
+                    if not metrics.get(key, []):
+                        metrics[key] = [0.0]
+
                 # Log episode summary
                 logger.info(f"\nEpisode {episode+1} Summary:")
                 logger.info(f"Steps completed: {step}/{steps_per_episode}")
@@ -519,7 +595,6 @@ def train_multi_agent(env_config, agent_config, num_episodes=10):
                 logger.info(f"Mean queue length: {metrics['mean_queue_lengths'][-1]:.2f}")
                 logger.info(f"Average throughput: {metrics['throughput'][-1]:.2f}")
                 logger.info(f"Average traffic pressure: {metrics['traffic_pressure'][-1]:.3f}")
-                logger.info("-" * 50)
                 
                 # Save checkpoint every 2 episodes
                 if (episode + 1) % 2 == 0:
@@ -582,21 +657,16 @@ def train_multi_agent(env_config, agent_config, num_episodes=10):
         logger.exception("Training error details:")
     finally:
         try:
-            if metrics['mean_rewards']:
-                final_dir = model_dir / "final"
-                final_dir.mkdir(exist_ok=True)
-                
-                multi_agent_system.save_agents(final_dir)
-                plot_metrics(metrics, log_dir / "final_metrics.png")
-                
-                with open(final_dir / "metrics.json", 'w') as f:
-                    json.dump(metrics, f, indent=4, default=json_serialize)
-                
-                logger.info("Final state saved successfully")
-                logger.info("\nTraining Summary:")
-                logger.info(f"Episodes completed: {len(metrics['mean_rewards'])}")
-                logger.info(f"Best reward: {max(metrics['mean_rewards']):.2f}")
-                logger.info(f"Best waiting time: {min(metrics['mean_waiting_times']):.2f}")
+            plot_metrics(metrics, log_dir / "final_metrics.png")
+            
+            with open(model_dir / "final" / "metrics.json", 'w') as f:
+                json.dump(metrics, f, indent=4, default=json_serialize)
+            
+            logger.info("Final state saved successfully")
+            logger.info("\nTraining Summary:")
+            logger.info(f"Episodes completed: {len(metrics['mean_rewards'])}")
+            logger.info(f"Best reward: {max(metrics['mean_rewards']):.2f}")
+            logger.info(f"Best waiting time: {min(metrics['mean_waiting_times']):.2f}")
         except Exception as e:
             logger.error(f"Error saving final state: {str(e)}")
             logger.exception("Final save error details:")
@@ -620,7 +690,6 @@ def main():
         'max_green': 45,              # More balanced
         'num_seconds': 1800,          # Back to moderate episode length
         'delta_time': 8,              # Less frequent but more stable decisions
-        'use_gui': False,
         'max_depart_delay': 200,      # More moderate
         'time_to_teleport': 200       # More moderate
     })
@@ -661,6 +730,9 @@ def main():
         'shared_memory_fraction': 0.35, # More moderate sharing
         'neighbor_update_freq': 4       # More moderate updates
     })
+    
+    # Update agent configuration for continuous action space
+    agent_config['action_type'] = 'continuous'
 
     print("\nStarting traffic light control training...")
     print("\nEnvironment Configuration:")
@@ -696,27 +768,26 @@ def main():
 
         # Print final results
         print("\nTraining completed!")
-        if metrics['mean_rewards']:
-            print("\nFinal Metrics Summary:")
-            print(f"Average reward per agent: {np.mean(metrics['mean_rewards']):.4f}")
-            print(f"Best episode reward: {max(metrics['mean_rewards']):.4f}")
-            print(f"Final average waiting time: {metrics['mean_waiting_times'][-1]:.2f} seconds")
-            print(f"Best waiting time: {min(metrics['mean_waiting_times']):.2f} seconds")
-            print(f"Average queue length: {np.mean(metrics['mean_queue_lengths']):.2f} vehicles")
-            if 'traffic_pressure' in metrics:
-                print(f"Average traffic pressure: {np.mean(metrics['traffic_pressure']):.3f}")
-            if 'throughput' in metrics:
-                print(f"Average throughput: {np.mean(metrics['throughput']):.2f} vehicles")
+        print("\nFinal Metrics Summary:")
+        print(f"Average reward per agent: {np.mean(metrics['mean_rewards']):.4f}")
+        print(f"Best episode reward: {max(metrics['mean_rewards']):.4f}")
+        print(f"Final average waiting time: {metrics['mean_waiting_times'][-1]:.2f} seconds")
+        print(f"Best waiting time: {min(metrics['mean_waiting_times']):.2f} seconds")
+        print(f"Average queue length: {np.mean(metrics['mean_queue_lengths']):.2f} vehicles")
+        if 'traffic_pressure' in metrics:
+            print(f"Average traffic pressure: {np.mean(metrics['traffic_pressure']):.3f}")
+        if 'throughput' in metrics:
+            print(f"Average throughput: {np.mean(metrics['throughput']):.2f} vehicles")
 
-            # Calculate improvement percentages
-            waiting_time_improvement = ((metrics['mean_waiting_times'][0] - metrics['mean_waiting_times'][-1]) / 
-                                     metrics['mean_waiting_times'][0] * 100)
-            queue_improvement = ((metrics['mean_queue_lengths'][0] - metrics['mean_queue_lengths'][-1]) / 
-                               metrics['mean_queue_lengths'][0] * 100)
+        # Calculate improvement percentages
+        waiting_time_improvement = ((metrics['mean_waiting_times'][0] - metrics['mean_waiting_times'][-1]) / 
+                                 metrics['mean_waiting_times'][0] * 100)
+        queue_improvement = ((metrics['mean_queue_lengths'][0] - metrics['mean_queue_lengths'][-1]) / 
+                           metrics['mean_queue_lengths'][0] * 100)
 
-            print("\nPerformance Improvements:")
-            print(f"Waiting time reduction: {waiting_time_improvement:.1f}%")
-            print(f"Queue length reduction: {queue_improvement:.1f}%")
+        print("\nPerformance Improvements:")
+        print(f"Waiting time reduction: {waiting_time_improvement:.1f}%")
+        print(f"Queue length reduction: {queue_improvement:.1f}%")
 
     except KeyboardInterrupt:
         print("\nTraining interrupted by user")

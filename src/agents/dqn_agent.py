@@ -8,18 +8,45 @@ from collections import deque, namedtuple
 import random
 
 class DQNNetwork(nn.Module):
-    def __init__(self, state_size, action_size, hidden_size=64):
+    def __init__(self, state_size, action_size, hidden_size=64, action_type='discrete'):
         super(DQNNetwork, self).__init__()
-        self.network = nn.Sequential(
+        self.action_type = action_type
+        
+        # Shared layers
+        self.shared_layers = nn.Sequential(
             nn.Linear(state_size, hidden_size),
             nn.ReLU(),
             nn.Linear(hidden_size, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, action_size)
+            nn.ReLU()
         )
+        
+        # Output layers based on action type
+        if action_type == 'discrete':
+            # Discrete action space
+            self.output_layer = nn.Linear(hidden_size, action_size)
+        else:
+            # Continuous action space
+            # Output mean and log standard deviation for a Gaussian distribution
+            self.output_layer = nn.Linear(hidden_size, action_size * 2)
     
     def forward(self, state):
-        return self.network(state)
+        # Shared feature extraction
+        features = self.shared_layers(state)
+        
+        # Output based on action type
+        if self.action_type == 'discrete':
+            # Discrete action: direct Q-value output
+            return self.output_layer(features)
+        else:
+            # Continuous action: output mean and log std
+            output = self.output_layer(features)
+            mean, log_std = torch.chunk(output, 2, dim=-1)
+            
+            # Clamp log standard deviation to prevent numerical instability
+            log_std = torch.clamp(log_std, min=-5, max=2)
+            
+            # Return mean of continuous action distribution
+            return mean
 
 class DQNAgent:
     def __init__(self, state_size, action_size, config):
@@ -37,8 +64,8 @@ class DQNAgent:
         
         # Networks
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.policy_net = DQNNetwork(state_size, action_size).to(self.device)
-        self.target_net = DQNNetwork(state_size, action_size).to(self.device)
+        self.policy_net = DQNNetwork(state_size, action_size, action_type=config.get('action_type', 'discrete')).to(self.device)
+        self.target_net = DQNNetwork(state_size, action_size, action_type=config.get('action_type', 'discrete')).to(self.device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
         
         # Optimizer
@@ -56,12 +83,18 @@ class DQNAgent:
     def act(self, state, training=True):
         """Select action using epsilon-greedy policy"""
         if training and random.random() < self.epsilon:
-            return random.randrange(self.action_size)
+            if self.policy_net.action_type == 'discrete':
+                return random.randrange(self.action_size)
+            else:
+                return np.random.uniform(-1, 1, self.action_size)
         
         with torch.no_grad():
             state = torch.FloatTensor(state).unsqueeze(0).to(self.device)
             q_values = self.policy_net(state)
-            return q_values.argmax().item()
+            if self.policy_net.action_type == 'discrete':
+                return q_values.argmax().item()
+            else:
+                return q_values.squeeze(0).cpu().numpy()
     
     def replay(self):
         """Train on batch from replay memory"""
@@ -73,23 +106,29 @@ class DQNAgent:
         
         # Convert to tensors
         state_batch = torch.FloatTensor(batch.state).to(self.device)
-        action_batch = torch.LongTensor(batch.action).to(self.device)
+        action_batch = torch.LongTensor(batch.action).to(self.device) if self.policy_net.action_type == 'discrete' else torch.FloatTensor(batch.action).to(self.device)
         reward_batch = torch.FloatTensor(batch.reward).to(self.device)
         next_state_batch = torch.FloatTensor(batch.next_state).to(self.device)
         done_batch = torch.FloatTensor(batch.done).to(self.device)
         
         # Compute Q(s_t, a) - the model computes Q(s_t), then we select the
         # columns of actions taken
-        state_action_values = self.policy_net(state_batch).gather(1, action_batch.unsqueeze(1))
+        if self.policy_net.action_type == 'discrete':
+            state_action_values = self.policy_net(state_batch).gather(1, action_batch.unsqueeze(1))
+        else:
+            state_action_values = self.policy_net(state_batch)
         
         # Compute V(s_{t+1}) for all next states
-        next_state_values = self.target_net(next_state_batch).max(1)[0].detach()
+        next_state_values = self.target_net(next_state_batch).max(1)[0].detach() if self.policy_net.action_type == 'discrete' else self.target_net(next_state_batch)
         
         # Compute the expected Q values
         expected_state_action_values = reward_batch + self.gamma * next_state_values * (1 - done_batch)
         
         # Compute loss
-        loss = nn.MSELoss()(state_action_values, expected_state_action_values.unsqueeze(1))
+        if self.policy_net.action_type == 'discrete':
+            loss = nn.MSELoss()(state_action_values, expected_state_action_values.unsqueeze(1))
+        else:
+            loss = nn.MSELoss()(state_action_values, expected_state_action_values)
         
         # Optimize the model
         self.optimizer.zero_grad()

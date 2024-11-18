@@ -162,7 +162,7 @@ def select_strategic_traffic_light(net_file):
     selected_tl = top_5[0][0]
     return selected_tl, tl_scores[selected_tl]
 
-def train_dqn(env_config, agent_config, num_episodes=20):
+def train_dqn(env_config, agent_config, num_episodes=50):
     """Train DQN agent on SUMO environment"""
     
     # Select strategic traffic light
@@ -321,6 +321,17 @@ def main():
     # Load base configurations
     env_config = load_config(project_root / 'config/env_config.yaml')
     agent_config = load_config(project_root / 'config/agent_config.yaml')
+    
+    # Ensure net_file, route_file, and out_csv_name are present
+    if 'net_file' not in env_config:
+        # Use a default or dynamically generated path
+        env_config['net_file'] = str(project_root / 'Version1/2024-11-05-18-42-37/osm.net.xml.gz')
+    
+    if 'route_file' not in env_config:
+        env_config['route_file'] = str(project_root / 'Version1/2024-11-05-18-42-37/osm.passenger.trips.xml')
+    
+    if 'out_csv_name' not in env_config:
+        env_config['out_csv_name'] = 'metrics.csv'
     
     # Update environment configuration
     env_config.update({

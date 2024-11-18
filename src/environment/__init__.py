@@ -2,12 +2,10 @@
 
 from .multi_agent_sumo_env import MultiAgentSumoEnvironment
 from .single_agent_sumo_env import SingleAgentSumoEnvironment
-from .gym_wrapper import SumoGymEnv, SingleAgentSumoGymEnv, MultiAgentSumoGymEnv
+from .maddpg_env import MultiAgentEnv
 
 __all__ = [
     'MultiAgentSumoEnvironment',
     'SingleAgentSumoEnvironment',
-    'SumoGymEnv',
-    'SingleAgentSumoGymEnv',
-    'MultiAgentSumoGymEnv'
+    'MultiAgentEnv'
 ]

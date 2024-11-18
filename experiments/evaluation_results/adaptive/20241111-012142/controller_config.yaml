@@ -1,0 +1,6 @@
+max_gap: 3.0
+max_phase_time: 60
+min_phase_time: 10
+queue_threshold: 4
+vehicle_extension_time: 2
+yellow_time: 3

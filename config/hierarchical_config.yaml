@@ -1,0 +1,50 @@
+# config/hierarchical_config.yaml
+
+# Environment settings
+environment:
+  num_seconds: 2000       # Increased episode length
+  delta_time: 8          # Less frequent decisions
+  yellow_time: 3         # Safe timing
+  min_green: 15         # Increased minimum green time
+  max_green: 45         # Balanced maximum
+  use_gui: false
+  max_depart_delay: 200
+  time_to_teleport: 200
+
+# Agent settings
+agent:
+  learning_rate: 0.0003   # Reduced for stability
+  batch_size: 128        # Increased batch size
+  memory_size: 200000    # Increased memory
+  gamma: 0.97           # Increased for longer-term planning
+  epsilon_start: 1.0
+  epsilon_min: 0.02     # Reduced minimum epsilon
+  epsilon_decay: 0.995  # Slower decay
+  hidden_size: 256      # Larger network
+  regional_size: 512    # Increased regional state size
+  target_update: 200    # Less frequent target updates
+  tau: 0.005           # Slower soft updates
+  dropout_rate: 0.12
+
+# Hierarchical settings
+hierarchy:
+  max_region_size: 6     # Smaller regions
+  min_region_size: 2     # More flexible
+  overlap_threshold: 0.2
+  regional_weight: 0.4   # Increased regional influence
+  coordination_threshold: 0.6  # Lower threshold
+  influence_radius: 150.0     # Increased radius
+  coordinator_update_freq: 4
+  message_batch_size: 32
+  max_messages_per_step: 100
+
+# Training settings
+training:
+  num_episodes: 15
+  eval_interval: 2
+  save_interval: 2
+  early_stopping_patience: 4
+  min_improvement: 0.02
+  max_steps_per_episode: 1000
+  learning_starts: 1000
+  target_update_freq: 75
