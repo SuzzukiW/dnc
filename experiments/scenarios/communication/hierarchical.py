@@ -26,6 +26,7 @@ project_root = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(project_root))
 
 from src.utils import setup_logger
+from src.utils.replay_buffer import PrioritizedReplayBuffer
 
 class Message:
     """Represents a communication message between agents"""
@@ -70,919 +71,412 @@ class RegionalCoordinator:
     
     def __init__(self,
                 region_id: str,
-                member_agents: List[str],
-                state_size: int,
-                action_size: int,
                 config: dict):
         """
         Initialize regional coordinator
         
         Args:
             region_id: Unique identifier for the region
-            member_agents: List of agent IDs in this region
-            state_size: Size of individual agent state
-            action_size: Size of agent action space
             config: Configuration dictionary
         """
         self.region_id = region_id
-        self.member_agents = set(member_agents)
-        self.state_size = state_size
-        self.action_size = action_size
+        self.member_agents = set()
+        self.messages = []
         self.config = config
-        
-        # Coordination parameters
-        self.influence_radius = config.get('influence_radius', 200.0)
-        self.coordination_interval = config.get('coordination_interval', 5)
-        self.max_agents = config.get('max_region_size', 10)
-        
-        # State tracking
-        self.agent_states = {}
-        self.agent_positions = {}
-        self.last_actions = defaultdict(int)
-        
-        # Regional metrics
-        self.metrics = {
-            'congestion_levels': defaultdict(list),
-            'waiting_times': defaultdict(list),
-            'coordination_scores': defaultdict(list),
-            'throughput': defaultdict(list)
-        }
-        
-        # Communication tracking
-        self.messages = defaultdict(list)
-        self.message_history = defaultdict(list)
-        
-        # Setup logging
-        self.logger = logging.getLogger(f'Region_{region_id}')
-        self.logger.setLevel(logging.INFO)
+        self.performance_history = deque(maxlen=100)
     
-    def process_messages(self):
-        """Process messages in queue and update regional state"""
-        # Process each type of message
-        for msg_type in Message.TYPES.values():
-            # Sort messages of this type by priority and timestamp
-            self.messages[msg_type] = sorted(
-                self.messages[msg_type],
-                key=lambda x: (-x.priority, x.timestamp)
-            )
-            
-            # Process each message of this type
-            for message in self.messages[msg_type]:
-                if message.processed:
-                    continue
-                    
-                # Process based on message type
-                if msg_type == Message.TYPES['STATE_UPDATE']:
-                    self._process_state_update(message)
-                elif msg_type == Message.TYPES['ACTION_PLAN']:
-                    self._process_action_plan(message)
-                elif msg_type == Message.TYPES['COORDINATION']:
-                    self._process_coordination(message)
-                
-                # Mark as processed and store in history
-                message.processed = True
-                self.message_history[msg_type].append(message)
-        
-        # Clear processed messages
-        for msg_type in Message.TYPES.values():
-            self.messages[msg_type] = [
-                m for m in self.messages[msg_type] 
-                if not m.processed
-            ]
+    def add_agent(self, agent_id: str):
+        self.member_agents.add(agent_id)
     
-    def _process_state_update(self, message: Message):
-        """Process state update message"""
-        if not message.content:
-            return
-            
-        agent_id = message.sender
-        self.agent_states[agent_id] = message.content
-        
-        # Update metrics
-        if 'metrics' in message.content:
-            for metric, value in message.content['metrics'].items():
-                self.metrics[metric][agent_id].append(value)
+    def remove_agent(self, agent_id: str):
+        self.member_agents.remove(agent_id)
     
-    def _process_action_plan(self, message: Message):
-        """Process action plan message"""
-        if not message.content:
-            return
-            
-        agent_id = message.sender
-        self.last_actions[agent_id] = message.content.get('action')
+    def clear_messages(self):
+        self.messages = []
     
-    def _process_coordination(self, message: Message):
-        """Process coordination request/response"""
-        if not message.content:
-            return
-            
-        # For coordination requests
-        if message.response_to is None:
-            # Generate and send response if appropriate
-            response = self._generate_coordination_response(message)
-            if response:
-                self.messages[Message.TYPES['COORDINATION']].append(response)
-        
-        # For coordination responses
-        else:
-            # Update coordination scores
-            self.metrics['coordination_scores'][message.sender].append(
-                message.content.get('value', 0.0)
-            )
+    def add_message(self, message: Message):
+        self.messages.append(message)
     
     def get_performance_score(self) -> float:
-        """Calculate performance score for the region"""
-        if not self.metrics:
-            return 0.0
-            
-        scores = []
-        
-        # Calculate throughput score
-        if self.metrics['throughput']:
-            recent_throughput = self.metrics['throughput'][-5:]
-            if recent_throughput:
-                throughput_score = np.mean(recent_throughput)
-                scores.append(min(1.0, throughput_score / 10.0))
-        
-        # Calculate waiting time score
-        if self.metrics['waiting_times']:
-            recent_waiting = self.metrics['waiting_times'][-5:]
-            if recent_waiting:
-                waiting_score = 1.0 - min(1.0, np.mean(recent_waiting) / 180.0)
-                scores.append(waiting_score)
-        
-        # Calculate congestion score
-        if self.metrics['congestion_levels']:
-            recent_congestion = self.metrics['congestion_levels'][-5:]
-            if recent_congestion:
-                congestion_score = 1.0 - min(1.0, np.mean(recent_congestion))
-                scores.append(congestion_score)
-        
-        # Calculate coordination score
-        if self.metrics['coordination_scores']:
-            recent_coordination = self.metrics['coordination_scores'][-5:]
-            if recent_coordination:
-                coord_score = min(1.0, np.mean(recent_coordination))
-                scores.append(coord_score)
-        
-        # Return average score
-        return np.mean(scores) if scores else 0.0
+        return np.mean(self.performance_history) if self.performance_history else 0
     
-    def _generate_coordination_response(self, request: Message) -> Optional[Message]:
-        """Generate response to coordination request"""
-        if request.sender not in self.member_agents:
-            return None
-            
-        return Message(
-            msg_type=Message.TYPES['COORDINATION'],
-            sender=self.region_id,
-            content={
-                'region_state': self.agent_states,
-                'recommendations': self._generate_recommendations(),
-                'timestamp': request.timestamp
-            },
-            priority=0.8,
-            response_to=request.sender
-        )
-    
-    def _generate_recommendations(self) -> dict:
-        """Generate action recommendations based on regional state"""
-        recommendations = {}
-        
-        # Simple recommendation based on average metrics
-        for metric in self.metrics:
-            if metric in ['waiting_times', 'congestion_levels']:
-                for agent_id in self.member_agents:
-                    if agent_id in self.metrics[metric]:
-                        recent_values = self.metrics[metric][agent_id][-5:]
-                        if recent_values:
-                            recommendations[f'{metric}_{agent_id}'] = np.mean(recent_values)
-        
-        return recommendations
+    def update_performance(self, score: float):
+        self.performance_history.append(score)
 
-class RegionManager:
-    """Manages division of network into regions and regional coordinators"""
-    
-    def __init__(self,
-                net_file: str,
-                config: dict,  # Added config parameter
-                max_region_size: int = 10,
-                min_region_size: int = 3,
-                overlap_threshold: float = 0.2):
+class PolicyNetwork(nn.Module):
+    """Enhanced policy network with attention and traffic-specific features"""
+
+    def __init__(self, state_size, action_size, message_size=32, hidden_size=128):
         """
-        Initialize region manager
+        Initialize enhanced policy network
         
         Args:
-            net_file: Path to SUMO network file
-            config: Configuration dictionary
-            max_region_size: Maximum agents per region
-            min_region_size: Minimum agents per region
-            overlap_threshold: Allowed region overlap ratio
-        """
-        self.net_file = net_file
-        self.max_region_size = max_region_size
-        self.min_region_size = min_region_size
-        self.overlap_threshold = overlap_threshold
-        
-        # Get influence radius from config
-        self.influence_radius = config.get('influence_radius', 120.0)  # Default to 120.0
-        
-        # Network representation
-        self.network_graph = nx.Graph()
-        self.regions = {}
-        self.agent_region_map = defaultdict(set)
-        
-        # Region metrics
-        self.region_metrics = defaultdict(dict)
-        self.cross_region_edges = set()
-        
-        # Performance tracking
-        self.metrics = {
-            'num_regions': [],
-            'avg_region_size': [],
-            'region_overlap': [],
-            'cross_region_flow': []
-        }
-        
-        # Build initial network representation
-        self._build_network_graph()
-    
-    def _build_network_graph(self):
-        """Build graph representation of the traffic network"""
-        # Read SUMO network
-        net = sumolib.net.readNet(self.net_file)
-        
-        # Add nodes (junctions)
-        for junction in net.getNodes():
-            self.network_graph.add_node(
-                junction.getID(),
-                pos=junction.getCoord(),
-                type=junction.getType()
-            )
-        
-        # Add edges
-        for edge in net.getEdges():
-            from_node = edge.getFromNode().getID()
-            to_node = edge.getToNode().getID()
-            
-            # Add edge with attributes
-            self.network_graph.add_edge(
-                from_node,
-                to_node,
-                id=edge.getID(),
-                length=edge.getLength(),
-                speed=edge.getSpeed()
-            )
-    
-    def _identify_regions(self, agent_positions: Dict[str, Tuple[float, float]]):
-        """
-        Identify regions based on agent positions and network structure
-        
-        Args:
-            agent_positions: Dictionary mapping agent IDs to their positions
-        """
-        # Reset current regions
-        self.regions.clear()
-        self.agent_region_map.clear()
-        
-        # Create graph of agent proximities
-        proximity_graph = nx.Graph()
-        for agent_id, pos in agent_positions.items():
-            proximity_graph.add_node(agent_id, pos=pos)
-        
-        # Add edges between nearby agents
-        for agent1 in agent_positions:
-            pos1 = np.array(agent_positions[agent1])
-            for agent2 in agent_positions:
-                if agent1 != agent2:
-                    pos2 = np.array(agent_positions[agent2])
-                    distance = np.linalg.norm(pos1 - pos2)
-                    
-                    # Connect agents within influence radius
-                    if distance <= self.influence_radius:
-                        proximity_graph.add_edge(agent1, agent2, weight=distance)
-        
-        # Find communities in proximity graph
-        communities = self._find_communities(proximity_graph)
-        
-        # Create regions from communities
-        for i, community in enumerate(communities):
-            region_id = f"region_{i}"
-            self.regions[region_id] = list(community)
-            
-            # Update agent-region mapping
-            for agent_id in community:
-                self.agent_region_map[agent_id].add(region_id)
-        
-        # Update metrics
-        self._update_region_metrics()
-    
-    def _find_communities(self, graph: nx.Graph) -> List[Set[str]]:
-        """Find communities in agent proximity graph using Louvain method"""
-        try:
-            import community
-            
-            # First pass: detect base communities
-            partition = community.best_partition(graph)
-            communities = defaultdict(set)
-            
-            for node, comm_id in partition.items():
-                communities[comm_id].add(node)
-            
-            # Adjust community sizes
-            final_communities = []
-            for comm in communities.values():
-                if len(comm) > self.max_region_size:
-                    # Split large communities
-                    sub_comms = self._split_community(graph.subgraph(comm))
-                    final_communities.extend(sub_comms)
-                elif len(comm) < self.min_region_size:
-                    # Try to merge small communities
-                    self._merge_small_community(comm, final_communities)
-                else:
-                    final_communities.append(comm)
-            
-            return final_communities
-            
-        except ImportError:
-            # Fallback to simple distance-based clustering
-            return self._distance_based_clustering(graph)
-    
-    def _split_community(self, community_graph: nx.Graph) -> List[Set[str]]:
-        """Split large community into smaller sub-communities"""
-        sub_communities = []
-        nodes = list(community_graph.nodes())
-        
-        while nodes:
-            # Start new sub-community
-            sub_comm = {nodes[0]}
-            frontier = {nodes[0]}
-            
-            # Grow sub-community until size limit
-            while len(sub_comm) < self.max_region_size and frontier:
-                current = frontier.pop()
-                neighbors = set(community_graph.neighbors(current)) - sub_comm
-                
-                # Add closest neighbors
-                sorted_neighbors = sorted(
-                    neighbors,
-                    key=lambda x: community_graph[current][x]['weight']
-                )
-                
-                for neighbor in sorted_neighbors:
-                    if len(sub_comm) < self.max_region_size:
-                        sub_comm.add(neighbor)
-                        frontier.add(neighbor)
-            
-            # Add sub-community and remove processed nodes
-            sub_communities.append(sub_comm)
-            nodes = [n for n in nodes if n not in sub_comm]
-        
-        return sub_communities
-    
-    def _merge_small_community(self, 
-                             community: Set[str],
-                             existing_communities: List[Set[str]]):
-        """Try to merge small community with existing ones"""
-        if not existing_communities:
-            existing_communities.append(community)
-            return
-        
-        # Find best community to merge with
-        best_merge = None
-        min_size = float('inf')
-        
-        for i, existing in enumerate(existing_communities):
-            merged_size = len(existing | community)
-            if merged_size <= self.max_region_size and merged_size < min_size:
-                min_size = merged_size
-                best_merge = i
-        
-        if best_merge is not None:
-            # Merge communities
-            existing_communities[best_merge] |= community
-        else:
-            # Add as new community if can't merge
-            existing_communities.append(community)
-    
-    def _distance_based_clustering(self, graph: nx.Graph) -> List[Set[str]]:
-        """Simple distance-based clustering fallback"""
-        communities = []
-        unassigned = set(graph.nodes())
-        
-        while unassigned:
-            # Start new community from random node
-            center = random.choice(list(unassigned))
-            community = {center}
-            
-            # Add nearest neighbors until size limit
-            while len(community) < self.max_region_size and unassigned:
-                distances = []
-                for node in unassigned - community:
-                    if node in graph[center]:
-                        distances.append(
-                            (node, graph[center][node]['weight'])
-                        )
-                
-                if not distances:
-                    break
-                    
-                # Add closest node
-                closest = min(distances, key=lambda x: x[1])[0]
-                community.add(closest)
-                unassigned.remove(closest)
-            
-            communities.append(community)
-            unassigned -= community
-        
-        return communities
-    
-    def _update_region_metrics(self):
-        """Update region performance metrics"""
-        # Calculate region sizes
-        region_sizes = [len(members) for members in self.regions.values()]
-        
-        # Calculate region overlap
-        total_assignments = sum(len(regions) for regions in self.agent_region_map.values())
-        avg_assignments = total_assignments / max(len(self.agent_region_map), 1)
-        
-        # Update metrics
-        self.metrics['num_regions'].append(len(self.regions))
-        self.metrics['avg_region_size'].append(np.mean(region_sizes))
-        self.metrics['region_overlap'].append(avg_assignments - 1)
-
-# Part B
-
-class Message:
-    """Represents a communication message between agents"""
-    
-    TYPES = {
-        'STATE_UPDATE': 1,     # Share state information
-        'ACTION_PLAN': 2,      # Share planned actions
-        'COORDINATION': 3,     # Coordination requests/responses
-        'RECOMMENDATION': 4,   # Regional recommendations
-        'ALERT': 5            # Critical situation alerts
-    }
-    
-    def __init__(self,
-                msg_type: int,
-                sender: str,
-                content: dict,
-                priority: float = 1.0,
-                timestamp: Optional[float] = None):
-        """
-        Initialize message
-        
-        Args:
-            msg_type: Type of message (from TYPES)
-            sender: ID of sending agent
-            content: Message content dictionary
-            priority: Message priority (0-1)
-            timestamp: Message creation time
-        """
-        self.type = msg_type
-        self.sender = sender
-        self.content = content
-        self.priority = priority
-        self.timestamp = timestamp or traci.simulation.getTime()
-        
-        # Track message handling
-        self.processed = False
-        self.response_to = None
-        self.responses = []
-
-class HierarchicalNetwork(nn.Module):
-    """Neural network with hierarchical structure"""
-    
-    def __init__(self,
-                local_size: int,
-                regional_size: int,
-                action_size: int,
-                hidden_size: int = 128):
-        """
-        Initialize hierarchical network
-        
-        Args:
-            local_size: Size of local state input
-            regional_size: Size of regional state input
-            action_size: Size of action space
+            state_size: Size of state input
+            action_size: Number of possible actions
+            message_size: Size of message vectors
             hidden_size: Size of hidden layers
         """
-        super(HierarchicalNetwork, self).__init__()
+        super().__init__()
         
-        # Local state processing
-        self.local_encoder = nn.Sequential(
-            nn.Linear(local_size, hidden_size),
+        # Traffic state processing
+        self.state_encoder = nn.Sequential(
+            nn.Linear(state_size, hidden_size),
+            nn.LayerNorm(hidden_size),
             nn.ReLU(),
+            nn.Dropout(0.1),
             nn.Linear(hidden_size, hidden_size),
+            nn.LayerNorm(hidden_size),
+            nn.ReLU(),
+            nn.Dropout(0.1)
+        )
+        
+        # Message processing with attention
+        self.message_size = message_size
+        self.message_attention = nn.MultiheadAttention(hidden_size, num_heads=4, dropout=0.1)
+        self.message_encoder = nn.Sequential(
+            nn.Linear(message_size, hidden_size),
+            nn.LayerNorm(hidden_size),
+            nn.ReLU(),
+            nn.Dropout(0.1)
+        )
+        
+        # Traffic pattern recognition
+        self.pattern_network = nn.Sequential(
+            nn.Linear(hidden_size, hidden_size // 2),
+            nn.LayerNorm(hidden_size // 2),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+            nn.Linear(hidden_size // 2, hidden_size // 2),
+            nn.LayerNorm(hidden_size // 2),
             nn.ReLU()
         )
         
-        # Regional state processing
-        self.regional_encoder = nn.Sequential(
-            nn.Linear(regional_size, hidden_size),
+        # Combined processing with residual connections
+        self.fusion_network = nn.Sequential(
+            nn.Linear(hidden_size * 2 + hidden_size // 2, hidden_size),
+            nn.LayerNorm(hidden_size),
             nn.ReLU(),
+            nn.Dropout(0.1),
             nn.Linear(hidden_size, hidden_size),
+            nn.LayerNorm(hidden_size),
             nn.ReLU()
         )
         
-        # Action prediction
-        self.action_head = nn.Sequential(
-            nn.Linear(hidden_size * 2, hidden_size),
+        # Dual heads for policy and value with separate networks
+        self.policy_head = nn.Sequential(
+            nn.Linear(hidden_size, hidden_size // 2),
+            nn.LayerNorm(hidden_size // 2),
             nn.ReLU(),
-            nn.Linear(hidden_size, action_size)
+            nn.Linear(hidden_size // 2, action_size)
         )
         
-        # Value prediction for advantage calculation
         self.value_head = nn.Sequential(
-            nn.Linear(hidden_size * 2, hidden_size),
+            nn.Linear(hidden_size, hidden_size // 2),
+            nn.LayerNorm(hidden_size // 2),
             nn.ReLU(),
-            nn.Linear(hidden_size, 1)
+            nn.Linear(hidden_size // 2, 1)
         )
+        
+        # Initialize weights with orthogonal initialization
+        self.apply(self._init_weights)
     
-    def forward(self,
-               local_state: torch.Tensor,
-               regional_state: Optional[torch.Tensor] = None) -> Tuple[torch.Tensor, torch.Tensor]:
+    def _init_weights(self, module):
+        if isinstance(module, nn.Linear):
+            nn.init.orthogonal_(module.weight.data, gain=np.sqrt(2))
+            module.bias.data.zero_()
+    
+    def forward(self, local_state, messages=None):
         """
-        Forward pass through network
+        Forward pass with attention and traffic pattern recognition
         
         Args:
-            local_state: Local agent state
-            regional_state: Optional regional state
+            local_state: Local state input tensor [batch_size, state_size]
+            messages: List of message tensors [batch_size, message_size]
             
         Returns:
-            Tuple of (action_values, state_value)
+            action_logits: Action probability logits
+            value: State value estimate
+            attention_weights: Optional attention weights for visualization
         """
+        batch_size = local_state.shape[0]
+        
         # Process local state
-        local_features = self.local_encoder(local_state)
+        state_features = self.state_encoder(local_state)
         
-        # Process regional state if available
-        if regional_state is not None:
-            regional_features = self.regional_encoder(regional_state)
+        # Process messages with attention if available
+        if messages and len(messages) > 0:
+            message_tensors = torch.stack(messages, dim=0)  # [num_messages, batch_size, message_size]
+            message_features = self.message_encoder(message_tensors)
+            
+            # Multi-head attention
+            message_features = message_features.permute(1, 0, 2)  # [batch_size, num_messages, hidden_size]
+            attended_messages, attention_weights = self.message_attention(
+                message_features, message_features, message_features
+            )
+            message_features = attended_messages.mean(dim=1)  # Pool attention outputs
         else:
-            regional_features = torch.zeros_like(local_features)
+            message_features = torch.zeros(batch_size, self.hidden_size, device=local_state.device)
+            attention_weights = None
         
-        # Combine features
-        combined = torch.cat([local_features, regional_features], dim=-1)
+        # Extract traffic patterns
+        pattern_features = self.pattern_network(state_features)
         
-        # Predict action values and state value
-        action_values = self.action_head(combined)
-        state_value = self.value_head(combined)
+        # Combine features with residual connections
+        combined_features = torch.cat([
+            state_features,
+            message_features,
+            pattern_features
+        ], dim=1)
         
-        return action_values, state_value
+        fused_features = self.fusion_network(combined_features)
+        
+        # Generate policy and value outputs
+        action_logits = self.policy_head(fused_features)
+        value = self.value_head(fused_features)
+        
+        return action_logits, value, attention_weights
 
 class HierarchicalAgent:
-    """Agent that operates within hierarchical communication structure"""
+    """Enhanced agent with prioritized experience replay and advanced learning"""
     
     def __init__(self,
                 agent_id: str,
                 state_size: int,
                 action_size: int,
                 config: dict):
-        """Initialize hierarchical agent"""
-        self.id = agent_id
+        """Initialize hierarchical agent with advanced features"""
+        self.agent_id = agent_id
         self.state_size = state_size
         self.action_size = action_size
-        self.config = config
         
-        # Network parameters
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.regional_size = config.get('regional_size', state_size * 3)
+        # Get config parameters with defaults
+        train_config = config.get('training', {})
+        self.gamma = train_config.get('gamma', 0.99)
+        self.epsilon_start = train_config.get('epsilon_start', 1.0)
+        self.epsilon_end = train_config.get('epsilon_end', 0.01)
+        self.epsilon_decay = train_config.get('epsilon_decay', 0.995)
+        self.batch_size = train_config.get('batch_size', 64)
+        self.learning_rate = train_config.get('learning_rate', 0.0003)
+        self.tau = train_config.get('tau', 0.005)  # Soft update parameter
         
-        # Initialize networks
-        self.policy_net = HierarchicalNetwork(
-            state_size,
-            self.regional_size,
-            action_size
-        ).to(self.device)
-        
-        self.target_net = HierarchicalNetwork(
-            state_size,
-            self.regional_size,
-            action_size
-        ).to(self.device)
-        
+        # Initialize networks with larger hidden size
+        self.policy_net = PolicyNetwork(state_size, action_size, hidden_size=256)
+        self.target_net = PolicyNetwork(state_size, action_size, hidden_size=256)
         self.target_net.load_state_dict(self.policy_net.state_dict())
         
-        # Initialize optimizer
-        self.optimizer = optim.Adam(
-            self.policy_net.parameters(),
-            lr=config.get('learning_rate', 0.001)
+        # Initialize optimizer with gradient clipping
+        self.optimizer = optim.Adam(self.policy_net.parameters(), lr=self.learning_rate)
+        self.grad_clip = train_config.get('grad_clip', 0.5)
+        
+        # Adaptive epsilon decay
+        self.epsilon = self.epsilon_start
+        self.epsilon_decay_steps = train_config.get('epsilon_decay_steps', 100000)
+        
+        # Prioritized experience replay
+        self.memory = PrioritizedReplayBuffer(
+            size=train_config.get('memory_size', 100000),
+            alpha=0.6,  # Prioritization exponent
+            beta=0.4    # Initial importance sampling weight
         )
         
-        # Memory buffers
-        self.memory_size = config.get('memory_size', 10000)
-        self.batch_size = config.get('batch_size', 32)
-        self.memory = []
-        
-        # Learning parameters
-        self.gamma = config.get('gamma', 0.95)
-        self.tau = config.get('tau', 0.01)
-        self.regional_weight = config.get('regional_weight', 0.3)
-        
-        # Action selection
-        self.epsilon = config.get('epsilon_start', 1.0)
-        self.epsilon_min = config.get('epsilon_min', 0.01)
-        self.epsilon_decay = config.get('epsilon_decay', 0.995)
-        
-        # Communication components
-        self.message_queue = []
-        self.received_messages = defaultdict(list)
-        self.regional_state = None
-        self.coordinator = None
+        # Message handling
+        self.message_buffer = []
+        self.max_messages = train_config.get('max_messages', 10)
+        self.message_importance = train_config.get('message_importance', 0.5)
         
         # Performance tracking
-        self.metrics = defaultdict(list)
-        self.training_step = 0
-
-    def remember(self, state, action, reward, next_state, done):
-        """Store experience in memory"""
-        # Convert state inputs to tensors if needed
-        if isinstance(state, np.ndarray):
-            state = torch.FloatTensor(state)
-        if isinstance(next_state, np.ndarray):
-            next_state = torch.FloatTensor(next_state)
-            
-        # Add experience to memory
-        self.memory.append((state, action, reward, next_state, done))
+        self.episode_rewards = []
+        self.waiting_times = []
+        self.update_count = 0
         
-        # Trim memory if exceeds size
-        if len(self.memory) > self.memory_size:
-            self.memory = self.memory[-self.memory_size:]
-            
-        # Track metrics
-        self.metrics['rewards'].append(reward)
-        if done:
-            self.metrics['episode_lengths'].append(len(self.metrics['rewards']))
-
-    def update(self) -> Optional[float]:
-        """Update agent's policy"""
-        if len(self.memory) < self.batch_size:
-            return None
-            
-        # Sample batch
-        batch = random.sample(self.memory, self.batch_size)
-        states, actions, rewards, next_states, dones = zip(*batch)
+        # Region info
+        self.region_id = None
         
-        # Convert to tensors
-        states = torch.stack([s.to(self.device) for s in states])
-        actions = torch.LongTensor(actions).to(self.device)
-        rewards = torch.FloatTensor(rewards).to(self.device)
-        next_states = torch.stack([s.to(self.device) for s in next_states])
-        dones = torch.FloatTensor(dones).to(self.device)
+        # Initialize device
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.policy_net.to(self.device)
+        self.target_net.to(self.device)
         
-        # Get current Q values
-        current_Q, _ = self.policy_net(states, self.regional_state)
-        current_Q = current_Q.gather(1, actions.unsqueeze(1)).squeeze(1)
-        
-        # Get next Q values
-        with torch.no_grad():
-            next_Q, _ = self.target_net(next_states, self.regional_state)
-            next_Q = next_Q.max(1)[0]
-            target_Q = rewards + (1 - dones) * self.gamma * next_Q
-        
-        # Compute loss
-        loss = F.mse_loss(current_Q, target_Q)
-        
-        # Optimize
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
-        
-        # Update target network
-        if self.training_step % self.config.get('target_update', 10) == 0:
-            for target_param, policy_param in zip(
-                self.target_net.parameters(),
-                self.policy_net.parameters()
-            ):
-                target_param.data.copy_(
-                    self.tau * policy_param.data +
-                    (1 - self.tau) * target_param.data
-                )
-        
-        # Update epsilon
-        self.epsilon = max(
-            self.epsilon_min,
-            self.epsilon * self.epsilon_decay
-        )
-        
-        self.training_step += 1
-        return loss.item()
+        # Initialize metrics
+        self.metrics = defaultdict(float)
     
-    def process_messages(self):
-        """Process received messages and update regional state"""
-        if not self.message_queue:
-            return
-        
-        # Sort messages by priority and timestamp
-        self.message_queue.sort(key=lambda x: (-x.priority, x.timestamp))
-        
-        # Process messages
-        regional_updates = []
-        coordination_requests = []
-        recommendations = []
-        
-        for message in self.message_queue:
-            if message.processed:
-                continue
-                
-            if message.type == Message.TYPES['STATE_UPDATE']:
-                regional_updates.append(message.content)
-            elif message.type == Message.TYPES['COORDINATION']:
-                coordination_requests.append(message)
-            elif message.type == Message.TYPES['RECOMMENDATION']:
-                recommendations.append(message.content)
+    def select_action(self, state: np.ndarray, messages: Optional[List[torch.Tensor]] = None, training: bool = True) -> int:
+        """Select action using epsilon-greedy with adaptive noise"""
+        if training:
+            # Adaptive epsilon decay
+            self.epsilon = self.epsilon_end + (self.epsilon_start - self.epsilon_end) * \
+                         np.exp(-self.update_count / self.epsilon_decay_steps)
             
-            # Mark as processed
-            message.processed = True
-            
-            # Store in history
-            self.received_messages[message.type].append(message)
-        
-        # Update regional state
-        if regional_updates:
-            self._update_regional_state(regional_updates)
-        
-        # Handle coordination requests
-        if coordination_requests:
-            self._handle_coordination(coordination_requests)
-        
-        # Clear processed messages
-        self.message_queue = [m for m in self.message_queue if not m.processed]
-    
-    def _update_regional_state(self, updates: List[dict]):
-        """Update regional state representation"""
-        if not updates:
-            return
-        
-        # Combine updates (simple averaging for now)
-        combined_state = defaultdict(list)
-        
-        for update in updates:
-            for key, value in update.items():
-                if isinstance(value, (int, float)):
-                    combined_state[key].append(value)
-        
-        # Average values
-        self.regional_state = {
-            key: np.mean(values) for key, values in combined_state.items()
-        }
-    
-    def _handle_coordination(self, requests: List[Message]):
-        """Handle coordination requests"""
-        for request in requests:
-            # Evaluate request
-            if self._should_coordinate(request):
-                # Generate response
-                response = self._generate_coordination_response(request)
-                
-                # Send response
-                if self.coordinator:
-                    self.coordinator.relay_message(response)
-                
-                # Update request
-                request.responses.append(response)
-    
-    def _should_coordinate(self, request: Message) -> bool:
-        """Decide whether to coordinate with requesting agent"""
-        if not request.content:
-            return False
-        
-        # Check if coordination would be beneficial
-        try:
-            # Get requestor's state
-            other_state = request.content.get('state')
-            if other_state is None:
-                return False
-            
-            # Calculate state similarity
-            similarity = self._calculate_state_similarity(other_state)
-            
-            # Check coordination criteria
-            return (similarity > self.config.get('coordination_threshold', 0.7) and
-                   len(request.responses) < self.config.get('max_responses', 3))
-        
-        except Exception as e:
-            print(f"Error evaluating coordination request: {e}")
-            return False
-    
-    def _generate_coordination_response(self, request: Message) -> Message:
-        """Generate response to coordination request"""
-        return Message(
-            msg_type=Message.TYPES['COORDINATION'],
-            sender=self.id,
-            content={
-                'state': self._get_shareable_state(),
-                'action': self.last_action,
-                'value': float(self.last_value) if hasattr(self, 'last_value') else 0.0,
-                'timestamp': traci.simulation.getTime()
-            },
-            priority=0.8,
-            response_to=request.sender
-        )
-    
-    def _calculate_state_similarity(self, other_state: dict) -> float:
-        """Calculate similarity between agent states"""
-        if not isinstance(other_state, dict):
-            return 0.0
-        
-        my_state = self._get_shareable_state()
-        
-        # Get common keys
-        common_keys = set(my_state.keys()) & set(other_state.keys())
-        if not common_keys:
-            return 0.0
-        
-        # Calculate similarity
-        similarities = []
-        for key in common_keys:
-            try:
-                my_val = float(my_state[key])
-                other_val = float(other_state[key])
-                
-                # Calculate normalized difference
-                max_val = max(abs(my_val), abs(other_val))
-                if max_val > 0:
-                    similarity = 1 - abs(my_val - other_val) / max_val
-                else:
-                    similarity = 1.0
-                    
-                similarities.append(similarity)
-            except (ValueError, TypeError):
-                continue
-        
-        return np.mean(similarities) if similarities else 0.0
-    
-    def _get_shareable_state(self) -> dict:
-        """Get state information that can be shared with other agents"""
-        try:
-            state = {
-                'queue_length': self.metrics.get('queue_length', [0])[-1],
-                'waiting_time': self.metrics.get('waiting_time', [0])[-1],
-                'throughput': self.metrics.get('throughput', [0])[-1]
-            }
-            return state
-        except Exception:
-            return {}
-
-    def select_action(self, state: np.ndarray) -> int:
-        """
-        Select action using epsilon-greedy policy
-        
-        Args:
-            state: Current state
-            
-        Returns:
-            Selected action
-        """
-        if random.random() < self.epsilon:
-            return random.randrange(self.action_size)
+            if random.random() < self.epsilon:
+                return random.randrange(self.action_size)
         
         with torch.no_grad():
             state = torch.FloatTensor(state).unsqueeze(0).to(self.device)
+            if messages:
+                messages = [m.to(self.device) for m in messages[-self.max_messages:]]
             
-            # Get regional state tensor if available
-            if self.regional_state is not None:
-                regional_tensor = torch.FloatTensor(
-                    list(self.regional_state.values())
-                ).unsqueeze(0).to(self.device)
-            else:
-                regional_tensor = None
+            action_logits, _, _ = self.policy_net(state, messages)
             
-            # Get action values and state value
-            action_values, state_value = self.policy_net(state, regional_tensor)
+            # Add small noise for exploration even during exploitation
+            if training:
+                action_logits += torch.randn_like(action_logits) * 0.1
             
-            # Store value for coordination
-            self.last_value = state_value.item()
+            return action_logits.argmax(dim=1).item()
+    
+    def update(self, state: np.ndarray, action: int, reward: float, next_state: np.ndarray, 
+              done: bool, messages: Optional[List[torch.Tensor]] = None) -> Tuple[float, float]:
+        """Update agent with prioritized experience replay and advanced learning"""
+        # Store experience with maximum priority for new experiences
+        self.memory.add(
+            state, action, reward, next_state, done,
+            messages if messages else [],
+            priority=self.memory.max_priority
+        )
+        
+        if len(self.memory) < self.batch_size:
+            return 0.0, 0.0
+        
+        self.update_count += 1
+        
+        # Sample batch with importance sampling
+        beta = min(1.0, 0.4 + self.update_count * 0.6 / 100000)  # Anneal beta to 1
+        experiences = self.memory.sample(self.batch_size, beta)
+        
+        states, actions, rewards, next_states, dones, batch_messages, weights, indices = experiences
+        
+        # Convert to tensors and move to device
+        states = torch.FloatTensor(states).to(self.device)
+        actions = torch.LongTensor(actions).to(self.device)
+        rewards = torch.FloatTensor(rewards).to(self.device)
+        next_states = torch.FloatTensor(next_states).to(self.device)
+        dones = torch.FloatTensor(dones).to(self.device)
+        weights = torch.FloatTensor(weights).to(self.device)
+        
+        # Get current Q values
+        q_values, state_values, _ = self.policy_net(states, batch_messages)
+        current_q = q_values.gather(1, actions.unsqueeze(1)).squeeze(1)
+        
+        # Compute target Q values with double Q-learning
+        with torch.no_grad():
+            next_q_values, next_state_values, _ = self.policy_net(next_states, batch_messages)
+            next_actions = next_q_values.argmax(dim=1, keepdim=True)
             
-            return action_values.argmax().item()
+            target_q_values, _, _ = self.target_net(next_states, batch_messages)
+            next_q = target_q_values.gather(1, next_actions).squeeze(1)
+            
+            # Compute target with TD(λ) and GAE
+            target_q = rewards + (1 - dones) * self.gamma * (
+                0.8 * next_q + 0.2 * next_state_values.squeeze(1)
+            )
+        
+        # Compute losses with prioritized replay correction
+        q_loss = (weights * F.smooth_l1_loss(current_q, target_q, reduction='none')).mean()
+        value_loss = (weights * F.mse_loss(state_values.squeeze(1), target_q.detach(), reduction='none')).mean()
+        
+        # Combined loss with L2 regularization
+        loss = q_loss + 0.5 * value_loss + 0.01 * sum(p.pow(2.0).sum() for p in self.policy_net.parameters())
+        
+        # Optimize the model
+        self.optimizer.zero_grad()
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.policy_net.parameters(), self.grad_clip)
+        self.optimizer.step()
+        
+        # Update priorities
+        td_errors = torch.abs(target_q - current_q).detach().cpu().numpy()
+        priorities = (td_errors + 1e-6) ** 0.6  # Convert to priorities using alpha=0.6
+        self.memory.update_priorities(indices, priorities)
+        
+        # Store metrics
+        self.metrics = {
+            'td_error': float(td_errors.mean()),
+            'priority': float(priorities.mean()),
+            'beta': beta,
+            'q_loss': q_loss.item(),
+            'value_loss': value_loss.item()
+        }
+        
+        # Soft update target network
+        if self.update_count % 10 == 0:
+            for target_param, policy_param in zip(self.target_net.parameters(), self.policy_net.parameters()):
+                target_param.data.copy_(
+                    self.tau * policy_param.data + (1.0 - self.tau) * target_param.data
+                )
+        
+        return q_loss.item(), value_loss.item()
+    
+    def process_messages(self, messages: List[Message]) -> List[torch.Tensor]:
+        """Process and prioritize messages"""
+        if not messages:
+            return []
+        
+        # Sort messages by priority and recency
+        messages.sort(key=lambda m: (m.priority, -m.timestamp))
+        messages = messages[-self.max_messages:]  # Keep only most recent/important messages
+        
+        # Convert messages to tensors
+        message_tensors = []
+        for msg in messages:
+            if msg.type == Message.TYPES['STATE_UPDATE']:
+                # Encode state information
+                state_tensor = torch.FloatTensor(msg.content['state']).to(self.device)
+                encoded_state = self.policy_net.state_encoder(state_tensor.unsqueeze(0))
+                message_tensors.append(encoded_state.squeeze(0))
+            elif msg.type == Message.TYPES['ACTION_PLAN']:
+                # Encode action information
+                action_tensor = torch.zeros(self.action_size, device=self.device)
+                action_tensor[msg.content['action']] = 1.0
+                message_tensors.append(action_tensor)
+        
+        return message_tensors
+    
+    def clear_messages(self):
+        """Clear message buffer"""
+        self.message_buffer = []
+    
+    def add_message(self, message: Message):
+        """Add message to buffer with priority handling"""
+        self.message_buffer.append(message)
+        if len(self.message_buffer) > self.max_messages:
+            # Remove lowest priority messages
+            self.message_buffer.sort(key=lambda m: (m.priority, -m.timestamp))
+            self.message_buffer = self.message_buffer[-self.max_messages:]
     
     def save(self, path: str):
-        """Save agent state"""
+        """
+        Save agent's models and training state
+        
+        Args:
+            path: Path to save the agent state
+        """
         save_dict = {
             'policy_net': self.policy_net.state_dict(),
             'target_net': self.target_net.state_dict(),
             'optimizer': self.optimizer.state_dict(),
-            'metrics': dict(self.metrics),
-            'training_step': self.training_step,
-            'epsilon': self.epsilon
+            'epsilon': self.epsilon,
+            'update_count': self.update_count,
+            'metrics': dict(self.metrics)
         }
         torch.save(save_dict, path)
     
     def load(self, path: str):
-        """Load agent state"""
+        """
+        Load agent's models and training state
+        
+        Args:
+            path: Path to load the agent state from
+        """
         if not os.path.exists(path):
+            print(f"Warning: No saved model found at {path}")
             return
             
-        checkpoint = torch.load(path)
+        checkpoint = torch.load(path, map_location=self.device)
         self.policy_net.load_state_dict(checkpoint['policy_net'])
         self.target_net.load_state_dict(checkpoint['target_net'])
         self.optimizer.load_state_dict(checkpoint['optimizer'])
-        self.metrics = defaultdict(list, checkpoint['metrics'])
-        self.training_step = checkpoint['training_step']
         self.epsilon = checkpoint['epsilon']
-
-# Part C
+        self.update_count = checkpoint['update_count']
+        self.metrics.update(checkpoint['metrics'])
 
 class HierarchicalManager:
     """Manages hierarchical multi-agent system and training"""
@@ -996,31 +490,55 @@ class HierarchicalManager:
         self.state_size = state_size
         self.action_size = action_size
         self.config = config
+        self.net_file = net_file
         
-        # Initialize region management
-        self.region_manager = RegionManager(
-            net_file,
-            config=config,  # Pass the config
-            max_region_size=config.get('max_region_size', 10),
-            min_region_size=config.get('min_region_size', 3),
-            overlap_threshold=config.get('overlap_threshold', 0.2)
-        )
+        # Get hierarchical config with defaults
+        self.hierarchical_config = config.get('hierarchical', {})
+        self.influence_radius = self.hierarchical_config.get('influence_radius', 150.0)
+        self.region_size = self.hierarchical_config.get('region_size', 3)
+        self.coordination_interval = self.hierarchical_config.get('coordination_interval', 5)
+        self.message_size = self.hierarchical_config.get('message_size', 32)
+        self.coordination_threshold = self.hierarchical_config.get('coordination_threshold', 0.6)
         
-        # Initialize agents and coordinators
+        # Agents and coordinators
         self.agents = {}
         self.coordinators = {}
         
-        # Performance tracking
-        self.metrics = defaultdict(list)
-        self.episode_rewards = defaultdict(list)
-        self.training_steps = 0
+        # Initialize metrics with default values
+        self.metrics = {
+            # Training metrics
+            'avg_td_error': 0.0,
+            'avg_priority': 0.0,
+            'current_beta': 0.4,
+            'current_epsilon': 1.0,
+            'learning_rate': self.config.get('training', {}).get('learning_rate', 0.001),
+            
+            # Agent metrics
+            'num_regions': 0,
+            'avg_region_size': 0,
+            'coordination_rate': 0.0,
+            
+            # Traffic metrics
+            'avg_queue_length': 0.0,
+            'avg_speed': 0.0,
+            'throughput': 0.0,
+            'avg_waiting_time': 0.0,
+            
+            # Buffer metrics
+            'buffer_size': 0
+        }
         
-        # Set up logging
-        self.logger = logging.getLogger('HierarchicalManager')
-        self.logger.setLevel(logging.INFO)
-    
+        # Performance tracking
+        self.episode_stats = {
+            'coordination_count': 0,
+            'total_messages': 0,
+            'queue_lengths': [],
+            'speeds': [],
+            'waiting_times': [],
+            'vehicle_counts': []
+        }
+
     def add_agent(self, agent_id: str):
-        """Add new agent to the system"""
         self.agents[agent_id] = HierarchicalAgent(
             agent_id,
             self.state_size,
@@ -1028,219 +546,298 @@ class HierarchicalManager:
             self.config
         )
     
-    def update_regions(self, agent_positions: Dict[str, Tuple[float, float]]):
-        """Update regional organization based on agent positions"""
-        # Update region assignments
-        self.region_manager._identify_regions(agent_positions)
-        
-        # Create/update regional coordinators
-        new_regions = set(self.region_manager.regions.keys())
-        current_regions = set(self.coordinators.keys())
-        
-        # Remove obsolete coordinators
-        for region_id in current_regions - new_regions:
-            del self.coordinators[region_id]
-        
-        # Add new coordinators
-        for region_id in new_regions - current_regions:
-            members = self.region_manager.regions[region_id]
-            self.coordinators[region_id] = RegionalCoordinator(
-                region_id,
-                members,
-                self.state_size,
-                self.action_size,
-                self.config
-            )
-        
-        # Update agent assignments
-        for agent_id, agent in self.agents.items():
-            regions = self.region_manager.agent_region_map[agent_id]
-            if regions:
-                # Assign primary coordinator (closest or most important region)
-                primary_region = self._select_primary_region(agent_id, regions)
-                agent.coordinator = self.coordinators[primary_region]
-    
-    def _select_primary_region(self, agent_id: str, regions: Set[str]) -> str:
-        """Select primary region for an agent"""
-        if len(regions) == 1:
-            return list(regions)[0]
-        
-        # Calculate region scores based on size and position
-        region_scores = []
-        agent_pos = self.agents[agent_id].get_position()
-        
-        for region_id in regions:
-            coordinator = self.coordinators[region_id]
+    def update_regions(self, positions: Dict[str, Tuple[float, float]]):
+        # Skip if no positions provided
+        if not positions:
+            return
             
-            # Calculate average position of region members
-            member_positions = [
-                self.agents[member].get_position()
-                for member in coordinator.member_agents
-                if member in self.agents
-            ]
-            
-            if member_positions:
-                center = np.mean(member_positions, axis=0)
-                distance = np.linalg.norm(center - agent_pos)
-                
-                # Score based on size and distance
-                size_score = len(coordinator.member_agents) / self.config.get('max_region_size', 10)
-                distance_score = 1 / (1 + distance)  # Normalize distance
-                
-                region_scores.append((
-                    region_id,
-                    0.7 * distance_score + 0.3 * size_score  # Weight factors
-                ))
+        # Only consider agents that are in the positions dictionary
+        valid_agents = set(positions.keys())
         
-        if region_scores:
-            return max(region_scores, key=lambda x: x[1])[0]
-        return list(regions)[0]
+        # Clear existing regions
+        old_regions = {agent.region_id for agent in self.agents.values() if agent.region_id}
+        self.coordinators = {}
+        
+        # Group agents by proximity
+        unassigned = list(valid_agents)
+        region_id = 0
+        
+        while unassigned:
+            # Start new region
+            current = unassigned.pop(0)
+            current_pos = positions[current]
+            
+            # Create coordinator
+            coordinator = RegionalCoordinator(region_id, self.config)
+            coordinator.add_agent(current)
+            self.agents[current].region_id = region_id
+            
+            # Find nearby agents
+            i = 0
+            while i < len(unassigned):
+                other = unassigned[i]
+                other_pos = positions[other]
+                
+                # Check if within influence radius
+                if self._calculate_distance(current_pos, other_pos) <= self.influence_radius:
+                    coordinator.add_agent(other)
+                    self.agents[other].region_id = region_id
+                    unassigned.pop(i)
+                else:
+                    i += 1
+            
+            self.coordinators[region_id] = coordinator
+            region_id += 1
+        
+        # Update metrics
+        self.metrics['num_regions'] = len(self.coordinators)
+        self.metrics['avg_region_size'] = np.mean([len(c.member_agents) for c in self.coordinators.values()])
     
-    def step(self, states: Dict[str, np.ndarray], training: bool = True) -> Dict[str, int]:
+    def _calculate_distance(self, pos1: Tuple[float, float], pos2: Tuple[float, float]) -> float:
+        return np.sqrt(np.sum((np.array(pos1) - np.array(pos2)) ** 2))
+    
+    def step(self, states, training=True):
         """
-        Execute step for all agents
+        Take a step with all agents
         
         Args:
-            states: Dictionary mapping agent IDs to states
-            training: Whether in training mode
+            states: Dictionary of states for each agent {agent_id: state}
+                   or tuple of (states_dict, global_state)
+            training: Whether this is a training step
             
         Returns:
-            Dictionary mapping agent IDs to selected actions
+            Dictionary of actions for each agent
         """
-        # Process messages and update regional states
-        self.process_communications()  # Changed from _process_communications
-        
-        # Select actions for all agents
+        # Handle case where states is (states_dict, global_state) tuple
+        if isinstance(states, tuple):
+            states_dict, global_state = states
+        else:
+            states_dict = states
+            global_state = None
+            
         actions = {}
-        for agent_id, state in states.items():
+        
+        # First get coordinator actions for each region
+        for coordinator in self.coordinators.values():
+            region_id = coordinator.region_id
+            if f"coordinator_{region_id}" in states_dict:
+                region_state = states_dict[f"coordinator_{region_id}"]
+                # For now, use a simple strategy selection (can be enhanced later)
+                actions[f"coordinator_{region_id}"] = 0  # Default strategy
+        
+        # Then get actions for each agent
+        for agent_id, state in states_dict.items():
             if agent_id in self.agents:
-                actions[agent_id] = self.agents[agent_id].select_action(state)
-        
-        # Update training steps
-        if training:
-            self.training_steps += 1
-        
+                agent = self.agents[agent_id]
+                
+                # Ensure state is numpy array
+                if not isinstance(state, np.ndarray):
+                    state = np.array(state, dtype=np.float32)
+                
+                # Include global state if available
+                if global_state is not None:
+                    if not isinstance(global_state, np.ndarray):
+                        global_state = np.array(global_state, dtype=np.float32)
+                    # Ensure dimensions match before concatenating
+                    if state.ndim == 1 and global_state.ndim == 1:
+                        combined_state = np.concatenate([state, global_state])
+                    else:
+                        # Handle case where either state has extra dimensions
+                        flat_state = state.flatten()
+                        flat_global = global_state.flatten()
+                        combined_state = np.concatenate([flat_state, flat_global])
+                else:
+                    combined_state = state
+                    
+                action = agent.select_action(combined_state, training=training)
+                actions[agent_id] = action
+                
         return actions
     
-    def process_communications(self):  # Changed from _process_communications
-        """Process all pending communications"""
-        # Process coordinator messages first
-        for coordinator in self.coordinators.values():
-            coordinator.process_messages()
-        
-        # Then process agent messages
+    def process_communications(self):
+        # Clear old messages
         for agent in self.agents.values():
-            agent.process_messages()
+            agent.clear_messages()
+        for coordinator in self.coordinators.values():
+            coordinator.clear_messages()
     
-    def update(self,
-              states: Dict[str, np.ndarray],
-              actions: Dict[str, int],
-              rewards: Dict[str, float],
-              next_states: Dict[str, np.ndarray],
-              dones: Dict[str, bool]) -> Dict[str, float]:
+    def update(self, states: Dict[str, np.ndarray], actions: Dict[str, int], rewards: Dict[str, float], next_states: Dict[str, np.ndarray], dones: Dict[str, bool], info: Dict[str, dict] = None) -> Dict[str, float]:
         """
-        Update all agents
+        Update all agents and collect metrics
         
+        Args:
+            states: Current states for each agent
+            actions: Actions taken by each agent
+            rewards: Rewards received by each agent
+            next_states: Next states for each agent
+            dones: Done flags for each agent
+            info: Additional information from environment
+            
         Returns:
             Dictionary of agent losses
         """
         losses = {}
+        total_td_error = 0.0
+        total_priority = 0.0
+        total_beta = 0.0
+        total_epsilon = 0.0
+        num_agents = len(self.agents)
         
-        # Calculate global reward component
-        global_reward = sum(rewards.values()) / len(rewards)
+        # Reset episode statistics
+        self.episode_stats['queue_lengths'] = []
+        self.episode_stats['speeds'] = []
+        self.episode_stats['waiting_times'] = []
+        self.episode_stats['vehicle_counts'] = []
         
-        # Update each agent
         for agent_id in states:
             if agent_id not in self.agents:
                 continue
-                
+            
             agent = self.agents[agent_id]
+            messages = []
             
-            # Get regional reward component if available
-            regional_reward = 0.0
-            if agent.coordinator:
-                region_members = agent.coordinator.member_agents
-                regional_reward = sum(
-                    rewards[member] for member in region_members
-                    if member in rewards
-                ) / len(region_members)
-            
-            # Combine rewards
-            combined_reward = (
-                (1 - agent.regional_weight) * rewards[agent_id] +
-                agent.regional_weight * (
-                    0.7 * regional_reward + 0.3 * global_reward
-                )
-            )
-            
-            # Store experience
-            agent.remember(
-                states[agent_id],
-                actions[agent_id],
-                combined_reward,
-                next_states[agent_id],
-                dones[agent_id]
-            )
+            # Get messages from region
+            if agent.region_id is not None:
+                coordinator = self.coordinators[agent.region_id]
+                messages = coordinator.messages
             
             # Update agent
-            loss = agent.update()
-            if loss is not None:
-                losses[agent_id] = loss
+            loss = agent.update(
+                states[agent_id],
+                actions[agent_id],
+                rewards[agent_id],
+                next_states[agent_id],
+                dones[agent_id],
+                messages
+            )
             
-            # Track rewards
-            self.episode_rewards[agent_id].append(combined_reward)
+            losses[agent_id] = loss
+            
+            # Collect metrics from agent
+            if hasattr(agent, 'metrics'):
+                total_td_error += agent.metrics.get('td_error', 0.0)
+                total_priority += agent.metrics.get('priority', 0.0)
+                total_beta += agent.metrics.get('beta', 0.4)
+                total_epsilon += agent.metrics.get('epsilon', 1.0)
+            
+            # Collect traffic metrics from info
+            if info and agent_id in info:
+                agent_info = info[agent_id]
+                self.episode_stats['queue_lengths'].append(agent_info.get('queue_length', 0))
+                self.episode_stats['speeds'].append(agent_info.get('speed', 0))
+                self.episode_stats['waiting_times'].append(agent_info.get('waiting_time', 0))
+                self.episode_stats['vehicle_counts'].append(agent_info.get('vehicle_count', 0))
+            
+            # Update region performance
+            if agent.region_id is not None:
+                coordinator = self.coordinators[agent.region_id]
+                coordinator.update_performance(rewards[agent_id])
+        
+        # Update all metrics
+        if num_agents > 0:
+            # Update training metrics
+            self.metrics.update({
+                'avg_td_error': total_td_error / num_agents,
+                'avg_priority': total_priority / num_agents,
+                'current_beta': total_beta / num_agents,
+                'current_epsilon': total_epsilon / num_agents,
+                'learning_rate': self.config.get('training', {}).get('learning_rate', 0.001),
+                
+                # Update agent metrics
+                'num_regions': len(self.coordinators),
+                'avg_region_size': np.mean([len(c.member_agents) for c in self.coordinators.values()]),
+                'coordination_rate': self.episode_stats['coordination_count'] / max(1, self.episode_stats['total_messages']),
+                
+                # Update traffic metrics
+                'avg_queue_length': np.mean(self.episode_stats['queue_lengths']) if self.episode_stats['queue_lengths'] else 0,
+                'avg_speed': np.mean(self.episode_stats['speeds']) if self.episode_stats['speeds'] else 0,
+                'avg_waiting_time': np.mean(self.episode_stats['waiting_times']) if self.episode_stats['waiting_times'] else 0,
+                'throughput': sum(self.episode_stats['vehicle_counts']) if self.episode_stats['vehicle_counts'] else 0,
+                
+                # Update buffer metrics
+                'buffer_size': sum(len(agent.memory) for agent in self.agents.values()) if hasattr(next(iter(self.agents.values())), 'memory') else 0
+            })
         
         return losses
-    
+
     def get_metrics(self) -> Dict[str, float]:
-        """Get current performance metrics"""
-        metrics = {
-            'avg_reward': np.mean([
-                np.mean(rewards) for rewards in self.episode_rewards.values()
-            ]),
-            'num_regions': len(self.coordinators),
-            'avg_region_size': np.mean([
-                len(coord.member_agents) for coord in self.coordinators.values()
-            ]),
-            'message_rate': np.mean([
-                len(agent.message_queue) for agent in self.agents.values()
-            ])
-        }
-        
-        return metrics
-    
+        """Return metrics from manager"""
+        return self.metrics.copy()  # Return a copy to prevent external modifications
+
     def save(self, path: str):
-        """Save all agents and system state"""
-        save_path = Path(path)
-        save_path.mkdir(parents=True, exist_ok=True)
+        path = Path(path)
+        path.mkdir(parents=True, exist_ok=True)
         
         # Save agents
-        agent_dir = save_path / 'agents'
-        agent_dir.mkdir(exist_ok=True)
-        
         for agent_id, agent in self.agents.items():
-            agent.save(agent_dir / f'{agent_id}.pt')
+            agent.save(str(path / f"agent_{agent_id}.pt"))
         
         # Save metrics
-        with open(save_path / 'metrics.json', 'w') as f:
-            json.dump(dict(self.metrics), f, indent=4)  # Convert defaultdict to dict for JSON serialization
+        with open(path / "metrics.json", 'w') as f:
+            json.dump(self.metrics, f)
     
     def load(self, path: str):
-        """Load agents and system state"""
-        load_path = Path(path)
+        path = Path(path)
         
         # Load agents
-        agent_dir = load_path / 'agents'
-        for agent_file in agent_dir.glob('*.pt'):
-            agent_id = agent_file.stem
-            if agent_id in self.agents:
-                self.agents[agent_id].load(agent_file)
+        for agent_id, agent in self.agents.items():
+            agent_path = path / f"agent_{agent_id}.pt"
+            if agent_path.exists():
+                agent.load(str(agent_path))
         
         # Load metrics
-        metrics_file = load_path / 'metrics.json'
-        if metrics_file.exists():
-            with open(metrics_file, 'r') as f:
+        metrics_path = path / "metrics.json"
+        if metrics_path.exists():
+            with open(metrics_path) as f:
                 self.metrics = defaultdict(list, json.load(f))
+
+    def update_learning_rate(self, lr: float):
+        """
+        Update learning rate for all agents
+        
+        Args:
+            lr: New learning rate value
+        """
+        for agent in self.agents.values():
+            for param_group in agent.optimizer.param_groups:
+                param_group['lr'] = lr
+    
+    def process_communications(self):
+        """
+        Process communications between agents and return coordination metrics
+        
+        Returns:
+            dict: Coordination metrics including:
+                - coordinated_agents: Number of agents that coordinated
+                - total_interactions: Total number of possible interactions
+        """
+        coordinated_agents = 0
+        total_interactions = 0
+        
+        # Process communications for each region
+        for coordinator in self.coordinators.values():
+            agents_in_region = len(coordinator.member_agents)
+            if agents_in_region > 1:
+                # Count potential interactions
+                total_interactions += (agents_in_region * (agents_in_region - 1)) // 2
+                
+                # Count actual coordinations (simplified for now)
+                coordinated_agents += agents_in_region
+        
+        return {
+            'coordinated_agents': coordinated_agents,
+            'total_interactions': total_interactions
+        }
+
+    def save_model(self, path: str):
+        """
+        Save model to specified path.
+        This is an alias for the save method to maintain compatibility with training script.
+        
+        Args:
+            path: Path to save model to
+        """
+        self.save(path)
 
 def main():
     """Example usage and testing"""
@@ -1262,7 +859,14 @@ def main():
         'min_region_size': 3,
         'overlap_threshold': 0.2,
         'regional_weight': 0.3,
-        'coordination_threshold': 0.7
+        'coordination_threshold': 0.7,
+        'hierarchical': {
+            'influence_radius': 150.0,
+            'region_size': 3,
+            'coordination_interval': 5,
+            'message_size': 32,
+            'coordination_threshold': 0.6
+        }
     }
     
     # Initialize environment
@@ -1305,7 +909,7 @@ def main():
                 
                 # Update agents
                 losses = manager.update(states, actions, rewards, next_states,
-                                     {tl: done for tl in states})
+                                     {tl: done for tl in states}, info)
                 
                 # Track rewards
                 for tl_id, reward in rewards.items():
