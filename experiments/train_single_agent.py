@@ -194,8 +194,8 @@ def train_dqn(env_config, agent_config, num_episodes=50):
     
     # Setup logging
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    log_dir = Path("experiments/logs") / f"single_agent_{selected_tl}_{timestamp}"
-    model_dir = Path("experiments/models") / f"single_agent_{selected_tl}_{timestamp}"
+    log_dir = Path("experiments/logs") / f"single_agent_traffic"
+    model_dir = Path("experiments/models") / f"single_agent_traffic"
     log_dir.mkdir(parents=True, exist_ok=True)
     model_dir.mkdir(parents=True, exist_ok=True)
     
@@ -256,7 +256,7 @@ def train_dqn(env_config, agent_config, num_episodes=50):
                     if metrics['waiting_times'][-1] > np.mean(metrics['waiting_times'][-5:]):
                         agent.epsilon = min(1.0, agent.epsilon * 1.1)
             
-            # Update metrics
+            # At the end of the episode, update metrics
             metrics['episode_rewards'].append(episode_reward)
             metrics['episode_lengths'].append(step)
             env_metrics = env.get_metrics()
@@ -266,7 +266,7 @@ def train_dqn(env_config, agent_config, num_episodes=50):
             metrics['traffic_pressure'].append(np.mean(env_metrics['traffic_pressure']))
             metrics['losses'].append(np.mean(episode_losses) if episode_losses else 0)
             
-            # Log progress
+            # Log progress at the end of the episode
             logger.info(f"\nEpisode {episode+1}/{num_episodes}")
             logger.info(f"Reward: {episode_reward:.2f}")
             logger.info(f"Average Loss: {metrics['losses'][-1]:.4f}")
@@ -275,7 +275,7 @@ def train_dqn(env_config, agent_config, num_episodes=50):
             logger.info(f"Average Queue Length: {metrics['queue_lengths'][-1]:.2f}")
             logger.info(f"Average Throughput: {metrics['throughput'][-1]:.2f}")
             
-            # Save checkpoint
+            # Save checkpoint every 2 episodes
             if (episode + 1) % 2 == 0:
                 checkpoint_dir = model_dir / f"checkpoint_{episode+1}"
                 checkpoint_dir.mkdir(exist_ok=True)
@@ -304,7 +304,7 @@ def train_dqn(env_config, agent_config, num_episodes=50):
         logger.error(f"Error during training: {str(e)}")
         logger.exception("Training error details:")
     finally:
-        # Save final model and metrics
+        # Save final model and metrics at the end
         try:
             agent.save(model_dir / "final_model.pt")
             with open(log_dir / "metrics_final.json", 'w') as f:
@@ -315,6 +315,7 @@ def train_dqn(env_config, agent_config, num_episodes=50):
             env.close()
     
     return metrics
+
 
 def main():
     """Main training function"""
