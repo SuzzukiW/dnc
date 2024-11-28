@@ -3,17 +3,14 @@
 model_name: CASF
 version: 1.2
 
-files:
-  net_file: "baseline/osm.net.xml.gz"
-  route_file: "baseline/osm.passenger.trips.xml"
-
 training:
-  num_episodes: 20         # Number of training episodes
-  steps_per_episode: 600     # Number of steps per episode
+  num_episodes: 1           # Increased from 20 to 1000 for better learning
+  steps_per_episode: 200       # Aligned with environment's max_episode_steps
   batch_size: 128
   gamma: 0.95
   tau: 0.01
-  update_every: 1
+  update_every: 10             # Reduced from 100 to 10 for more frequent updates
+  checkpoint_interval: 50      # Adjusted to save checkpoints every 50 episodes
 
 model:
   state_encoder_units: [256, 128]
@@ -29,29 +26,34 @@ model:
   final_state_dim: 32
   actor_hidden_units: [64, 32]
   critic_hidden_units: [64, 32]
-  learning_rate: 0.001       # Moved from training to model
-  grad_clip: 0.5             # Moved from training to model
+  learning_rate: 0.001         # Moved from training to model
+  grad_clip: 0.5               # Moved from training to model
 
 environment:
-  observation_dim: 28  # Fixed size for all states
-  action_dim: 1        # Changed from 4 to 1
-  max_episode_steps: 200  # Changed from 1000 to 200 to align with steps_per_episode
+  observation_dim: 28
+  action_dim: 2                 # Increased from 1 to 2 for more control (e.g., phase and duration)
+  max_episode_steps: 200
   max_neighbors: 4
   communication_range: 1000
   max_phase_duration: 60
-  reward_weights:        # Moved under environment
+  reward_weights:
     waiting_time: 1.0
     queue_length: 1.0
     throughput: 1.0
+  files:
+    net_file: "baseline/osm.net.xml.gz"             # Path to your SUMO network file
+    route_file: "baseline/osm.passenger.trips.xml"  # Path to your SUMO route file
 
 memory:
-  capacity: 200000          # Increased from 100000 to 200000
+  capacity: 120000              # Reduced from 200000 to better match total steps
   prioritized_replay: true
   alpha: 0.6
-  beta: 0.4
+  beta_start: 0.4               # Initial beta value for importance sampling
+  beta_end: 1.0                 # Final beta value after annealing
+  beta_steps: 100000            # Number of steps over which beta is annealed
   epsilon: 0.01
 
 logging:
   log_interval: 100
-  checkpoint_interval: 1       # Changed from 5 to 1 to save checkpoints every episode
+  checkpoint_interval: 50        # Adjusted to save checkpoints every 50 episodes
   eval_interval: 500
