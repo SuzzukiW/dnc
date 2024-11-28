@@ -1,60 +1,31 @@
 # src/utils/logger.py
 
 import logging
-import sys
-from pathlib import Path
 
-def setup_logger(name, log_file, level=logging.INFO):
-    """Setup logger with specified name and log file
+def get_logger(name, level=logging.INFO):
+    """
+    Initializes and returns a logger with the specified name and level.
     
     Args:
-        name (str): Name of the logger
-        log_file (str or Path): Path to log file
-        level (int): Logging level
-        
+        name (str): The name of the logger.
+        level (int, optional): The logging level. Defaults to logging.INFO.
+    
     Returns:
-        logging.Logger: Configured logger instance
+        logging.Logger: Configured logger.
     """
-    # Convert log_file to Path if it's a string
-    log_file = Path(log_file)
-    
-    # Create directory if it doesn't exist
-    log_file.parent.mkdir(parents=True, exist_ok=True)
-    
-    # Create formatter
-    formatter = logging.Formatter(
-        fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
-    
-    # Setup file handler
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setFormatter(formatter)
-    
-    # Setup stream handler (console output)
-    stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setFormatter(formatter)
-    
-    # Setup logger
     logger = logging.getLogger(name)
     logger.setLevel(level)
     
-    # Remove existing handlers if any
-    logger.handlers = []
-    
-    # Add handlers
-    logger.addHandler(file_handler)
-    logger.addHandler(stream_handler)
+    if not logger.handlers:
+        # Create console handler
+        ch = logging.StreamHandler()
+        ch.setLevel(level)
+        
+        # Create formatter
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        
+        # Add handler to logger
+        logger.addHandler(ch)
     
     return logger
-
-def get_logger(name):
-    """Get existing logger by name
-    
-    Args:
-        name (str): Name of the logger
-        
-    Returns:
-        logging.Logger: Logger instance
-    """
-    return logging.getLogger(name)

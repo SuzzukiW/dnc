@@ -1,0 +1,77 @@
+# config/ppo_config.yaml
+
+# Training Parameters
+train:
+  num_episodes: 10  # Increase episodes for better learning
+  max_steps_per_episode: 50
+  eval_interval: 5
+  save_interval: 10
+  log_interval: 1
+
+# PPO Hyperparameters
+ppo:
+  learning_rate: 3.5e-4  # More conservative learning rate
+  gamma: 0.99
+  gae_lambda: 0.95  # Back to standard value
+  clip_range: 0.2
+  vf_coef: 0.5  # Reduced to balance value and policy learning
+  ent_coef: 0.005  # Lower entropy for more exploitation
+  max_grad_norm: 0.5
+  n_epochs: 100  # Reduced to prevent overfitting
+  batch_size: 32  # Smaller batch for more frequent updates
+
+# Network Architecture
+network:
+  actor:
+    hidden_sizes: [32, 16]  # Simpler architecture
+    activation: "relu"
+  critic:
+    hidden_sizes: [32, 16]
+    activation: "relu"
+
+# Environment Configuration
+env:
+  # SUMO Configuration
+  sumo_net_file: "Version1/2024-11-05-18-42-37/osm.net.xml"
+  sumo_route_file: "Version1/2024-11-05-18-42-37/osm.passenger.trips.xml"
+  sumo_gui: false
+  sumo_step_length: 1  # Match baseline's granularity
+  min_green_time: 5
+  max_green_time: 50
+  yellow_time: 3
+  num_actions: 4
+
+# Multi-Agent Settings
+multi_agent:
+  observation_radius: 150  # Wider view of traffic
+  neighbor_features: 3
+
+# Reward Function Weights
+rewards:
+  queue_length: -5.0
+  waiting_time: -30.0  # Much stronger penalty for waiting time
+  speed: 2.0
+  emergency: -3.0
+  throughput: 50.0
+
+# Experiment Configuration
+experiment:
+  name: "multi_agent_ppo"
+  seed: 42
+  num_eval_episodes: 5
+  save_dir: "experiments/models/ppo"
+  checkpoint_dir: "checkpoints/"
+  debug_mode: false
+  use_wandb: false
+
+# Logging Configuration
+logging:
+  log_dir: "experiments/logs/ppo"
+  tensorboard: true
+  metrics:
+    - average_queue_length
+    - average_waiting_time
+    - average_speed
+    - total_throughput
+    - emissions
+    - fuel_consumption

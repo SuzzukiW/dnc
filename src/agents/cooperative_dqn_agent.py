@@ -8,6 +8,8 @@ import random
 from collections import namedtuple, defaultdict, deque
 from typing import Dict, List, Optional, Any
 from pathlib import Path
+import torch.cuda.amp as amp
+import torch.nn.functional as F
 
 from src.models.dqn_network import DQNNetwork
 
@@ -42,6 +44,20 @@ class SharedReplayBuffer:
             done: Episode termination flag
             agent_id: ID of the agent
         """
+        # Ensure action is a numpy array
+        if isinstance(action, (int, float)):
+            action = np.array([action], dtype=np.float32)
+        elif isinstance(action, list):
+            action = np.array(action, dtype=np.float32)
+        elif isinstance(action, torch.Tensor):
+            action = action.cpu().numpy()
+            
+        # Ensure state and next_state are numpy arrays
+        if isinstance(state, torch.Tensor):
+            state = state.cpu().numpy()
+        if isinstance(next_state, torch.Tensor):
+            next_state = next_state.cpu().numpy()
+            
         # Determine state size
         state_size = len(state) if isinstance(state, (list, np.ndarray)) else state.shape[0]
         
@@ -73,28 +89,19 @@ class SharedReplayBuffer:
         Returns:
             Batch of transitions
         """
-        # Use state-specific memory if state_size is provided
+        # Filter by state size if specified
         if state_size is not None:
-            memory_pool = self.agent_memories.get(state_size, [])
+            memory_pool = self.agent_memories[state_size]
         else:
             memory_pool = self.memory
         
         # Ensure enough samples
         if len(memory_pool) < batch_size:
             return None
-        
-        # Sample transitions
+            
+        # Sample transitions with matching state sizes
         batch = random.sample(memory_pool, batch_size)
-        
-        # Prepare batch tensors
-        states = torch.FloatTensor([t.state for t in batch])
-        actions = torch.FloatTensor([t.action for t in batch])
-        rewards = torch.FloatTensor([t.reward for t in batch])
-        next_states = torch.FloatTensor([t.next_state for t in batch])
-        dones = torch.FloatTensor([float(t.done) for t in batch])
-        agent_ids = [t.agent_id for t in batch]
-        
-        return states, actions, rewards, next_states, dones, agent_ids
+        return batch
     
     def __len__(self):
         """
@@ -106,77 +113,84 @@ class SharedReplayBuffer:
         return len(self.memory)
 
 class CooperativeDQNAgent:
-    """Individual cooperative DQN agent"""
     def __init__(self, agent_id, state_size, action_size, shared_memory, neighbor_ids, config):
-        """
-        Initialize a Cooperative DQN Agent with adaptive network configuration
-        
-        Args:
-            agent_id: Unique identifier for the agent
-            state_size: Dimension of input state
-            action_size: Dimension of output actions
-            shared_memory: Shared replay buffer
-            neighbor_ids: List of neighboring agent IDs
-            config: Configuration dictionary
-        """
         self.agent_id = agent_id
-        
-        # Ensure state_size and action_size are integers
         self.state_size = int(state_size)
         self.action_size = int(action_size)
         
         self.shared_memory = shared_memory
         self.neighbor_ids = neighbor_ids
-        self.config = config  # Store the entire config
+        self.config = config
         
-        # Hyperparameters with more robust defaults
+        # Hyperparameters
         self.gamma = float(config.get('gamma', 0.99))
         self.learning_rate = float(config.get('learning_rate', 0.001))
         self.epsilon = float(config.get('epsilon_start', 1.0))
         self.epsilon_min = float(config.get('epsilon_min', 0.01))
         self.epsilon_decay = float(config.get('epsilon_decay', 0.995))
         self.batch_size = int(config.get('batch_size', 64))
-        
-        # Regional learning parameters
         self.regional_weight = float(config.get('regional_weight', 0.3))
-        self.use_regional_input = bool(config.get('use_regional_input', False))
         
-        # Adaptive network configuration
-        hidden_sizes = config.get('hidden_sizes', None)
+        # Setup device with Apple Silicon support
+        if hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+            self.device = torch.device("mps")
+        else:
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            
+        # Enable float32 matrix multiplication on Apple Silicon
+        if self.device == torch.device("mps"):
+            torch.set_default_dtype(torch.float32)
         
-        # Networks with adaptive architecture
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # Setup networks with specific state size for this agent
+        hidden_sizes = [
+            min(384, max(64, self.state_size * 2)),
+            min(192, max(32, self.state_size)),
+            min(96, max(16, self.state_size // 2))
+        ]
         
-        # Create policy network
+        # Initialize policy and target networks with agent-specific dimensions
         self.policy_net = DQNNetwork(
-            state_size=self.state_size, 
-            action_size=self.action_size, 
+            state_size=self.state_size,
+            action_size=self.action_size,
             hidden_sizes=hidden_sizes
         ).to(self.device)
         
-        # Create target network
         self.target_net = DQNNetwork(
-            state_size=self.state_size, 
-            action_size=self.action_size, 
+            state_size=self.state_size,
+            action_size=self.action_size,
             hidden_sizes=hidden_sizes
         ).to(self.device)
         
-        # Copy weights from policy to target network
         self.target_net.load_state_dict(self.policy_net.state_dict())
         
-        # Optimizer with adaptive learning rate
+        # Optimizer setup with Apple Silicon optimizations
         self.optimizer = optim.Adam(
-            self.policy_net.parameters(), 
+            self.policy_net.parameters(),
             lr=self.learning_rate,
-            weight_decay=1e-5  # Add L2 regularization
+            weight_decay=1e-5,
+            eps=1e-7  # Increased epsilon for better numerical stability
         )
         
-        # Freeze target network parameters
-        for param in self.target_net.parameters():
-            param.requires_grad = False
+        # Enable AMP (Automatic Mixed Precision) for better performance
+        self.scaler = amp.GradScaler()
+        self.use_amp = True
     
     def remember(self, state, action, reward, next_state, done):
         """Store transition in shared memory"""
+        # Ensure action is a numpy array
+        if isinstance(action, (int, float)):
+            action = np.array([action], dtype=np.float32)
+        elif isinstance(action, list):
+            action = np.array(action, dtype=np.float32)
+        elif isinstance(action, torch.Tensor):
+            action = action.cpu().numpy()
+            
+        # Ensure state and next_state are numpy arrays
+        if isinstance(state, torch.Tensor):
+            state = state.cpu().numpy()
+        if isinstance(next_state, torch.Tensor):
+            next_state = next_state.cpu().numpy()
+            
         self.shared_memory.push(state, action, reward, next_state, done, self.agent_id)
     
     def act(self, state, training=True, regional_recommendation=None):
@@ -194,9 +208,13 @@ class CooperativeDQNAgent:
                 # Get Q-values from policy network
                 q_values = self.policy_net(state_tensor)
                 
-                # Convert Q-values to continuous action
-                # This assumes the network outputs a continuous action directly
-                action = q_values.cpu().numpy()[0]
+                # Get action index with highest Q-value
+                action_index = q_values.argmax(dim=1).long()
+                
+                # Convert to one-hot action
+                action = torch.zeros_like(q_values[0])
+                action[action_index] = 1
+                action = action.cpu().numpy()
         
         # Apply regional recommendation if provided
         if regional_recommendation is not None:
@@ -214,52 +232,66 @@ class CooperativeDQNAgent:
         for neighbor_id in self.neighbor_ids:
             if neighbor_id in other_agents:
                 neighbor = other_agents[neighbor_id]
-                # Only share weights if state sizes match
-                if neighbor.state_size == self.state_size:
+                # Only share weights if state sizes match and action sizes match
+                if (neighbor.state_size == self.state_size and 
+                    neighbor.action_size == self.action_size):
                     self._share_weights(neighbor.policy_net)
     
     def _share_weights(self, other_network, share_ratio=0.1):
         """Share a portion of weights with another network"""
-        for param, other_param in zip(self.policy_net.parameters(), other_network.parameters()):
-            param.data.copy_(share_ratio * other_param.data + (1 - share_ratio) * param.data)
+        # Only share weights if network architectures match
+        if (list(self.policy_net.parameters())[0].shape == 
+            list(other_network.parameters())[0].shape):
+            for param, other_param in zip(self.policy_net.parameters(), 
+                                        other_network.parameters()):
+                if param.shape == other_param.shape:
+                    param.data.copy_(share_ratio * other_param.data + 
+                                   (1 - share_ratio) * param.data)
     
     def replay(self, global_reward=0):
         """Train on batch from shared memory with both local and global rewards"""
-        if len(self.shared_memory) < self.batch_size:
-            return
-        
-        batch = self.shared_memory.sample(self.batch_size, self.state_size)
-        
+        # Sample batch of transitions with matching state size
+        batch = self.shared_memory.sample(self.batch_size, state_size=self.state_size)
         if batch is None:
             return
         
-        states, actions, rewards, next_states, dones, agent_ids = batch
+        states_array = np.array([t.state for t in batch])
+        actions_array = np.vstack([t.action for t in batch])
+        rewards_array = np.array([t.reward for t in batch])
+        next_states_array = np.array([t.next_state for t in batch])
+        dones_array = np.array([float(t.done) for t in batch])
         
-        # Convert to tensors
-        states = states.to(self.device)
-        actions = actions.to(self.device)
-        rewards = rewards.to(self.device)
-        next_states = next_states.to(self.device)
-        dones = dones.to(self.device)
+        # Convert numpy arrays to tensors
+        states = torch.FloatTensor(states_array).to(self.device)
+        actions = torch.LongTensor(actions_array).to(self.device)
+        rewards = torch.FloatTensor(rewards_array).to(self.device)
+        next_states = torch.FloatTensor(next_states_array).to(self.device)
+        dones = torch.FloatTensor(dones_array).to(self.device)
         
-        # Current Q values
-        current_q_values = self.policy_net(states).gather(1, actions.unsqueeze(1))
+        # Add global reward component
+        rewards = rewards + global_reward
         
-        # Next Q values from target net
-        next_q_values = self.target_net(next_states).max(1)[0].detach()
-        target_q_values = rewards + self.gamma * next_q_values * (1 - dones)
-        
-        # Compute loss
-        loss = nn.MSELoss()(current_q_values, target_q_values.unsqueeze(1))
-        
-        # Optimize the model
+        with torch.cuda.amp.autocast(enabled=self.use_amp):
+            # Get current Q values
+            current_q_values = self.policy_net(states)
+            action_indices = actions.argmax(dim=1).long()  # Convert actions to indices
+            state_action_values = current_q_values.gather(1, action_indices.unsqueeze(1))
+
+            # Compute next state values
+            with torch.no_grad():
+                next_state_values = self.target_net(next_states).max(1)[0]
+                next_state_values[dones.bool()] = 0.0  # Use boolean indexing
+                expected_state_action_values = (next_state_values * self.gamma) + rewards
+
+            # Compute loss
+            loss = F.smooth_l1_loss(state_action_values, expected_state_action_values.unsqueeze(1))
+
+        # Optimize the model with gradient scaling
         self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
-        
-        # Decay epsilon
-        self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
-        
+        self.scaler.scale(loss).backward()
+        self.scaler.step(self.optimizer)
+        self.scaler.update()
+
         return loss.item()
     
     def update_target_network(self):
@@ -290,35 +322,24 @@ class CooperativeDQNAgent:
         self.epsilon = checkpoint['epsilon']
 
 class MultiAgentDQN:
-    """Manager class for multiple cooperative DQN agents"""
-    def __init__(self, state_size, action_size, agent_ids, neighbor_map, config):
-        """
-        Initialize multi-agent DQN system
-
-        Args:
-            state_size: Default state size (can be overridden per agent)
-            action_size: Default action size (can be overridden per agent)
-            agent_ids: List of agent IDs
-            neighbor_map: Mapping of agents to their neighbors
-            config: Configuration dictionary
-        """
-        self.config = config  # Store the config
+    def __init__(self, valid_traffic_lights, observation_spaces, action_spaces, neighbor_map, config):
+        self.config = config
         self.shared_memory = SharedReplayBuffer(config.get('memory_size', 100000))
         self.agents = {}
         
-        # Create an agent for each traffic light
-        for agent_id in agent_ids:
-            # Get state and action size for this specific agent
-            agent_state_size = config.get(f'{agent_id}_state_size', state_size)
-            agent_action_size = config.get(f'{agent_id}_action_size', action_size)
+        # Create agents with individual state sizes
+        for agent_id in valid_traffic_lights:
+            # Get state and action sizes from spaces
+            agent_state_size = observation_spaces[agent_id].shape[0]
+            agent_action_size = action_spaces[agent_id].shape[0]
             
-            neighbor_ids = neighbor_map.get(agent_id, [])
+            # Create agent with its specific dimensions
             self.agents[agent_id] = CooperativeDQNAgent(
                 agent_id=agent_id,
                 state_size=agent_state_size,
                 action_size=agent_action_size,
                 shared_memory=self.shared_memory,
-                neighbor_ids=neighbor_ids,
+                neighbor_ids=neighbor_map.get(agent_id, []),
                 config=config
             )
     

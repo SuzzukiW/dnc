@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-11-21 17:21:13 by Eclipse SUMO sumo Version 1.20.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="/Users/xfu/bu-courses-repo/cds-ds-340/ds340-project/Version1/2024-11-05-18-42-37/osm.net.xml"/>
+        <route-files value="/Users/xfu/bu-courses-repo/cds-ds-340/ds340-project/Version1/2024-11-05-18-42-37/osm.passenger.trips.xml"/>
+    </input>
+
+    <output>
+        <vehroute-output value="routes.out.xml"/>
+    </output>
+
+    <time>
+        <step-length value="0.5"/>
+    </time>
+
+    <processing>
+        <collision.action value="teleport"/>
+        <collision.mingap-factor value="0"/>
+        <max-num-vehicles value="250"/>
+        <scale value="0.15"/>
+        <time-to-teleport value="150"/>
+        <waiting-time-memory value="7200"/>
+        <max-depart-delay value="15"/>
+        <lanechange.duration value="1.5"/>
+        <time-to-impatience value="5"/>
+    </processing>
+
+    <routing>
+        <device.rerouting.probability value="1.0"/>
+        <device.rerouting.period value="20"/>
+        <device.rerouting.adaptation-weight value="0.8"/>
+        <device.rerouting.adaptation-interval value="20"/>
+        <device.rerouting.with-taz value="true"/>
+    </routing>
+
+    <report>
+        <no-warnings value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <traci_server>
+        <remote-port value="55515"/>
+    </traci_server>
+
+    <random_number>
+        <random value="true"/>
+    </random_number>
+
+    <gui_only>
+        <quit-on-end value="true"/>
+    </gui_only>
+
+</configuration>

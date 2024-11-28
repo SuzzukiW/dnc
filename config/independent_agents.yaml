@@ -1,28 +1,49 @@
 # config/independent_agents.yaml
 
-environment:
-  use_gui: false
-  num_seconds: 3600
-  delta_time: 5
-  yellow_time: 2
-  min_green: 5
-  max_green: 50
-  max_depart_delay: 100000
-  time_to_teleport: -1
-  
-agent:
-  # Learning parameters
-  gamma: 0.95
-  learning_rate: 0.001
+# Training Configuration
+training:
+  num_episodes: 10
   batch_size: 32
-  memory_size: 100000
-  target_update: 10
-  tau: 0.001  # For soft updates
-  
-  # Network architecture
-  hidden_size: 64
-  
-  # Exploration parameters
+  train_freq: 5  # How often to train (steps)
+  save_freq: 100  # How often to save checkpoints (episodes)
   epsilon_start: 1.0
-  epsilon_min: 0.01
-  epsilon_decay: 0.995
+  epsilon_end: 0.01
+  epsilon_decay: 800  # Episodes over which to decay epsilon
+  learning_rate: 0.001
+  gamma: 0.95  # Discount factor
+  max_steps_per_episode: 50  # Maximum number of steps allowed in a single episode
+
+# Environment Configuration
+environment:
+  delta_time: 5  # Simulation time step (seconds)
+  yellow_time: 2  # Duration of yellow phase
+  min_green: 5   # Minimum green phase duration
+  max_green: 50  # Maximum green phase duration
+  num_seconds: 3600  # Episode duration in seconds
+  sumo_seed: 42
+  use_gui: false
+  sumo_warnings: false
+
+# Network Configuration
+network:
+  state_size: 14  # 4 lanes * (queue + wait + speed) + phase_duration + is_yellow
+  action_size: 2  # Keep/change phase
+  hidden_sizes: [64, 32]  # Size of hidden layers
+
+# File Paths
+paths:
+  net_file: "Version1/2024-11-05-18-42-37/osm.net.xml"
+  route_file: "Version1/2024-11-05-18-42-37/osm.passenger.trips.xml"
+  output_dir: "outputs/"
+  log_dir: "logs/"
+
+# Memory Configuration
+memory:
+  capacity: 20000  # Size of replay buffer
+  min_samples: 200  # Minimum samples before training starts
+
+# Evaluation Configuration
+evaluation:
+  eval_frequency: 50  # Episodes between evaluations
+  num_eval_episodes: 5  # Number of episodes for each evaluation
+  render_eval: false  # Whether to render evaluation episodes
