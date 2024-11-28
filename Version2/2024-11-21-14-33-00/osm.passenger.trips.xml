@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-11-21 14:33:11.908174 by osmWebWizard.py v1_21_0+0000-d7b3b481c43
+<configuration>
+    <net-file value="C:\Windows\system32\2024-11-21-14-33-00\osm.net.xml.gz"/>
+    <output-trip-file value="C:\Windows\system32\2024-11-21-14-33-00\osm.passenger.trips.xml"/>
+    <route-file value="C:\Windows\system32\2024-11-21-14-33-00\osm.passenger.rou.xml"/>
+    <prefix value="veh"/>
+    <trip-attributes value="departLane=&quot;best&quot;"/>
+    <fringe-start-attributes value="departSpeed=&quot;max&quot;"/>
+    <vehicle-class value="passenger"/>
+    <lanes value="True"/>
+    <fringe-factor value="5"/>
+    <allow-fringe.min-length value="1000.0"/>
+    <via-edge-types value="highway.motorway,highway.motorway_link,highway.trunk_link,highway.primary_link,highway.secondary_link,highway.tertiary_link"/>
+    <min-distance value="300.0"/>
+    <min-distance.fringe value="10.0"/>
+    <remove-loops value="True"/>
+    <validate value="True"/>
+    <insertion-density value="12.0"/>
+</configuration>
+-->
+
+<!-- generated on 2024-11-21 14:33:11 by Eclipse SUMO duarouter Version 1.21.0
+<duarouterConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
+
+    <input>
+        <net-file value="C:\Windows\system32\2024-11-21-14-33-00\osm.net.xml.gz"/>
+        <route-files value="C:\Windows\system32\2024-11-21-14-33-00\osm.passenger.trips.xml"/>
+    </input>
+
+    <output>
+        <output-file value="C:\Windows\system32\2024-11-21-14-33-00\osm.passenger.trips.xml.tmp"/>
+        <alternatives-output value="NUL"/>
+        <write-trips value="true"/>
+    </output>
+
+    <processing>
+        <remove-loops value="true"/>
+    </processing>
+
+    <time>
+        <begin value="0.0"/>
+        <end value="3600.0"/>
+    </time>
+
+    <report>
+        <no-warnings value="true"/>
+        <ignore-errors value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+</duarouterConfiguration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="veh_passenger" vClass="passenger"/>
+    <trip id="veh17" type="veh_passenger" depart="1575.32" departLane="best" departSpeed="max" from="63104590#0" to="8651512#3"/>
+    <trip id="veh19" type="veh_passenger" depart="1760.66" departLane="best" departSpeed="max" from="1039343430#0" to="8647158#1"/>
+    <trip id="veh36" type="veh_passenger" depart="3335.98" departLane="best" from="8648507#1" to="426489346#1"/>
+    <trip id="veh37" type="veh_passenger" depart="3428.65" departLane="best" departSpeed="max" from="591217296#0" to="426489346#2"/>
+</routes>
