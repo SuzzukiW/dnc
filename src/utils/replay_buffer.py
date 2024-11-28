@@ -1,45 +1,70 @@
+# src/utils/replay_buffer.py
+
 import numpy as np
 import random
-import torch
+import tensorflow as tf
 
-class ReplayBuffer:
-    """Fixed-size buffer to store experience tuples."""
+class PrioritizedReplayBuffer:
+    def __init__(self, capacity, alpha=0.6, beta=0.4, epsilon=0.01):
+        self.capacity = capacity
+        self.alpha = alpha
+        self.beta = beta
+        self.epsilon = epsilon
+        self.buffer = []
+        self.pos = 0
+        self.priorities = np.zeros((capacity,), dtype=np.float32)
 
-    def __init__(self, buffer_size, batch_size, seed):
-        """Initialize a ReplayBuffer object.
-        
-        Params
-        ======
-            buffer_size (int): maximum size of buffer
-            batch_size (int): size of each training batch
-            seed (int): random seed
-        """
-        self.memory = []
-        self.buffer_size = buffer_size
-        self.batch_size = batch_size
-        self.seed = random.seed(seed)
-    
-    def add(self, states, actions, rewards, next_states, dones):
-        """Add a new experience to memory."""
-        if len(self.memory) >= self.buffer_size:
-            self.memory.pop(0)
-        
-        experience = (states, actions, rewards, next_states, dones)
-        self.memory.append(experience)
-    
-    def sample(self):
-        """Randomly sample a batch of experiences from memory."""
-        experiences = random.sample(self.memory, k=self.batch_size)
-        
-        # Convert to NumPy arrays
-        states = np.array([e[0] for e in experiences])
-        actions = np.array([e[1] for e in experiences])
-        rewards = np.array([e[2] for e in experiences])
-        next_states = np.array([e[3] for e in experiences])
-        dones = np.array([e[4] for e in experiences])
-        
-        return (states, actions, rewards, next_states, dones)
-    
+    def add(self, state, action, reward, next_state, neighbor_next_state, neighbor_next_action, done):
+        max_prio = self.priorities.max() if self.buffer else 1.0
+
+        if len(self.buffer) < self.capacity:
+            self.buffer.append((state, action, reward, next_state, neighbor_next_state, neighbor_next_action, done))
+        else:
+            self.buffer[self.pos] = (state, action, reward, next_state, neighbor_next_state, neighbor_next_action, done)
+
+        self.priorities[self.pos] = max_prio
+        self.pos = (self.pos + 1) % self.capacity
+
+    def sample(self, batch_size):
+        if len(self.buffer) == self.capacity:
+            prios = self.priorities
+        else:
+            prios = self.priorities[:self.pos]
+
+        probs = prios ** self.alpha
+        probs /= probs.sum()
+
+        indices = np.random.choice(len(self.buffer), batch_size, p=probs)
+        samples = [self.buffer[idx] for idx in indices]
+
+        total = len(self.buffer)
+        weights = (total * probs[indices]) ** (-self.beta)
+        weights /= weights.max()
+        weights = np.array(weights, dtype=np.float32)
+
+        states, actions, rewards, next_states, neighbor_next_states, neighbor_next_actions, dones = zip(*samples)
+        return (
+            np.array(states),
+            np.array(actions),
+            np.array(rewards, dtype=np.float32),
+            np.array(next_states),
+            np.array(neighbor_next_states),
+            np.array(neighbor_next_actions),
+            np.array(dones, dtype=np.float32),
+            weights,
+            indices
+        )
+
+    def update_priorities(self, indices, td_errors):
+        for idx, td_error in zip(indices, td_errors):
+            if isinstance(td_error, np.ndarray):
+                td_error = td_error.item()
+            elif isinstance(td_error, tf.Tensor):
+                td_error = td_error.numpy().item()
+            else:
+                td_error = float(td_error)
+            
+            self.priorities[idx] = (abs(td_error) + self.epsilon) ** self.alpha
+
     def __len__(self):
-        """Return the current size of internal memory."""
-        return len(self.memory)
+        return len(self.buffer)

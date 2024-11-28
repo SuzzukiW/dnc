@@ -17,19 +17,21 @@ class DQNNetwork(nn.Module):
         """
         super(DQNNetwork, self).__init__()
         
-        # Ensure state_size is an integer
-        state_size = int(state_size)
+        # Ensure state_size is an integer and matches input dimension
+        self.state_size = int(state_size)
+        self.action_size = int(action_size)
         
         # Default hidden layer configuration if not provided
         if hidden_sizes is None:
-            # Adaptive hidden layer sizes based on input state size
+            # Scale hidden layers based on input size
             hidden_sizes = [
-                max(32, min(256, int(state_size * 1.5))),  # First hidden layer
-                max(16, min(128, int(state_size)))         # Second hidden layer
+                min(384, max(64, self.state_size * 2)),
+                min(192, max(32, self.state_size)),
+                min(96, max(16, self.state_size // 2))
             ]
         
-        # Input layer with adaptive size
-        self.input_layer = nn.Linear(state_size, hidden_sizes[0])
+        # Input layer matching the state size exactly
+        self.input_layer = nn.Linear(self.state_size, hidden_sizes[0])
         nn.init.xavier_uniform_(self.input_layer.weight)
         nn.init.zeros_(self.input_layer.bias)
         
@@ -43,14 +45,17 @@ class DQNNetwork(nn.Module):
             self.hidden_layers.append(layer)
             prev_size = hidden_size
         
-        # Output layer
+        # Output layer for Q-values
         self.output_layer = nn.Linear(prev_size, action_size)
         nn.init.xavier_uniform_(self.output_layer.weight)
         nn.init.zeros_(self.output_layer.bias)
-    
+        
+        # Activation functions
+        self.activation = nn.ReLU()
+        
     def forward(self, state):
         """
-        Forward pass with adaptive processing
+        Forward pass with input validation and adaptive processing
         
         Args:
             state: Input state tensor
@@ -58,29 +63,32 @@ class DQNNetwork(nn.Module):
         Returns:
             Q-values for actions
         """
-        # Ensure input is a 2D tensor with correct dtype
+        # Input validation and conversion
         if not isinstance(state, torch.Tensor):
             state = torch.tensor(state, dtype=torch.float32)
         
         if state.dim() == 1:
             state = state.unsqueeze(0)
+            
+        # Ensure state matches expected input size
+        if state.shape[-1] != self.state_size:
+            raise ValueError(f"Input state size {state.shape[-1]} does not match expected size {self.state_size}")
         
-        # Ensure state is float and on the correct device
-        state = state.float()
+        # Forward pass through network
+        x = self.activation(self.input_layer(state))
         
-        # Input layer with ReLU activation
-        x = F.relu(self.input_layer(state))
+        for hidden_layer in self.hidden_layers:
+            x = self.activation(hidden_layer(x))
         
-        # Pass through hidden layers
-        for layer in self.hidden_layers:
-            x = F.relu(layer(x))
+        # Output Q-values
+        q_values = self.output_layer(x)
         
-        # Output layer
-        return self.output_layer(x)
+        return q_values
     
-    def reset_noise(self):
-        """
-        Reset noise for exploration (optional)
-        Useful for techniques like Noisy Networks
-        """
-        pass
+    def save(self, path):
+        """Save model state"""
+        torch.save(self.state_dict(), path)
+    
+    def load(self, path):
+        """Load model state"""
+        self.load_state_dict(torch.load(path))

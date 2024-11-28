@@ -2,6 +2,7 @@
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim 
 import numpy as np
 from collections import deque, namedtuple
@@ -11,134 +12,181 @@ class DQNNetwork(nn.Module):
     def __init__(self, state_size, action_size, hidden_size=64, action_type='discrete'):
         super(DQNNetwork, self).__init__()
         self.action_type = action_type
+        self.state_size = None  # Will be set dynamically
+        self.hidden_size = hidden_size
+        self.action_size = action_size
         
-        # Shared layers
+        # Initialize with placeholders to ensure parameters exist
         self.shared_layers = nn.Sequential(
-            nn.Linear(state_size, hidden_size),
+            nn.Linear(1, hidden_size),  # Placeholder input size
             nn.ReLU(),
             nn.Linear(hidden_size, hidden_size),
             nn.ReLU()
         )
         
-        # Output layers based on action type
         if action_type == 'discrete':
-            # Discrete action space
             self.output_layer = nn.Linear(hidden_size, action_size)
         else:
-            # Continuous action space
-            # Output mean and log standard deviation for a Gaussian distribution
             self.output_layer = nn.Linear(hidden_size, action_size * 2)
     
+    def _adapt_layers(self, input_size):
+        """Adapt layers to new input size if needed"""
+        if self.state_size == input_size:
+            return
+            
+        self.state_size = input_size
+        device = next(self.parameters()).device
+        
+        # Create new layers with correct input size
+        self.shared_layers = nn.Sequential(
+            nn.Linear(input_size, self.hidden_size),
+            nn.ReLU(),
+            nn.Linear(self.hidden_size, self.hidden_size),
+            nn.ReLU()
+        ).to(device)
+        
+        if self.action_type == 'discrete':
+            self.output_layer = nn.Linear(self.hidden_size, self.action_size).to(device)
+        else:
+            self.output_layer = nn.Linear(self.hidden_size, self.action_size * 2).to(device)
+    
     def forward(self, state):
-        # Shared feature extraction
+        # Convert numpy arrays to tensors if necessary
+        if isinstance(state, np.ndarray):
+            state = torch.FloatTensor(state)
+            
+        if state.dim() == 1:
+            state = state.unsqueeze(0)
+            
+        # Adapt layers if input size has changed
+        if self.state_size != state.shape[1]:
+            self._adapt_layers(state.shape[1])
+        
+        # Forward pass
         features = self.shared_layers(state)
         
-        # Output based on action type
         if self.action_type == 'discrete':
-            # Discrete action: direct Q-value output
             return self.output_layer(features)
         else:
-            # Continuous action: output mean and log std
             output = self.output_layer(features)
             mean, log_std = torch.chunk(output, 2, dim=-1)
-            
-            # Clamp log standard deviation to prevent numerical instability
             log_std = torch.clamp(log_std, min=-5, max=2)
-            
-            # Return mean of continuous action distribution
             return mean
 
 class DQNAgent:
     def __init__(self, state_size, action_size, config):
-        self.state_size = state_size
-        self.action_size = action_size
-        
-        # Hyperparameters
-        self.gamma = config.get('gamma', 0.95)
-        self.learning_rate = config.get('learning_rate', 0.001)
-        self.epsilon = config.get('epsilon_start', 1.0)
-        self.epsilon_min = config.get('epsilon_min', 0.01)
-        self.epsilon_decay = config.get('epsilon_decay', 0.995)
-        self.batch_size = config.get('batch_size', 32)
-        self.memory_size = config.get('memory_size', 10000)
-        
-        # Networks
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.policy_net = DQNNetwork(state_size, action_size, action_type=config.get('action_type', 'discrete')).to(self.device)
-        self.target_net = DQNNetwork(state_size, action_size, action_type=config.get('action_type', 'discrete')).to(self.device)
-        self.target_net.load_state_dict(self.policy_net.state_dict())
-        
-        # Optimizer
-        self.optimizer = optim.Adam(self.policy_net.parameters(), lr=self.learning_rate)
-        
-        # Replay memory
-        self.Transition = namedtuple('Transition', 
-                                   ('state', 'action', 'reward', 'next_state', 'done'))
-        self.memory = deque(maxlen=self.memory_size)
+            self.action_size = action_size
+            
+            # Use MPS (Metal Performance Shaders) for M1/M2/M3 Macs
+            if torch.backends.mps.is_available():
+                self.device = torch.device("mps")
+            elif torch.cuda.is_available():
+                self.device = torch.device("cuda")
+            else:
+                self.device = torch.device("cpu")
+                
+            print(f"Using device: {self.device}")
+            
+            # Training parameters
+            self.gamma = config.get('gamma', 0.95)
+            self.learning_rate = config.get('learning_rate', 0.001)
+            self.epsilon = config.get('epsilon_start', 1.0)
+            self.epsilon_min = config.get('epsilon_min', 0.01)
+            self.epsilon_decay = config.get('epsilon_decay', 0.995)
+            self.batch_size = config.get('batch_size', 32)
+            self.memory_size = config.get('memory_size', 10000)
+            
+            # Initialize networks
+            self.policy_net = DQNNetwork(
+                state_size=1,
+                action_size=action_size,
+                hidden_size=config.get('hidden_sizes', [64])[0],
+                action_type=config.get('action_type', 'discrete')
+            ).to(self.device)
+            
+            self.target_net = DQNNetwork(
+                state_size=1,
+                action_size=action_size,
+                hidden_size=config.get('hidden_sizes', [64])[0],
+                action_type=config.get('action_type', 'discrete')
+            ).to(self.device)
+            
+            # Initialize target network with policy network's weights
+            self.target_net.load_state_dict(self.policy_net.state_dict())
+            
+            # Initialize optimizer with larger batch size for M3
+            self.optimizer = optim.Adam(
+                self.policy_net.parameters(),
+                lr=self.learning_rate,
+                eps=1e-4  # Increased epsilon for better numerical stability
+            )
+            
+            # Use a more efficient memory structure
+            self.memory = deque(maxlen=self.memory_size)
+            self.Transition = namedtuple('Transition', 
+                                    ('state', 'action', 'reward', 'next_state', 'done'))
+                                    
+            # Batch tensors for reuse
+            self.batch_indices = torch.arange(self.batch_size, device=self.device)
         
     def remember(self, state, action, reward, next_state, done):
         """Store transition in replay memory"""
+        if len(self.memory) >= self.memory_size:
+            self.memory.popleft()  # Use popleft() instead of pop(0)
         self.memory.append(self.Transition(state, action, reward, next_state, done))
         
     def act(self, state, training=True):
         """Select action using epsilon-greedy policy"""
         if training and random.random() < self.epsilon:
-            if self.policy_net.action_type == 'discrete':
-                return random.randrange(self.action_size)
-            else:
-                return np.random.uniform(-1, 1, self.action_size)
+            return random.randrange(self.action_size)
         
         with torch.no_grad():
-            state = torch.FloatTensor(state).unsqueeze(0).to(self.device)
+            if isinstance(state, np.ndarray):
+                state = torch.FloatTensor(state).to(self.device)
+            if state.dim() == 1:
+                state = state.unsqueeze(0)
+                
             q_values = self.policy_net(state)
-            if self.policy_net.action_type == 'discrete':
-                return q_values.argmax().item()
-            else:
-                return q_values.squeeze(0).cpu().numpy()
+            return q_values.argmax().item()
     
     def replay(self):
-        """Train on batch from replay memory"""
-        if len(self.memory) < self.batch_size:
-            return
-        
-        transitions = random.sample(self.memory, self.batch_size)
-        batch = self.Transition(*zip(*transitions))
-        
-        # Convert to tensors
-        state_batch = torch.FloatTensor(batch.state).to(self.device)
-        action_batch = torch.LongTensor(batch.action).to(self.device) if self.policy_net.action_type == 'discrete' else torch.FloatTensor(batch.action).to(self.device)
-        reward_batch = torch.FloatTensor(batch.reward).to(self.device)
-        next_state_batch = torch.FloatTensor(batch.next_state).to(self.device)
-        done_batch = torch.FloatTensor(batch.done).to(self.device)
-        
-        # Compute Q(s_t, a) - the model computes Q(s_t), then we select the
-        # columns of actions taken
-        if self.policy_net.action_type == 'discrete':
-            state_action_values = self.policy_net(state_batch).gather(1, action_batch.unsqueeze(1))
-        else:
-            state_action_values = self.policy_net(state_batch)
-        
-        # Compute V(s_{t+1}) for all next states
-        next_state_values = self.target_net(next_state_batch).max(1)[0].detach() if self.policy_net.action_type == 'discrete' else self.target_net(next_state_batch)
-        
-        # Compute the expected Q values
-        expected_state_action_values = reward_batch + self.gamma * next_state_values * (1 - done_batch)
-        
-        # Compute loss
-        if self.policy_net.action_type == 'discrete':
-            loss = nn.MSELoss()(state_action_values, expected_state_action_values.unsqueeze(1))
-        else:
-            loss = nn.MSELoss()(state_action_values, expected_state_action_values)
-        
-        # Optimize the model
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
-        
-        # Decay epsilon
-        self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
-        
-        return loss.item()
+            """Train on batch from replay memory with optimized processing"""
+            if len(self.memory) < self.batch_size:
+                return None
+                
+            # Sample and process batch more efficiently
+            transitions = random.sample(self.memory, self.batch_size)
+            batch = self.Transition(*zip(*transitions))
+            
+            # Pre-allocate tensors on device
+            state_batch = torch.stack([torch.FloatTensor(s) for s in batch.state]).to(self.device)
+            action_batch = torch.tensor(batch.action, device=self.device, dtype=torch.long)
+            reward_batch = torch.tensor(batch.reward, device=self.device, dtype=torch.float)
+            next_state_batch = torch.stack([torch.FloatTensor(s) for s in batch.next_state]).to(self.device)
+            done_batch = torch.tensor(batch.done, device=self.device, dtype=torch.float)
+            
+            # Compute current Q values in single pass
+            current_q_values = self.policy_net(state_batch)
+            state_action_values = current_q_values.gather(1, action_batch.unsqueeze(1))
+            
+            # Compute next Q values in single pass
+            with torch.no_grad():
+                next_state_values = self.target_net(next_state_batch).max(1)[0]
+                expected_state_action_values = (reward_batch + self.gamma * next_state_values * (1 - done_batch))
+            
+            # Compute loss and update in single step
+            loss = F.smooth_l1_loss(state_action_values, expected_state_action_values.unsqueeze(1))
+            
+            self.optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.policy_net.parameters(), 1)
+            self.optimizer.step()
+            
+            # Update epsilon more efficiently
+            self.epsilon *= self.epsilon_decay
+            self.epsilon = max(self.epsilon_min, self.epsilon)
+            
+            return loss.item()
     
     def update_target_network(self):
         """Update target network with policy network weights"""

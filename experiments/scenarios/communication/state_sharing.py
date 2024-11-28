@@ -1,194 +1,153 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
+import os
 import numpy as np
-from typing import List, Dict, Any
+from typing import Dict, List, Optional
 
-class StateSharedAgent:
+class StateSharing:
     """
-    Multi-agent reinforcement learning agent with state sharing capabilities
-    for traffic light control in a grid network.
+    Scenario class for hierarchical state sharing experiments
     """
-    def __init__(self, 
-                 state_dim: int = 10, 
-                 action_dim: int = 4, 
-                 learning_rate: float = 0.001,
-                 communication_type: str = 'full'):
-        """
-        Initialize the state-shared agent with different communication strategies.
-        """
-        self.state_dim = state_dim
-        self.action_dim = action_dim
-        self.communication_type = communication_type
-        
-        # Neural network for Q-learning
-        self.q_network = self._build_neural_network()
-        self.target_network = self._build_neural_network()
-        self.target_network.load_state_dict(self.q_network.state_dict())
-        
-        self.optimizer = optim.Adam(self.q_network.parameters(), lr=learning_rate)
-        self.loss_fn = nn.MSELoss()
-        
-        # Shared memory for state communication
-        self.shared_memory = {}
-        
-        # Performance tracking
-        self.total_reward = 0
-        self.episodes_completed = 0
+    def __init__(
+        self,
+        net_file: str,
+        route_file: str,
+        use_gui: bool = False,
+        num_episodes: int = 100,
+        episode_length: int = 3600,
+        delta_time: int = 5,
+    ):
+        self.net_file = net_file
+        self.route_file = route_file
+        self.use_gui = use_gui
+        self.num_episodes = num_episodes
+        self.episode_length = episode_length
+        self.delta_time = delta_time
 
-    def _build_neural_network(self) -> nn.Module:
-        """
-        Build a neural network for Q-learning with state representation.
-        """
-        return nn.Sequential(
-            nn.Linear(self.state_dim, 64),
-            nn.ReLU(),
-            nn.Linear(64, 64),
-            nn.ReLU(),
-            nn.Linear(64, self.action_dim)
-        )
-    
-    def select_action(self, state: np.ndarray, epsilon: float = 0.1) -> int:
-        """
-        Select an action using epsilon-greedy strategy.
-        """
-        if np.random.random() < epsilon:
-            return np.random.randint(self.action_dim)
-        
-        with torch.no_grad():
-            state_tensor = torch.FloatTensor(state)
-            q_values = self.q_network(state_tensor)
-            return q_values.argmax().item()
-    
-    def update(self, 
-               state: np.ndarray, 
-               action: int, 
-               reward: float, 
-               next_state: np.ndarray,
-               done: bool):
-        """
-        Update the Q-network using experience replay.
-        """
-        # Track total reward
-        self.total_reward += reward
-        
-        if done:
-            self.episodes_completed += 1
-        
-        # Convert to tensors
-        state_tensor = torch.FloatTensor(state)
-        next_state_tensor = torch.FloatTensor(next_state)
-        
-        # Current Q-value
-        current_q = self.q_network(state_tensor)[action]
-        
-        # Compute target Q-value
-        with torch.no_grad():
-            next_q_values = self.target_network(next_state_tensor)
-            max_next_q = next_q_values.max()
-            target_q = reward + (1 - done) * 0.99 * max_next_q
-        
-        # Compute loss
-        loss = self.loss_fn(current_q, target_q)
-        
-        # Optimize the model
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
+        # Initialize experiment metrics
+        self.metrics = {
+            'episode_rewards': [],
+            'episode_waiting_times': [],
+            'episode_throughput': [],
+            'episode_queue_lengths': [],
+            'regional_performance': {},
+            'coordination_metrics': []
+        }
 
-def simulate_traffic_scenario(agents: List[StateSharedAgent], 
-                               num_episodes: int = 100, 
-                               max_steps: int = 1000) -> Dict[str, float]:
-    """
-    Simulate a traffic scenario with multiple agents.
-    
-    Args:
-        agents (List[StateSharedAgent]): List of agents to simulate
-        num_episodes (int): Number of episodes to run
-        max_steps (int): Maximum steps per episode
-    
-    Returns:
-        Dict[str, float]: Performance metrics
-    """
-    for episode in range(num_episodes):
-        # Initialize episode states
-        states = [np.random.rand(10) for _ in agents]
+    def preprocess_state(self, state: Dict) -> np.ndarray:
+        """
+        Advanced state preprocessing with feature extraction
+        """
+        # Extract raw state components
+        own_state = np.array(state['own_state']).flatten()
         
-        for step in range(max_steps):
-            # Select actions for each agent
-            actions = [agent.select_action(state) for agent, state in zip(agents, states)]
-            
-            # Simulate rewards and next states (simplified)
-            rewards = [
-                np.random.normal(loc=0, scale=1) * (1 - abs(action - 2)/2) 
-                for action in actions
-            ]
-            
-            # Simulate next states (random walk)
-            next_states = [
-                state + np.random.normal(loc=0, scale=0.1, size=state.shape) 
-                for state in states
-            ]
-            
-            # Update agents
-            for i, (agent, state, action, reward, next_state) in enumerate(
-                zip(agents, states, actions, rewards, next_states)
-            ):
-                done = step == max_steps - 1
-                agent.update(state, action, reward, next_state, done)
-                
-                # Optional: Share states based on communication type
-                if agent.communication_type != 'none':
-                    agent.shared_memory[f'agent_{i}'] = state
-            
-            states = next_states
-    
-    # Compute performance metrics
-    metrics = {
-        'avg_reward': np.mean([agent.total_reward / max(1, agent.episodes_completed) for agent in agents]),
-        'total_throughput': num_episodes * max_steps,
-        'avg_wait_time': np.mean([1 / max(0.1, agent.total_reward) for agent in agents])
-    }
-    
-    return metrics
+        # Feature engineering
+        # 1. Queue length features
+        queue_features = own_state[:len(own_state)//3]
+        queue_mean = np.mean(queue_features)
+        queue_std = np.std(queue_features)
+        
+        # 2. Waiting time features
+        wait_features = own_state[len(own_state)//3:2*len(own_state)//3]
+        wait_mean = np.mean(wait_features)
+        wait_std = np.std(wait_features)
+        
+        # 3. Speed features
+        speed_features = own_state[2*len(own_state)//3:-1]
+        speed_mean = np.mean(speed_features)
+        speed_std = np.std(speed_features)
+        
+        # 4. Current phase
+        current_phase = own_state[-1]
+        
+        # Combine engineered features
+        engineered_state = np.array([
+            queue_mean, queue_std,
+            wait_mean, wait_std,
+            speed_mean, speed_std,
+            current_phase
+        ])
+        
+        # Normalize with robust scaling
+        def robust_scale(x):
+            median = np.median(x)
+            iqr = np.percentile(x, 75) - np.percentile(x, 25)
+            return np.clip((x - median) / (iqr + 1e-8), -3, 3)
+        
+        normalized_state = robust_scale(engineered_state)
+        
+        return normalized_state
 
-def run_state_sharing_experiment(
-    num_agents: int = 4, 
-    communication_types: List[str] = ['none', 'local', 'full'],
-    num_episodes: int = 100,
-    max_steps: int = 1000
-) -> Dict[str, Any]:
-    """
-    Run experiments with different state sharing strategies.
-    """
-    results = {}
-    
-    for comm_type in communication_types:
-        # Initialize agents with specific communication strategy
-        agents = [
-            StateSharedAgent(
-                state_dim=10,  # Example state dimension 
-                action_dim=4,  # Example action dimension
-                communication_type=comm_type
-            ) for _ in range(num_agents)
-        ]
+    def calculate_reward(
+        self,
+        state: Dict,
+        action: int,
+        next_state: Dict,
+        info: Dict
+    ) -> float:
+        """
+        Advanced reward calculation focusing on wait time reduction and throughput
+        """
+        # Extract key metrics with more precise extraction
+        waiting_time = info.get('waiting_time', 0)
+        throughput = info.get('throughput', 0)
+        queue_length = info.get('queue_length', 0)
         
-        # Run traffic simulation
-        performance_metrics = simulate_traffic_scenario(
-            agents, 
-            num_episodes=num_episodes, 
-            max_steps=max_steps
+        # Aggressive wait time penalty
+        wait_time_penalty = -2.0 * (waiting_time / 100.0) ** 2  # Quadratic penalty
+        
+        # Throughput reward with exponential scaling
+        throughput_reward = np.log1p(throughput) * 1.5
+        
+        # Queue length penalty
+        queue_penalty = -1.5 * (queue_length / 10.0)
+        
+        # Combine rewards with carefully tuned weights
+        total_reward = (
+            wait_time_penalty +   # Strong negative for wait times
+            throughput_reward +   # Positive for throughput
+            queue_penalty         # Penalty for queue buildup
         )
         
-        results[comm_type] = performance_metrics
-    
-    return results
+        return total_reward
 
-if __name__ == "__main__":
-    # Run the state sharing experiment
-    experiment_results = run_state_sharing_experiment()
-    print("State Sharing Experiment Results:")
-    for comm_type, metrics in experiment_results.items():
-        print(f"\nCommunication Type: {comm_type}")
-        for metric, value in metrics.items():
-            print(f"{metric}: {value}")
+    def log_metrics(
+        self,
+        episode: int,
+        states: Dict[str, Dict],
+        actions: Dict[str, int],
+        rewards: Dict[str, float],
+        info: Dict
+    ):
+        """
+        Simplified metrics logging matching Baseline
+        """
+        # Aggregate metrics across all agents
+        total_waiting_time = 0
+        total_throughput = 0
+        total_vehicles = 0
+        
+        for tl_id, state in states.items():
+            # Extract metrics from state or info
+            waiting_time = info.get('waiting_time', 0)
+            throughput = info.get('throughput', 0)
+            
+            total_waiting_time += waiting_time
+            total_throughput += throughput
+            total_vehicles += 1
+        
+        # Store metrics for this episode
+        self.metrics['episode_rewards'].append(np.mean(list(rewards.values())))
+        self.metrics['episode_waiting_times'].append(total_waiting_time / max(1, total_vehicles))
+        self.metrics['episode_throughput'].append(total_throughput)
+
+    def get_results(self) -> Dict:
+        """
+        Return experiment results
+        """
+        return {
+            'rewards': self.metrics['episode_rewards'],
+            'waiting_times': self.metrics['episode_waiting_times'],
+            'throughput': self.metrics['episode_throughput'],
+            'queue_lengths': self.metrics['episode_queue_lengths'],
+            'regional_performance': self.metrics['regional_performance'],
+            'coordination': self.metrics['coordination_metrics']
+        }

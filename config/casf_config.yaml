@@ -1,0 +1,59 @@
+# config/casf_config.yaml
+
+model_name: CASF
+version: 1.2
+
+training:
+  num_episodes: 1           # Increased from 20 to 1000 for better learning
+  steps_per_episode: 200       # Aligned with environment's max_episode_steps
+  batch_size: 128
+  gamma: 0.95
+  tau: 0.01
+  update_every: 10             # Reduced from 100 to 10 for more frequent updates
+  checkpoint_interval: 50      # Adjusted to save checkpoints every 50 episodes
+
+model:
+  state_encoder_units: [256, 128]
+  state_embedding_dim: 64
+  num_attention_heads: 4
+  key_dim: 32
+  value_dim: 32
+  dropout: 0.1
+  max_neighbors: 4
+  communication_range: 300
+  distance_embedding_dim: 16
+  fusion_hidden_units: [128, 64]
+  final_state_dim: 32
+  actor_hidden_units: [64, 32]
+  critic_hidden_units: [64, 32]
+  learning_rate: 0.001         # Moved from training to model
+  grad_clip: 0.5               # Moved from training to model
+
+environment:
+  observation_dim: 28
+  action_dim: 2                 # Increased from 1 to 2 for more control (e.g., phase and duration)
+  max_episode_steps: 200
+  max_neighbors: 4
+  communication_range: 1000
+  max_phase_duration: 60
+  reward_weights:
+    waiting_time: 1.0
+    queue_length: 1.0
+    throughput: 1.0
+  files:
+    net_file: "baseline/osm.net.xml.gz"             # Path to your SUMO network file
+    route_file: "baseline/osm.passenger.trips.xml"  # Path to your SUMO route file
+
+memory:
+  capacity: 120000              # Reduced from 200000 to better match total steps
+  prioritized_replay: true
+  alpha: 0.6
+  beta_start: 0.4               # Initial beta value for importance sampling
+  beta_end: 1.0                 # Final beta value after annealing
+  beta_steps: 100000            # Number of steps over which beta is annealed
+  epsilon: 0.01
+
+logging:
+  log_interval: 100
+  checkpoint_interval: 50        # Adjusted to save checkpoints every 50 episodes
+  eval_interval: 500

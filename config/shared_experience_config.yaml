@@ -1,0 +1,55 @@
+# config/shared_experience_config.yaml
+
+# Simulation parameters
+simulation:
+  net_file: "baseline/osm.net.xml.gz"
+  route_file: "baseline/osm.passenger.trips.xml"
+  gui: false
+  max_steps: 100
+  time_step: 1.0
+  warmup_steps: 0
+
+# Environment parameters
+environment:
+  observation_radius: 3
+  yellow_time: 3
+  min_green_time: 10
+  max_green_time: 60
+  normalize_observations: true
+
+# Shared Experience parameters
+shared_experience:
+  memory_size: 20000  # Reduced since no sharing
+  sharing_interval: 200  # Less frequent attempts
+  max_shared_samples: 20  # Minimal sharing
+  proximity_weight: false  # Disabled since no neighbors
+  experience_priority: true
+
+# DQN Agent parameters
+agent:
+  gamma: 0.95
+  learning_rate: 0.001
+  epsilon_start: 1.0
+  epsilon_min: 0.1
+  epsilon_decay: 0.995
+  batch_size: 64
+  hidden_sizes: [64, 64]
+  target_update_frequency: 100
+  action_type: "discrete"
+
+# Training parameters
+training:
+  total_episodes: 10
+  max_steps_per_episode: 50
+  eval_frequency: 2
+  save_frequency: 5
+  log_frequency: 1
+  checkpoint_dir: "checkpoints/shared_experience_test"
+  log_dir: "logs/shared_experience_test"
+
+# Reward parameters
+reward:
+  waiting_time_penalty: -0.8
+  queue_length_penalty: -0.4
+  throughput_reward: 2.0
+  emergency_penalty: -1.0

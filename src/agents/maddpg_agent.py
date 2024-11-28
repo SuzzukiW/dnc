@@ -1,154 +1,395 @@
+# src/agents/maddpg_agent.py
+
+import yaml
 import numpy as np
 import torch
-import torch.nn.functional as F
+import torch.nn as nn
 import torch.optim as optim
+from typing import Dict, List, Tuple
+import os
+import torch.nn.functional as F
 
-from src.models.maddpg_network import MADDPGNetwork
-from src.utils.ou_noise import OUNoise
+from src.models.maddpg_network import Actor, Critic
+from src.utils.prioritized_replay_buffer import PrioritizedReplayBuffer
+from src.utils.noise import OUNoise
+from src.utils.state_preprocessor import StatePreprocessor
+from src.utils.state_dimensionality_reducer import StateDimensionalityReducer
 
 class MADDPGAgent:
-    """Multi-Agent Deep Deterministic Policy Gradient (MADDPG) Agent"""
+    """MADDPG Agent with dynamic action size handling."""
     
-    def __init__(self, state_size, action_size, num_agents, random_seed, 
-                 hidden_size=256, lr_actor=1e-4, lr_critic=1e-3, 
-                 weight_decay=0, gamma=0.99, tau=1e-3):
-        """Initialize a MADDPG Agent
+    def __init__(self, config_path: str, agent_id: str, observation_space, action_space, max_action_size: int):
+        """Initialize a MADDPG agent with flexible state and action handling."""
+        with open(config_path, 'r') as f:
+            config = yaml.safe_load(f)
         
-        Params
-        ======
-            state_size (int): dimension of each state
-            action_size (int): dimension of each action
-            num_agents (int): number of agents in the environment
-            random_seed (int): random seed
-            hidden_size (int): number of nodes in hidden layers
-            lr_actor (float): learning rate for actor
-            lr_critic (float): learning rate for critic
-            weight_decay (float): L2 weight decay
-            gamma (float): discount factor
-            tau (float): soft update of target parameters
-        """
-        self.state_size = state_size
-        self.action_size = action_size
-        self.num_agents = num_agents
-        self.seed = torch.manual_seed(random_seed)
+        # Device
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
-        # Hyperparameters
-        self.gamma = gamma
-        self.tau = tau
+        self.agent_id = agent_id
+        
+        # Flexible state and action size handling
+        self.original_state_size = observation_space.shape[0]
+        self.action_size = action_space.shape[0]
+        self.max_action_size = max_action_size
+        
+        # Adaptive state preprocessing
+        self.state_preprocessor = self._create_state_preprocessor(
+            input_size=self.original_state_size, 
+            config=config
+        )
+        
+        # Compute preprocessed state size
+        sample_state = torch.randn(1, self.original_state_size)
+        self.preprocessed_state_size = self.state_preprocessor(sample_state).size(1)
+        
+        # Number of agents from config
+        self.num_agents = config['environment']['num_agents']
+        
+        # Neural Networks with flexible input sizes
+        self.actor = Actor(
+            state_size=self.preprocessed_state_size, 
+            action_size=self.action_size, 
+            hidden_layers=config['network']['actor']['hidden_layers']
+        )
+        self.actor_target = Actor(
+            state_size=self.preprocessed_state_size, 
+            action_size=self.action_size, 
+            hidden_layers=config['network']['actor']['hidden_layers']
+        )
+        
+        # Critic takes full state and action from all agents
+        critic_state_size = self.preprocessed_state_size * self.num_agents
+        critic_action_size = self.max_action_size * self.num_agents
+        
+        self.critic = Critic(
+            state_size=critic_state_size, 
+            action_size=critic_action_size, 
+            hidden_layers=config['network']['critic']['hidden_layers']
+        )
+        self.critic_target = Critic(
+            state_size=critic_state_size, 
+            action_size=critic_action_size, 
+            hidden_layers=config['network']['critic']['hidden_layers']
+        )
+        
+        # Copy weights
+        self.actor_target.load_state_dict(self.actor.state_dict())
+        self.critic_target.load_state_dict(self.critic.state_dict())
+        
+        # Optimizers
+        self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=config['training']['learning_rate_actor'])
+        self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=config['training']['learning_rate_critic'])
+        
+        # Move networks to device
+        self.to(self.device)
+        
+        # Replay memory
+        memory_config = config['memory']
+        self.memory = PrioritizedReplayBuffer(
+            memory_config['capacity'], 
+            memory_config.get('alpha', 0.6),
+            self.preprocessed_state_size * self.num_agents, 
+            self.max_action_size * self.num_agents
+        )
         
         # Noise process
-        self.noise = OUNoise(action_size, random_seed)
+        self.noise = OUNoise(
+            size=self.action_size, 
+            mu=config['noise'].get('mu', 0.0), 
+            theta=config['noise'].get('theta', 0.15), 
+            sigma=config['noise'].get('sigma', 0.2)
+        )
         
-        # Actor Network (w/ Target Network)
-        self.actor_local = MADDPGNetwork(state_size, action_size, hidden_size, num_agents)
-        self.actor_target = MADDPGNetwork(state_size, action_size, hidden_size, num_agents)
-        self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=lr_actor)
-        
-        # Critic Network (w/ Target Network)
-        self.critic_local = MADDPGNetwork(state_size * num_agents, action_size * num_agents, 
-                                          hidden_size, num_agents, critic=True)
-        self.critic_target = MADDPGNetwork(state_size * num_agents, action_size * num_agents, 
-                                           hidden_size, num_agents, critic=True)
-        self.critic_optimizer = optim.Adam(self.critic_local.parameters(), 
-                                           lr=lr_critic, weight_decay=weight_decay)
-        
-        # Hard copy weights from local to target networks
-        self.soft_update(self.actor_local, self.actor_target, 1.0)
-        self.soft_update(self.critic_local, self.critic_target, 1.0)
+        # Hyperparameters
+        self.gamma = config['training']['gamma']
+        self.tau = config['training']['tau']
+        self.batch_size = config['training']['batch_size']
     
-    def act(self, states, add_noise=True):
-        """Returns actions for given states as per current policy."""
-        states = torch.from_numpy(states).float()
-        self.actor_local.eval()
+    def _create_state_preprocessor(self, input_size: int, config: Dict):
+        """
+        Create a flexible state preprocessor that can handle varying input sizes.
+        
+        Args:
+            input_size: Original state vector size
+            config: Configuration dictionary
+        
+        Returns:
+            A neural network module for state preprocessing
+        """
+        # Use a more robust state preprocessor with batch normalization handling
+        preprocessor = StateDimensionalityReducer(
+            input_size=input_size, 
+            output_size=config.get('state_preprocessor', {}).get('output_size', 32),
+            reduction_method=config.get('state_preprocessor', {}).get('method', 'adaptive')
+        )
+        
+        # Ensure the preprocessor can handle single sample scenarios
+        preprocessor.eval()  # Set to evaluation mode to handle single sample
+        return preprocessor
+
+    def preprocess_state(self, state: torch.Tensor):
+        # Ensure input is a tensor
+        if not isinstance(state, torch.Tensor):
+            state = torch.tensor(state, dtype=torch.float32)
+        
+        # Add batch dimension if missing
+        if state.dim() == 1:
+            state = state.unsqueeze(0)
+        
+        # Flatten if more than 2 dimensions
+        if state.dim() > 2:
+            state = state.view(state.size(0), -1)
+        
+        # Ensure tensor is float
+        state = state.float()
+        
+        # Truncate or pad to match input size
+        if state.size(1) > self.original_state_size:
+            state = state[:, :self.original_state_size]
+        elif state.size(1) < self.original_state_size:
+            padding = torch.zeros(
+                state.size(0), 
+                self.original_state_size - state.size(1), 
+                device=state.device,
+                dtype=state.dtype
+            )
+            state = torch.cat([state, padding], dim=1)
+        
+        # Preprocess with dimensionality reducer
+        # Ensure at least 2 samples for BatchNorm
+        if state.size(0) == 1:
+            # Duplicate the single sample
+            state = state.repeat(2, 1)
+            preprocessed_state = self.state_preprocessor(state)
+            preprocessed_state = preprocessed_state[:1]  # Return only the first tensor
+        else:
+            preprocessed_state = self.state_preprocessor(state)
+        
+        return preprocessed_state
+    
+    def to(self, device):
+        """Move agent's networks to specified device."""
+        self.state_preprocessor = self.state_preprocessor.to(device)
+        self.actor = self.actor.to(device)
+        self.actor_target = self.actor_target.to(device)
+        self.critic = self.critic.to(device)
+        self.critic_target = self.critic_target.to(device)
+        return self
+    
+    def act(self, state: np.ndarray, add_noise: bool = True) -> np.ndarray:
+        """Get actions from actor network."""
+        # Convert to tensor and move to device
+        state_tensor = torch.FloatTensor(state).to(self.device)
+        
+        # Ensure state is the right shape
+        if state_tensor.dim() == 1:
+            state_tensor = state_tensor.unsqueeze(0)
+        
+        # Preprocess state
+        state_tensor = self.preprocess_state(state_tensor)
+        
+        # Get action from actor network
+        self.actor.eval()
         with torch.no_grad():
-            actions = self.actor_local(states).cpu().data.numpy()
-        self.actor_local.train()
+            action = self.actor(state_tensor).cpu().numpy()
         
+        # Add noise if requested
         if add_noise:
-            noise = self.noise.sample()
-            actions = np.clip(actions + noise, -1, 1)
+            action += self.noise.sample()
+            action = np.clip(action, -1, 1)
         
-        return actions
+        return action.squeeze()
     
-    def reset(self):
-        """Reset the noise process"""
-        self.noise.reset()
-    
-    def soft_update(self, local_model, target_model, tau):
-        """Soft update model parameters.
-        θ_target = τ*θ_local + (1 - τ)*θ_target
-        
-        Params
-        ======
-            local_model: PyTorch model (weights will be copied from)
-            target_model: PyTorch model (weights will be copied to)
-            tau (float): interpolation parameter 
+    def step(self, state: np.ndarray, action: np.ndarray, reward: float,
+            next_state: np.ndarray, done: bool, other_agents_states: List[np.ndarray],
+            other_agents_actions: List[np.ndarray], other_agents_next_states: List[np.ndarray]):
         """
-        for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
-            target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
-    
-    def learn(self, experiences, agent_number):
-        """Update policy and value parameters using given batch of experience tuples.
-        Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
-        where:
-            actor_target(state) -> action
-            critic_target(state, action) -> Q-value
+        Store experience and potentially learn from it.
         
-        Params
-        ======
-            experiences (Tuple[torch.Tensor]): tuple of (s, a, r, s', done) tuples 
-            agent_number (int): index of agent being updated
+        Handles state and action preprocessing for experiences with varying dimensions.
         """
-        states, actions, rewards, next_states, dones = experiences
+        # Process states and store multi-agent information
+        preprocessed_state = self.preprocess_state(torch.FloatTensor(state))
+        preprocessed_next_state = self.preprocess_state(torch.FloatTensor(next_state))
         
-        # Convert to torch tensors if not already
-        states = torch.FloatTensor(states)
-        actions = torch.FloatTensor(actions)
-        rewards = torch.FloatTensor(rewards)
-        next_states = torch.FloatTensor(next_states)
-        dones = torch.FloatTensor(dones)
+        # Process other agents' states
+        processed_other_states = [
+            self.preprocess_state(torch.FloatTensor(other_state)).detach().cpu().numpy() 
+            for other_state in other_agents_states
+        ]
+        processed_other_next_states = [
+            self.preprocess_state(torch.FloatTensor(other_next_state)).detach().cpu().numpy() 
+            for other_next_state in other_agents_next_states
+        ]
         
-        # Compute actions for all agents using target actor networks
-        next_actions = torch.zeros_like(actions)
-        for i in range(self.num_agents):
-            next_actions[:, i, :] = self.actor_target(next_states[:, i, :])
+        # Concatenate all states for full state representation
+        full_state = np.concatenate([preprocessed_state.detach().cpu().numpy()] + processed_other_states, axis=1)
+        full_next_state = np.concatenate([preprocessed_next_state.detach().cpu().numpy()] + processed_other_next_states, axis=1)
         
-        # Flatten states and actions for critic
-        critic_states = next_states.view(next_states.size(0), -1)
-        critic_actions = next_actions.view(next_actions.size(0), -1)
+        # Pad and concatenate actions
+        padded_action = np.pad(action, (0, self.max_action_size - len(action)), mode='constant')
+        padded_other_actions = [
+            np.pad(a, (0, self.max_action_size - len(a)), mode='constant')
+            for a in other_agents_actions
+        ]
+        full_action = np.concatenate([padded_action] + padded_other_actions)
         
-        # Get predicted next-state Q values from target models
-        Q_targets_next = self.critic_target(torch.cat((critic_states, critic_actions), dim=1))
+        # Add experience to memory
+        self.memory.add(
+            full_state,
+            full_action,
+            reward,
+            full_next_state,
+            float(done),
+            1.0,  # Default priority
+            None  # No attention states needed
+        )
         
-        # Compute Q targets for current states (y_i)
-        Q_targets = rewards[:, agent_number].unsqueeze(1) + \
-                    self.gamma * Q_targets_next * (1 - dones[:, agent_number].unsqueeze(1))
+        # Learn periodically
+        if len(self.memory.priorities) > self.batch_size:
+            self.learn(None)  # Use None to sample from memory internally
+        
+        # Update noise process
+        self.noise.sample()
+    
+    def learn(self, experiences: Tuple):
+        """Update policy and value parameters using given batch of experience tuples."""
+        # If experiences is None, sample from memory
+        if experiences is None:
+            # Ensure we have enough samples
+            if len(self.memory.priorities) < self.batch_size:
+                return
+            
+            # Sample from memory
+            experiences = self.memory.sample(self.batch_size)
+        
+        # Unpack experiences
+        states, actions, rewards, next_states, dones, indices, weights = experiences
+        
+        # Convert to tensors and ensure they're float32
+        states = torch.FloatTensor(states).to(self.device)
+        actions = torch.FloatTensor(actions).to(self.device)
+        rewards = torch.FloatTensor(rewards).to(self.device)
+        next_states = torch.FloatTensor(next_states).to(self.device)
+        dones = torch.FloatTensor(dones).to(self.device)
+        weights = torch.FloatTensor(weights).to(self.device)
+        
+        # Split states and actions back into individual agent components
+        # Each agent's state has size self.preprocessed_state_size
+        agent_states = states[:, :self.preprocessed_state_size]
+        agent_next_states = next_states[:, :self.preprocessed_state_size]
+        agent_actions = actions[:, :self.action_size]
+        
+        # Compute target Q values
+        with torch.no_grad():
+            # Get next actions using target actor networks (only for this agent)
+            next_actions = self.actor_target(agent_next_states)
+            
+            # Pad next_actions to match max_action_size if needed
+            if next_actions.shape[1] < self.max_action_size:
+                padding = torch.zeros(next_actions.shape[0], self.max_action_size - next_actions.shape[1]).to(self.device)
+                next_actions = torch.cat([next_actions, padding], dim=1)
+            
+            # Keep other agents' actions from the sampled batch for the full next_actions
+            other_agents_next_actions = actions[:, self.max_action_size:]
+            full_next_actions = torch.cat([next_actions, other_agents_next_actions], dim=1)
+            
+            # Compute target Q values using full state-action pairs
+            target_q_values = self.critic_target(next_states, full_next_actions)
+            target_rewards = rewards + (1 - dones) * self.gamma * target_q_values
+        
+        # Compute current Q values using full state-action pairs
+        current_q_values = self.critic(states, actions)
+        
+        # Compute TD errors for priority update - take mean across batch dimension
+        td_errors = torch.abs(target_rewards - current_q_values).mean(dim=1).detach().cpu().numpy()
+        
+        # Update priorities in replay buffer
+        self.memory.update_priorities(indices, td_errors)
         
         # Compute critic loss
-        critic_states_current = states.view(states.size(0), -1)
-        critic_actions_current = actions.view(actions.size(0), -1)
-        Q_expected = self.critic_local(torch.cat((critic_states_current, critic_actions_current), dim=1))
-        critic_loss = F.mse_loss(Q_expected, Q_targets.detach())
+        critic_loss = F.mse_loss(current_q_values, target_rewards, reduction='none')
+        critic_loss = torch.mean(critic_loss * weights)
         
-        # Minimize the loss
+        # Optimize critic
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
         self.critic_optimizer.step()
         
-        # ---------------------------- update actor ---------------------------- #
-        # Compute actor loss
-        pred_actions = torch.zeros_like(actions)
-        for i in range(self.num_agents):
-            pred_actions[:, i, :] = self.actor_local(states[:, i, :])
+        # Compute actor loss using only this agent's state
+        actor_actions = self.actor(agent_states)
         
-        pred_actions_flat = pred_actions.view(pred_actions.size(0), -1)
-        actor_loss = -self.critic_local(torch.cat((critic_states_current, pred_actions_flat), dim=1)).mean()
+        # Pad actor_actions if needed
+        if actor_actions.shape[1] < self.max_action_size:
+            padding = torch.zeros(actor_actions.shape[0], self.max_action_size - actor_actions.shape[1]).to(self.device)
+            actor_actions = torch.cat([actor_actions, padding], dim=1)
         
-        # Minimize the loss
+        # Keep other agents' actions from the sampled batch
+        other_agents_actions = actions[:, self.max_action_size:]
+        full_actor_actions = torch.cat([actor_actions, other_agents_actions], dim=1)
+        
+        actor_loss = -self.critic(states, full_actor_actions).mean()
+        
+        # Optimize actor
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
         self.actor_optimizer.step()
         
-        # ----------------------- update target networks ----------------------- #
-        self.soft_update(self.critic_local, self.critic_target, self.tau)
-        self.soft_update(self.actor_local, self.actor_target, self.tau)
+        # Soft update of target networks
+        self.soft_update(self.critic, self.critic_target)
+        self.soft_update(self.actor, self.actor_target)
+        
+        return critic_loss.item(), actor_loss.item()
+    
+    def soft_update(self, local_model: torch.nn.Module, target_model: torch.nn.Module):
+        """Soft update model parameters: θ_target = τ*θ_local + (1 - τ)*θ_target."""
+        for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
+            target_param.data.copy_(self.tau * local_param.data + (1.0 - self.tau) * target_param.data)
+    
+    def reset(self):
+        """Reset the noise process."""
+        self.noise.reset()
+        
+    def save(self, path: str):
+        """Save the agent's networks to files.
+        
+        Args:
+            path: Path to save the model files
+        """
+        os.makedirs(path, exist_ok=True)
+        torch.save(
+            self.actor.state_dict(),
+            os.path.join(path, f'actor_{self.agent_id}.pth')
+        )
+        torch.save(
+            self.actor_target.state_dict(),
+            os.path.join(path, f'actor_target_{self.agent_id}.pth')
+        )
+        torch.save(
+            self.critic.state_dict(),
+            os.path.join(path, f'critic_{self.agent_id}.pth')
+        )
+        torch.save(
+            self.critic_target.state_dict(),
+            os.path.join(path, f'critic_target_{self.agent_id}.pth')
+        )
+    
+    def load(self, path: str):
+        """Load the agent's networks from files.
+        
+        Args:
+            path: Path to the saved model files
+        """
+        self.actor.load_state_dict(
+            torch.load(os.path.join(path, f'actor_{self.agent_id}.pth'))
+        )
+        self.actor_target.load_state_dict(
+            torch.load(os.path.join(path, f'actor_target_{self.agent_id}.pth'))
+        )
+        self.critic.load_state_dict(
+            torch.load(os.path.join(path, f'critic_{self.agent_id}.pth'))
+        )
+        self.critic_target.load_state_dict(
+            torch.load(os.path.join(path, f'critic_target_{self.agent_id}.pth'))
+        )

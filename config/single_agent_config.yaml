@@ -1,0 +1,41 @@
+# config/single_agent_config.yaml
+
+# Environment Configuration
+env:
+  net_file: "baseline/osm.net.xml.gz"
+  route_file: "baseline/osm.passenger.trips.xml"
+  use_gui: false
+  episode_length: 3600  # 1 hour in seconds
+  delta_time: 1
+  min_green_time: 10
+  max_green_time: 60
+  yellow_time: 2
+
+# Agent Configuration
+agent:
+  # DQN parameters
+  gamma: 0.99  # Keep high discount factor for long-term rewards
+  learning_rate: 0.001  # Stable learning rate
+  epsilon_start: 1.0
+  epsilon_min: 0.05  # Higher minimum exploration
+  epsilon_decay: 0.98  # Slower decay for more exploration
+  batch_size: 256  # Larger batch size for better learning
+  memory_size: 1000000  # Large memory for diverse experiences
+  hidden_sizes: [512, 256]  # Larger network
+  target_update_frequency: 25  # Frequent updates
+
+  # Advanced features
+  double_dqn: true
+  dueling_dqn: true
+  prioritized_replay: true
+
+# Training Configuration
+training:
+  num_episodes: 10  # More episodes for better learning
+  max_steps: 50   # 30 minutes worth of steps
+  save_frequency: 10
+  
+  # Early stopping
+  early_stopping: true
+  patience: 15  # More patience for finding better solutions
+  min_improvement: 0.03  # Smaller improvements are considered significant

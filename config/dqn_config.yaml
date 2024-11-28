@@ -1,0 +1,51 @@
+# config/dqn_config.yaml
+
+# Environment Configuration
+environment:
+  # Network Files
+  net_file: "baseline/osm.net.xml.gz"
+  route_file: "baseline/osm.passenger.trips.xml"
+  out_csv_name: "metrics.csv"
+  
+  # Simulation Parameters
+  use_gui: false
+  max_steps: 600  # Increased to allow vehicles to complete routes
+  delta_time: 1     # Time step length in seconds
+  yellow_time: 2
+  min_green: 10
+  max_green: 50
+  
+  # Vehicle Parameters
+  max_depart_delay: 180
+  time_to_teleport: 300  # Increased back to baseline value
+  
+  # Multi-agent Parameters
+  neighbor_distance: 150
+
+# DQN Agent Configuration
+agent:
+  # Learning Parameters
+  gamma: 0.98
+  learning_rate: 0.0003
+  min_lr: 0.00001
+  lr_decay: 0.997
+  
+  # Exploration Parameters
+  epsilon_start: 1.0
+  epsilon_min: 0.02
+  epsilon_decay: 0.998
+  
+  # Network Parameters
+  hidden_size: 512
+  batch_size: 64
+  memory_size: 200000
+  target_update_frequency: 8
+  use_shared_memory: true
+
+# Training Parameters
+training:
+  num_episodes: 20
+  eval_frequency: 5
+  save_frequency: 10
+  log_frequency: 100
+  early_stopping_patience: 15
