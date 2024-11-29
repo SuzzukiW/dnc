@@ -10,7 +10,8 @@ import tensorflow as tf
 from datetime import datetime
 import traci
 
-from evaluation_sets.metrics import average_waiting_time, total_throughput, average_speed, max_waiting_time
+from evaluation_sets.metrics import average_waiting_time, total_throughput, average_speed, max_waiting_time  # Import metrics
+from tqdm import tqdm  # Import tqdm for progress bars
 
 class MACSFTrainer:
     def __init__(self, config_path):
@@ -97,11 +98,11 @@ class MACSFTrainer:
     
     def train(self):
         self.logger.info("Starting training")
-        for episode in range(1, self.num_episodes + 1):
+        for episode in tqdm(range(1, self.num_episodes + 1), desc="Episodes"):
             states, neighbor_states = self.env.reset()
             total_rewards = {agent_id: 0 for agent_id in self.agents}
             episode_metrics = {}
-            for step in range(1, self.steps_per_episode + 1):
+            for step in tqdm(range(1, self.steps_per_episode + 1), desc="Steps", leave=False):
                 actions = []
                 agent_ids = list(self.agents.keys())
                 for idx, agent_id in enumerate(agent_ids):

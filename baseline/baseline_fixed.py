@@ -8,7 +8,6 @@ import numpy as np
 from typing import List, Dict, Union
 from pathlib import Path
 
-# Add SUMO_HOME to path
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
     sys.path.append(tools)
@@ -203,8 +202,8 @@ class BaselineFixedSimulation:
 
 if __name__ == "__main__":
     # Run baseline simulation matching RL episodes
-    num_episodes = 20  # Reasonable number for baseline evaluation
-    max_steps = 600   # Match DQN config max_steps
+    num_episodes = 20
+    max_steps = 600
     all_metrics = {
         'average_waiting_time': [],
         'total_throughput': [],
@@ -215,7 +214,7 @@ if __name__ == "__main__":
     for episode in range(num_episodes):
         print(f"\nRunning episode {episode + 1}/{num_episodes}")
         sim = BaselineFixedSimulation()
-        metrics = sim.run(steps=max_steps)  # Match DQN config max_steps
+        metrics = sim.run(steps=max_steps)
         
         # Store final metrics for each episode
         all_metrics['average_waiting_time'].append(metrics['average_waiting_time'][-1])
@@ -224,7 +223,7 @@ if __name__ == "__main__":
         all_metrics['max_waiting_time'].append(metrics['max_waiting_time'][-1])
     
     # Calculate and print average metrics across all episodes
-    print("\nBaseline Fixed-time Results - Averaged over 10 episodes:")
+    print("\nBaseline Fixed-time Results - Averaged over 20 episodes:")
     print(f"Average Waiting Time: {np.mean(all_metrics['average_waiting_time']):.2f} ± {np.std(all_metrics['average_waiting_time']):.2f} seconds")
     print(f"Average Total Throughput: {np.mean(all_metrics['total_throughput']):.2f} ± {np.std(all_metrics['total_throughput']):.2f} vehicles")
     print(f"Average Speed: {np.mean(all_metrics['average_speed']):.2f} ± {np.std(all_metrics['average_speed']):.2f} km/h")

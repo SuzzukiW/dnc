@@ -6,10 +6,10 @@ import numpy as np
 import traci
 import sumolib
 from gym import spaces
-import logging  # Import logging module
-from src.utils.logger import get_logger  # Import the logger utility
-import time  # Import time module
-import contextlib  # Import contextlib to redirect stderr
+import logging
+from src.utils.logger import get_logger
+import time
+import contextlib
 
 
 class MACSFEnvironment:
@@ -96,31 +96,40 @@ class MACSFEnvironment:
         
         sumo_config = self.config['files']
         
+        sumo_cmd = [sumo_binary]
+        
         if 'sumocfg' in sumo_config and sumo_config['sumocfg']:
-            self.sumo_cmd = [
-                sumo_binary,
+            sumo_cmd += [
                 "-c", sumo_config['sumocfg'],
                 "--start",
                 "--quit-on-end"
             ]
             self.logger.info("Using 'sumocfg' for SUMO configuration.")
         else:
-            # Ensure 'net_file' and 'route_file' are present
             if 'net_file' not in sumo_config or 'route_file' not in sumo_config:
                 self.logger.error("Either 'sumocfg' or both 'net_file' and 'route_file' must be provided in 'files' section.")
                 raise KeyError("Either 'sumocfg' or both 'net_file' and 'route_file' must be provided in 'files' section.")
-            self.sumo_cmd = [
-                sumo_binary,
+            sumo_cmd += [
                 "-n", sumo_config['net_file'],
                 "-r", sumo_config['route_file'],
                 "--start",
                 "--quit-on-end"
             ]
             self.logger.info("Using 'net_file' and 'route_file' for SUMO configuration.")
-        
-        # Start SUMO with stderr redirected to suppress warnings
+
+        # Add options to suppress warnings and logs
+        sumo_cmd += [
+            "--no-warnings",
+            "--no-step-log",
+            "--error-log", os.devnull,
+            "--message-log", os.devnull
+        ]
+
+        self.sumo_cmd = sumo_cmd
+
+        # Start SUMO with stdout and stderr redirected to suppress output
         try:
-            with contextlib.redirect_stderr(open(os.devnull, 'w')):
+            with contextlib.redirect_stdout(open(os.devnull, 'w')), contextlib.redirect_stderr(open(os.devnull, 'w')):
                 traci.start(self.sumo_cmd)
             self.logger.info("SUMO simulation started successfully.")
         except Exception as e:

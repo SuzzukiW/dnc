@@ -90,7 +90,8 @@ class MADDPGAgent:
             memory_config['capacity'], 
             memory_config.get('alpha', 0.6),
             self.preprocessed_state_size * self.num_agents, 
-            self.max_action_size * self.num_agents
+            self.max_action_size * self.num_agents,
+            memory_config['max_neighbors']
         )
         
         # Noise process
@@ -179,22 +180,15 @@ class MADDPGAgent:
     
     def act(self, state: np.ndarray, add_noise: bool = True) -> np.ndarray:
         """Get actions from actor network."""
-        # Convert to tensor and move to device
-        state_tensor = torch.FloatTensor(state).to(self.device)
+        # Convert state to tensor and preprocess
+        state_tensor = torch.FloatTensor(state).unsqueeze(0)
+        preprocessed_state = self.preprocess_state(state_tensor)
         
-        # Ensure state is the right shape
-        if state_tensor.dim() == 1:
-            state_tensor = state_tensor.unsqueeze(0)
-        
-        # Preprocess state
-        state_tensor = self.preprocess_state(state_tensor)
-        
-        # Get action from actor network
         self.actor.eval()
         with torch.no_grad():
-            action = self.actor(state_tensor).cpu().numpy()
+            action = self.actor(preprocessed_state.to(self.device)).cpu().data.numpy()
+        self.actor.train()
         
-        # Add noise if requested
         if add_noise:
             action += self.noise.sample()
             action = np.clip(action, -1, 1)
@@ -210,22 +204,23 @@ class MADDPGAgent:
         Handles state and action preprocessing for experiences with varying dimensions.
         """
         # Process states and store multi-agent information
-        preprocessed_state = self.preprocess_state(torch.FloatTensor(state))
-        preprocessed_next_state = self.preprocess_state(torch.FloatTensor(next_state))
+        preprocessed_state = self.preprocess_state(torch.FloatTensor(state).unsqueeze(0))  # Shape: [1, preprocessed_size]
+        preprocessed_next_state = self.preprocess_state(torch.FloatTensor(next_state).unsqueeze(0))  # Shape: [1, preprocessed_size]
         
         # Process other agents' states
         processed_other_states = [
-            self.preprocess_state(torch.FloatTensor(other_state)).detach().cpu().numpy() 
+            self.preprocess_state(torch.FloatTensor(other_state).unsqueeze(0)).detach().cpu().numpy() 
             for other_state in other_agents_states
         ]
         processed_other_next_states = [
-            self.preprocess_state(torch.FloatTensor(other_next_state)).detach().cpu().numpy() 
+            self.preprocess_state(torch.FloatTensor(other_next_state).unsqueeze(0)).detach().cpu().numpy() 
             for other_next_state in other_agents_next_states
         ]
         
         # Concatenate all states for full state representation
-        full_state = np.concatenate([preprocessed_state.detach().cpu().numpy()] + processed_other_states, axis=1)
-        full_next_state = np.concatenate([preprocessed_next_state.detach().cpu().numpy()] + processed_other_next_states, axis=1)
+        # Ensure all states have same batch dimension before concatenating
+        full_state = np.concatenate([preprocessed_state.detach().cpu().numpy()] + processed_other_states, axis=1)  # Shape: [1, total_state_size]
+        full_next_state = np.concatenate([preprocessed_next_state.detach().cpu().numpy()] + processed_other_next_states, axis=1)  # Shape: [1, total_state_size]
         
         # Pad and concatenate actions
         padded_action = np.pad(action, (0, self.max_action_size - len(action)), mode='constant')
@@ -235,6 +230,36 @@ class MADDPGAgent:
         ]
         full_action = np.concatenate([padded_action] + padded_other_actions)
         
+        # Calculate TD error for prioritized replay
+        with torch.no_grad():
+            # Convert to tensors with correct dimensions
+            state_tensor = torch.FloatTensor(full_state).to(self.device)  # Shape: [1, state_size]
+            next_state_tensor = torch.FloatTensor(full_next_state).to(self.device)  # Shape: [1, state_size]
+            action_tensor = torch.FloatTensor(full_action).to(self.device).unsqueeze(0)  # Shape: [1, action_size]
+            
+            current_Q = self.critic(state_tensor, action_tensor)
+            next_actions = []
+            for i, agent_next_state in enumerate([next_state] + other_agents_next_states):
+                if i == 0:
+                    # Preprocess the state before passing to actor
+                    processed_next_state = self.preprocess_state(torch.FloatTensor(agent_next_state).unsqueeze(0))
+                    next_action = self.actor_target(processed_next_state.to(self.device))
+                else:
+                    # For simplicity, use current agent's target network for other agents
+                    processed_next_state = self.preprocess_state(torch.FloatTensor(agent_next_state).unsqueeze(0))
+                    next_action = self.actor_target(processed_next_state.to(self.device))
+                padded_next_action = torch.nn.functional.pad(
+                    next_action, 
+                    (0, self.max_action_size - next_action.size(-1)), 
+                    mode='constant'
+                )
+                next_actions.append(padded_next_action)
+            
+            # Concatenate and ensure correct dimensions
+            next_actions = torch.cat(next_actions, dim=1)  # Shape: [1, total_action_size]
+            target_Q = reward + (self.gamma * self.critic_target(next_state_tensor, next_actions) * (1 - done))
+            td_error = abs(float(target_Q - current_Q))
+
         # Add experience to memory
         self.memory.add(
             full_state,
@@ -243,37 +268,30 @@ class MADDPGAgent:
             full_next_state,
             float(done),
             1.0,  # Default priority
-            None  # No attention states needed
+            None,  # No attention states needed
+            td_error  # Add TD error for prioritized replay
         )
         
         # Learn periodically
-        if len(self.memory.priorities) > self.batch_size:
-            self.learn(None)  # Use None to sample from memory internally
-        
-        # Update noise process
-        self.noise.sample()
+        if len(self.memory) > self.batch_size:
+            experiences = self.memory.sample(self.batch_size)
+            if experiences is not None:
+                self.learn(experiences)
     
     def learn(self, experiences: Tuple):
         """Update policy and value parameters using given batch of experience tuples."""
-        # If experiences is None, sample from memory
+        # Skip if no experiences provided
         if experiences is None:
-            # Ensure we have enough samples
-            if len(self.memory.priorities) < self.batch_size:
-                return
+            return
             
-            # Sample from memory
-            experiences = self.memory.sample(self.batch_size)
+        states, actions, rewards, next_states, dones = experiences
         
-        # Unpack experiences
-        states, actions, rewards, next_states, dones, indices, weights = experiences
-        
-        # Convert to tensors and ensure they're float32
+        # Convert to tensors and ensure correct dimensions
         states = torch.FloatTensor(states).to(self.device)
         actions = torch.FloatTensor(actions).to(self.device)
-        rewards = torch.FloatTensor(rewards).to(self.device)
+        rewards = torch.FloatTensor(rewards).unsqueeze(-1).to(self.device)
         next_states = torch.FloatTensor(next_states).to(self.device)
-        dones = torch.FloatTensor(dones).to(self.device)
-        weights = torch.FloatTensor(weights).to(self.device)
+        dones = torch.FloatTensor(dones).unsqueeze(-1).to(self.device)
         
         # Split states and actions back into individual agent components
         # Each agent's state has size self.preprocessed_state_size
@@ -306,11 +324,11 @@ class MADDPGAgent:
         td_errors = torch.abs(target_rewards - current_q_values).mean(dim=1).detach().cpu().numpy()
         
         # Update priorities in replay buffer
-        self.memory.update_priorities(indices, td_errors)
+        self.memory.update_priorities(None, td_errors)
         
         # Compute critic loss
         critic_loss = F.mse_loss(current_q_values, target_rewards, reduction='none')
-        critic_loss = torch.mean(critic_loss * weights)
+        critic_loss = torch.mean(critic_loss)
         
         # Optimize critic
         self.critic_optimizer.zero_grad()
