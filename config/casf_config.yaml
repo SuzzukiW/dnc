@@ -4,8 +4,8 @@ model_name: CASF
 version: 1.2
 
 training:
-  num_episodes: 1           # Increased from 20 to 1000 for better learning
-  steps_per_episode: 200       # Aligned with environment's max_episode_steps
+  num_episodes: 20           # Increased from 20 to 1000 for better learning
+  steps_per_episode: 600       # Aligned with environment's max_episode_steps
   batch_size: 128
   gamma: 0.95
   tau: 0.01

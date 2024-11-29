@@ -4,8 +4,8 @@
 simulation:
   net_file: "baseline/osm.net.xml.gz"
   trip_file: "baseline/osm.passenger.trips.xml"
-  num_episodes: 10
-  max_steps: 50
+  num_episodes: 20
+  max_steps: 600
   use_gui: false
   step_length: 0.5  # Reduced for finer control
   delta_time: 2  # Reduced for more frequent updates

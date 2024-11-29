@@ -2,8 +2,8 @@
 
 # Training Parameters
 train:
-  num_episodes: 10  # Increase episodes for better learning
-  max_steps_per_episode: 50
+  num_episodes: 20
+  max_steps_per_episode: 600
   eval_interval: 5
   save_interval: 10
   log_interval: 1

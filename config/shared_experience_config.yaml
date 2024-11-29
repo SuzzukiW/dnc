@@ -39,8 +39,8 @@ agent:
 
 # Training parameters
 training:
-  total_episodes: 10
-  max_steps_per_episode: 50
+  total_episodes: 20
+  max_steps_per_episode: 600
   eval_frequency: 2
   save_frequency: 5
   log_frequency: 1

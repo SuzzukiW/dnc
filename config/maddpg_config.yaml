@@ -7,8 +7,8 @@ sumo_network:
 
 # Training parameters
 training:
-  num_episodes: 1  # Reduced number of episodes for quicker training
-  max_steps_per_episode: 50  # Reduced to 100 steps as requested
+  num_episodes: 20
+  max_steps_per_episode: 600
   batch_size: 64
   learning_rate_actor: 0.001
   learning_rate_critic: 0.001
@@ -23,6 +23,7 @@ memory:
   capacity: 200000
   min_size_for_training: 128
   alpha: 0.7
+  max_neighbors: 8  # Added max_neighbors parameter for PrioritizedReplayBuffer
 
 # Neural Network Architecture
 network:

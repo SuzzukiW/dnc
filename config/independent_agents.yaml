@@ -2,7 +2,7 @@
 
 # Training Configuration
 training:
-  num_episodes: 10
+  num_episodes: 20
   batch_size: 32
   train_freq: 5  # How often to train (steps)
   save_freq: 100  # How often to save checkpoints (episodes)
@@ -11,7 +11,7 @@ training:
   epsilon_decay: 800  # Episodes over which to decay epsilon
   learning_rate: 0.001
   gamma: 0.95  # Discount factor
-  max_steps_per_episode: 50  # Maximum number of steps allowed in a single episode
+  max_steps_per_episode: 600  # Maximum number of steps allowed in a single episode
 
 # Environment Configuration
 environment:

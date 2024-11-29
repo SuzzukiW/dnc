@@ -31,8 +31,8 @@ agent:
 
 # Training Configuration
 training:
-  num_episodes: 10  # More episodes for better learning
-  max_steps: 50   # 30 minutes worth of steps
+  num_episodes: 20  # More episodes for better learning
+  max_steps: 600   # 30 minutes worth of steps
   save_frequency: 10
   
   # Early stopping

@@ -31,9 +31,9 @@ agent:
 
 # Training Configuration
 training:
-  num_episodes: 10
-  max_steps: 50
-  save_frequency: 2
+  num_episodes: 20
+  max_steps: 600
+  save_frequency: 10
   
   # Early stopping
   early_stopping: true
