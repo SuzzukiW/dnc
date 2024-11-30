@@ -1,4 +1,4 @@
-# src/utils/prioritized_replay_buffer.py
+# src/utils/prioritized_replay_buffer_casf.py
 
 import numpy as np
 from typing import Tuple
@@ -54,7 +54,15 @@ class SumTree:
                     parent_idx = right
 
         data_idx = leaf_idx - (self.capacity - 1)
-        data_idx = data_idx % self.capacity  # Ensure index is within bounds
+
+        # Ensure the data index is valid and within the initialized entries
+        if data_idx < 0 or data_idx >= self.n_entries:
+            # Resample if invalid index
+            if self.total_priority == 0:
+                # If total priority is zero, return a default value to prevent infinite recursion
+                return leaf_idx, 1e-6, (np.zeros(self.capacity, dtype=np.float32),) * 7
+            else:
+                return self.get_leaf(np.random.uniform(0, self.total_priority))
 
         data = self.data[data_idx]
         return leaf_idx, self.tree[leaf_idx], data
@@ -105,6 +113,13 @@ class PrioritizedReplayBuffer:
         done: bool,
         td_error: float
     ):
+        # Store states as is without reshaping
+        state = np.array(state, dtype=np.float32)
+        next_state = np.array(next_state, dtype=np.float32)
+        neighbor_next_state = np.array(neighbor_next_state, dtype=np.float32)
+        neighbor_next_action = np.array(neighbor_next_action, dtype=np.float32)
+        action = np.array(action, dtype=np.float32)
+
         priority = self._get_priority(td_error)
         data = (state, action, reward, next_state, neighbor_next_state, neighbor_next_action, done)
         self.sum_tree.add(priority, data)
@@ -115,9 +130,16 @@ class PrioritizedReplayBuffer:
             raise ValueError("The SumTree is empty. Cannot sample.")
 
         batch_size = min(batch_size, self.sum_tree.n_entries)
-        batch = []
-        indices = []
-        priorities = []
+
+        states = np.zeros((batch_size, self.state_dim), dtype=np.float32)
+        actions = np.zeros((batch_size, self.action_dim), dtype=np.float32)
+        rewards = np.zeros(batch_size, dtype=np.float32)
+        next_states = np.zeros((batch_size, self.state_dim), dtype=np.float32)
+        neighbor_next_states = np.zeros((batch_size, self.max_neighbors, self.state_dim), dtype=np.float32)
+        neighbor_next_actions = np.zeros((batch_size, self.max_neighbors, self.action_dim), dtype=np.float32)
+        dones = np.zeros(batch_size, dtype=np.float32)
+        indices = np.zeros(batch_size, dtype=np.int32)
+        weights = np.zeros(batch_size, dtype=np.float32)
 
         segment = self.sum_tree.total_priority / batch_size
 
@@ -126,29 +148,31 @@ class PrioritizedReplayBuffer:
             b = segment * (i + 1)
             s = np.random.uniform(a, b)
             idx, p, data = self.sum_tree.get_leaf(s)
-            batch.append(data)
-            indices.append(idx)
-            priorities.append(p)
 
-        states, actions, rewards, next_states, neighbor_next_states, neighbor_next_actions, dones = zip(*batch)
+            # Ensure states have correct dimensions
+            states[i] = np.array(data[0], dtype=np.float32)[:self.state_dim]
+            actions[i] = np.array(data[1], dtype=np.float32)[:self.action_dim]
+            rewards[i] = data[2]
+            next_states[i] = np.array(data[3], dtype=np.float32)[:self.state_dim]
+            neighbor_next_states[i] = np.array(data[4], dtype=np.float32)[:, :self.state_dim]
+            neighbor_next_actions[i] = np.array(data[5], dtype=np.float32)[:, :self.action_dim]
+            dones[i] = data[6]
+            indices[i] = idx
+            weights[i] = (self.size * p / self.sum_tree.total_priority) ** (-self.beta)
 
-        probs = np.array(priorities) / self.sum_tree.total_priority
-        beta = self.beta
-        weights = (self.size * probs) ** (-beta)
         weights /= weights.max()
-
         self.beta = min(self.beta_end, self.beta + (self.beta_end - self.beta_start) / self.beta_steps)
         self.step_count += 1
 
         return (
-            np.array(states),
-            np.array(actions),
-            np.array(rewards),
-            np.array(next_states),
-            np.array(neighbor_next_states),
-            np.array(neighbor_next_actions),
-            np.array(dones),
-            np.array(indices),
+            states,
+            actions,
+            rewards,
+            next_states,
+            neighbor_next_states,
+            neighbor_next_actions,
+            dones,
+            indices,
             weights.astype(np.float32)
         )
 

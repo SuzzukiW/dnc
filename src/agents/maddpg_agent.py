@@ -10,7 +10,7 @@ import os
 import torch.nn.functional as F
 
 from src.models.maddpg_network import Actor, Critic
-from src.utils.prioritized_replay_buffer import PrioritizedReplayBuffer
+from src.utils.prioritized_replay_buffer_maddpg import PrioritizedReplayBuffer
 from src.utils.noise import OUNoise
 from src.utils.state_preprocessor import StatePreprocessor
 from src.utils.state_dimensionality_reducer import StateDimensionalityReducer
@@ -106,6 +106,8 @@ class MADDPGAgent:
         self.gamma = config['training']['gamma']
         self.tau = config['training']['tau']
         self.batch_size = config['training']['batch_size']
+        self.update_every = config['training'].get('update_every', 1)
+        self.step_count = 0
     
     def _create_state_preprocessor(self, input_size: int, config: Dict):
         """
@@ -217,10 +219,44 @@ class MADDPGAgent:
             for other_next_state in other_agents_next_states
         ]
         
+        # Ensure all states have consistent shapes before concatenation
+        preprocessed_state_np = preprocessed_state.detach().cpu().numpy()
+        preprocessed_next_state_np = preprocessed_next_state.detach().cpu().numpy()
+        
+        # Reshape all states to have the same dimensions
+        all_states = [preprocessed_state_np] + processed_other_states
+        all_next_states = [preprocessed_next_state_np] + processed_other_next_states
+        
+        # Ensure all states have the same shape by padding if necessary
+        max_state_dim = max(state.shape[-1] for state in all_states)
+        padded_states = []
+        padded_next_states = []
+        
+        for state in all_states:
+            if state.shape[-1] < max_state_dim:
+                padded_state = np.pad(
+                    state,
+                    ((0, 0), (0, max_state_dim - state.shape[-1])),
+                    mode='constant'
+                )
+                padded_states.append(padded_state)
+            else:
+                padded_states.append(state)
+                
+        for state in all_next_states:
+            if state.shape[-1] < max_state_dim:
+                padded_state = np.pad(
+                    state,
+                    ((0, 0), (0, max_state_dim - state.shape[-1])),
+                    mode='constant'
+                )
+                padded_next_states.append(padded_state)
+            else:
+                padded_next_states.append(state)
+        
         # Concatenate all states for full state representation
-        # Ensure all states have same batch dimension before concatenating
-        full_state = np.concatenate([preprocessed_state.detach().cpu().numpy()] + processed_other_states, axis=1)  # Shape: [1, total_state_size]
-        full_next_state = np.concatenate([preprocessed_next_state.detach().cpu().numpy()] + processed_other_next_states, axis=1)  # Shape: [1, total_state_size]
+        full_state = np.concatenate(padded_states, axis=1)  # Shape: [1, total_state_size]
+        full_next_state = np.concatenate(padded_next_states, axis=1)  # Shape: [1, total_state_size]
         
         # Pad and concatenate actions
         padded_action = np.pad(action, (0, self.max_action_size - len(action)), mode='constant')
@@ -259,24 +295,34 @@ class MADDPGAgent:
             next_actions = torch.cat(next_actions, dim=1)  # Shape: [1, total_action_size]
             target_Q = reward + (self.gamma * self.critic_target(next_state_tensor, next_actions) * (1 - done))
             td_error = abs(float(target_Q - current_Q))
+            
+            # Apply very strict TD error control
+            td_error = min(td_error, 1.0)  # Clip to [0, 1]
+            td_error = 0.1 + 0.9 * td_error  # Ensure minimum priority of 0.1
 
-        # Add experience to memory
-        self.memory.add(
-            full_state,
-            full_action,
-            reward,
-            full_next_state,
-            float(done),
-            1.0,  # Default priority
-            None,  # No attention states needed
-            td_error  # Add TD error for prioritized replay
-        )
-        
-        # Learn periodically
-        if len(self.memory) > self.batch_size:
-            experiences = self.memory.sample(self.batch_size)
-            if experiences is not None:
-                self.learn(experiences)
+        # Add a check to ensure the replay buffer has enough samples
+        if len(self.memory) >= self.batch_size:
+            # Clip the TD error to prevent extreme priority values
+            clipped_td_error = np.clip(np.abs(td_error), 1e-6, 100.0)
+            
+            self.memory.add(
+                full_state,
+                full_action,
+                reward,
+                full_next_state,
+                float(done),
+                1.0,  # Default priority
+                None,  # No attention states needed
+                clipped_td_error  # Add controlled TD error for prioritized replay
+            )
+
+            # Perform learning step only when buffer has enough samples
+            if self.step_count % self.update_every == 0:
+                experiences = self.memory.sample(self.batch_size)
+                if experiences is not None:
+                    self.learn(experiences)
+
+        self.step_count += 1
     
     def learn(self, experiences: Tuple):
         """Update policy and value parameters using given batch of experience tuples."""
@@ -284,81 +330,132 @@ class MADDPGAgent:
         if experiences is None:
             return
             
-        states, actions, rewards, next_states, dones = experiences
+        # Handle different experience tuple formats
+        if len(experiences) == 5:  # Basic format: (states, actions, rewards, next_states, dones)
+            states, actions, rewards, next_states, dones = experiences
+            indices = None
+            weights = torch.ones(states.shape[0], 1).to(self.device)  # Default weights
+        elif len(experiences) == 7:  # Format with priorities: (states, actions, rewards, next_states, dones, indices, weights)
+            states, actions, rewards, next_states, dones, indices, weights = experiences
+        elif len(experiences) == 9:  # Extended format: (states, actions, rewards, next_states, dones, indices, weights, attention_states, td_errors)
+            states, actions, rewards, next_states, dones, indices, weights, _, _ = experiences
+        else:
+            raise ValueError(f"Unexpected number of values in experiences tuple: {len(experiences)}")
         
-        # Convert to tensors and ensure correct dimensions
-        states = torch.FloatTensor(states).to(self.device)
-        actions = torch.FloatTensor(actions).to(self.device)
-        rewards = torch.FloatTensor(rewards).unsqueeze(-1).to(self.device)
-        next_states = torch.FloatTensor(next_states).to(self.device)
-        dones = torch.FloatTensor(dones).unsqueeze(-1).to(self.device)
+        # Convert numpy arrays to tensors and move to device
+        states = torch.FloatTensor(np.array(states)).to(self.device)  # Shape: [batch_size, num_agents * state_size]
+        next_states = torch.FloatTensor(np.array(next_states)).to(self.device)  # Shape: [batch_size, num_agents * state_size]
+        actions = torch.FloatTensor(np.array(actions)).to(self.device)  # Shape: [batch_size, num_agents * action_size]
+        rewards = torch.FloatTensor(np.array(rewards)).unsqueeze(-1).to(self.device)  # Shape: [batch_size, 1]
+        dones = torch.FloatTensor(np.array(dones)).unsqueeze(-1).to(self.device)  # Shape: [batch_size, 1]
         
-        # Split states and actions back into individual agent components
-        # Each agent's state has size self.preprocessed_state_size
-        agent_states = states[:, :self.preprocessed_state_size]
-        agent_next_states = next_states[:, :self.preprocessed_state_size]
-        agent_actions = actions[:, :self.action_size]
+        if weights is not None:
+            # Convert weights to float32 array first
+            weights = np.array(weights, dtype=np.float32)
+            weights = torch.FloatTensor(weights).unsqueeze(-1).to(self.device)  # Shape: [batch_size, 1]
+        else:
+            weights = torch.ones_like(rewards).to(self.device)
         
-        # Compute target Q values
-        with torch.no_grad():
-            # Get next actions using target actor networks (only for this agent)
-            next_actions = self.actor_target(agent_next_states)
-            
-            # Pad next_actions to match max_action_size if needed
-            if next_actions.shape[1] < self.max_action_size:
-                padding = torch.zeros(next_actions.shape[0], self.max_action_size - next_actions.shape[1]).to(self.device)
-                next_actions = torch.cat([next_actions, padding], dim=1)
-            
-            # Keep other agents' actions from the sampled batch for the full next_actions
-            other_agents_next_actions = actions[:, self.max_action_size:]
-            full_next_actions = torch.cat([next_actions, other_agents_next_actions], dim=1)
-            
-            # Compute target Q values using full state-action pairs
-            target_q_values = self.critic_target(next_states, full_next_actions)
-            target_rewards = rewards + (1 - dones) * self.gamma * target_q_values
+        # Get dimensions
+        batch_size = states.size(0)
+        num_agents = self.num_agents
+        state_size = states.size(-1) // num_agents
+        action_size = actions.size(-1) // num_agents
+
+        # Reshape states and actions to have consistent dimensions
+        states = states.view(batch_size, num_agents, state_size)
+        next_states = next_states.view(batch_size, num_agents, state_size)
+        actions = actions.view(batch_size, num_agents, action_size)
+
+        # Get next actions for each agent using their respective target networks
+        next_actions = []
+        for i in range(num_agents):
+            agent_next_state = next_states[:, i, :]
+            next_action = self.actor_target(agent_next_state)
+            # Pad if necessary
+            if next_action.size(-1) < self.max_action_size:
+                next_action = torch.nn.functional.pad(
+                    next_action,
+                    (0, self.max_action_size - next_action.size(-1)),
+                    mode='constant'
+                )
+            next_actions.append(next_action)
+        next_actions = torch.cat(next_actions, dim=1)
+
+        # Flatten states and actions for critic input
+        states_flat = states.view(batch_size, -1)  # Shape: (batch_size, num_agents * state_size)
+        next_states_flat = next_states.view(batch_size, -1)  # Shape: (batch_size, num_agents * state_size)
+        actions_flat = actions.view(batch_size, -1)  # Shape: (batch_size, num_agents * action_size)
+
+        # Compute target Q value
+        target_q_next = self.critic_target(next_states_flat, next_actions)
+        target_rewards = rewards + (self.gamma * target_q_next * (1 - dones))
+
+        # Compute current Q value
+        current_q_values = self.critic(states_flat, actions_flat)
         
-        # Compute current Q values using full state-action pairs
-        current_q_values = self.critic(states, actions)
-        
-        # Compute TD errors for priority update - take mean across batch dimension
+        # Compute TD errors for updating priorities
         td_errors = torch.abs(target_rewards - current_q_values).mean(dim=1).detach().cpu().numpy()
         
-        # Update priorities in replay buffer
-        self.memory.update_priorities(None, td_errors)
+        # Update priorities in replay buffer if indices are provided
+        if indices is not None:
+            # Apply very strict TD error control
+            td_errors = np.clip(td_errors, 0, 1.0)  # Clip to [0, 1]
+            td_errors = 0.1 + 0.9 * td_errors  # Ensure minimum priority of 0.1
+            
+            # Convert indices and td_errors to numpy arrays with correct types
+            indices = np.asarray(indices, dtype=np.int32)
+            td_errors = np.asarray(td_errors, dtype=np.float32)
+            self.memory.update_priorities(indices, td_errors)
         
-        # Compute critic loss
+        # Compute critic loss with importance sampling weights
         critic_loss = F.mse_loss(current_q_values, target_rewards, reduction='none')
-        critic_loss = torch.mean(critic_loss)
+        critic_loss = (critic_loss * weights).mean()
         
         # Optimize critic
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
         self.critic_optimizer.step()
         
-        # Compute actor loss using only this agent's state
-        actor_actions = self.actor(agent_states)
+        # Compute actor loss
+        # Get current agent's actions
+        current_actions = self.actor(states[:, 0, :])
         
-        # Pad actor_actions if needed
-        if actor_actions.shape[1] < self.max_action_size:
-            padding = torch.zeros(actor_actions.shape[0], self.max_action_size - actor_actions.shape[1]).to(self.device)
-            actor_actions = torch.cat([actor_actions, padding], dim=1)
+        # Pad actions if necessary
+        if current_actions.size(-1) < self.max_action_size:
+            current_actions = torch.nn.functional.pad(
+                current_actions,
+                (0, self.max_action_size - current_actions.size(-1)),
+                mode='constant'
+            )
         
-        # Keep other agents' actions from the sampled batch
-        other_agents_actions = actions[:, self.max_action_size:]
-        full_actor_actions = torch.cat([actor_actions, other_agents_actions], dim=1)
+        # Create full actions tensor with padded actions for all agents
+        actions_for_critic = []
+        for i in range(self.num_agents):
+            if i == 0:
+                actions_for_critic.append(current_actions)
+            else:
+                agent_action = actions[:, i, :]
+                if agent_action.size(-1) < self.max_action_size:
+                    agent_action = torch.nn.functional.pad(
+                        agent_action,
+                        (0, self.max_action_size - agent_action.size(-1)),
+                        mode='constant'
+                    )
+                actions_for_critic.append(agent_action)
+        actions_for_critic = torch.cat(actions_for_critic, dim=1)
         
-        actor_loss = -self.critic(states, full_actor_actions).mean()
+        # Compute actor loss using properly formatted actions
+        actor_loss = -self.critic(states_flat, actions_for_critic).mean()
         
         # Optimize actor
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
         self.actor_optimizer.step()
         
-        # Soft update of target networks
+        # Update target networks
         self.soft_update(self.critic, self.critic_target)
         self.soft_update(self.actor, self.actor_target)
-        
-        return critic_loss.item(), actor_loss.item()
     
     def soft_update(self, local_model: torch.nn.Module, target_model: torch.nn.Module):
         """Soft update model parameters: θ_target = τ*θ_local + (1 - τ)*θ_target."""

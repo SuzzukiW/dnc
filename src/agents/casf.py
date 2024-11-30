@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
 from src.models.casf_network import CASFNetwork
-from src.utils.prioritized_replay_buffer import PrioritizedReplayBuffer
+from src.utils.prioritized_replay_buffer_casf import PrioritizedReplayBuffer
 import logging
 from src.utils.logger import get_logger
 
@@ -105,7 +105,7 @@ class CASFAgent:
         self.logger.debug(f"Agent {self.agent_id} acting with action: {action}")
         return action
 
-    def store_experience(self, state, action, reward, next_state, neighbor_next_state, neighbor_next_action, done, td_error):
+    def store_experience(self, state, action, reward, next_state, neighbor_next_state, neighbor_next_action, done, td_error=None):
         """
         Stores an experience in the replay buffer.
 
@@ -117,8 +117,18 @@ class CASFAgent:
             neighbor_next_state (np.ndarray): Next states of neighbors.
             neighbor_next_action (np.ndarray): Next actions of neighbors.
             done (bool): Whether the episode is done.
-            td_error (float): TD-error for priority update.
+            td_error (float, optional): TD-error for priority update. If None, uses max priority.
         """
+        # Ensure all states are numpy arrays with consistent shapes
+        state = np.array(state, dtype=np.float32).reshape(self.state_dim)
+        next_state = np.array(next_state, dtype=np.float32).reshape(self.state_dim)
+        neighbor_next_state = np.array(neighbor_next_state, dtype=np.float32).reshape(self.max_neighbors, self.state_dim)
+        neighbor_next_action = np.array(neighbor_next_action, dtype=np.float32).reshape(self.max_neighbors, self.action_dim)
+        action = np.array(action, dtype=np.float32).reshape(self.action_dim)
+
+        if td_error is None:
+            td_error = self.memory.max_priority
+
         self.memory.add(
             state=state,
             action=action,
@@ -140,14 +150,14 @@ class CASFAgent:
             return
 
         (
-            states, 
-            actions, 
-            rewards, 
-            next_states, 
-            neighbor_next_states, 
-            neighbor_next_actions, 
-            dones, 
-            indices, 
+            states,
+            actions,
+            rewards,
+            next_states,
+            neighbor_next_states,
+            neighbor_next_actions,
+            dones,
+            indices,
             weights
         ) = self.memory.sample(self.batch_size)
 

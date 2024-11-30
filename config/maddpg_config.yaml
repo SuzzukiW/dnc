@@ -10,11 +10,12 @@ training:
   num_episodes: 20
   max_steps_per_episode: 600
   batch_size: 64
+  update_every: 4  # Learn every 4 steps to reduce computational overhead
   learning_rate_actor: 0.001
   learning_rate_critic: 0.001
-  gamma: 0.95  # Discount factor
-  tau: 0.01    # Soft update parameter
-  update_every: 50
+  learning_rate: 1.0e-4
+  gamma: 0.99
+  tau: 0.001
   warmup_steps: 10
   evaluate_every: 1  # Evaluate more frequently due to fewer episodes
 
