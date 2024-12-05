@@ -1,12 +1,24 @@
 #!/usr/bin/env python
 
+# baseline_special_event.py
+
 import os
 import sys
 import traci
 import numpy as np
-from typing import List, Dict, Union, Set, Tuple
+import random
+from typing import List, Dict, Union
 from pathlib import Path
-from enum import Enum
+from tqdm import tqdm
+import time
+import logging
+
+# Configure logging
+logging.basicConfig(
+    filename='special_event_simulation.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 # Add SUMO_HOME to path
 if 'SUMO_HOME' in os.environ:
@@ -16,109 +28,59 @@ else:
     sys.exit("Please declare environment variable 'SUMO_HOME'")
 
 # Import metrics
-from evaluation_sets.metrics import (
-    average_waiting_time,
-    total_throughput,
-    average_speed,
-    max_waiting_time
-)
+try:
+    from evaluation_sets.metrics import (
+        average_waiting_time,
+        max_waiting_time
+    )
+except ImportError:
+    logging.error("Failed to import metrics. Ensure 'evaluation_sets.metrics' is accessible.")
+    sys.exit("Failed to import metrics.")
 
-class EventType(Enum):
-    SPORTS = "sports"          # Fenway, TD Garden events
-    CONCERT = "concert"        # Arena events, outdoor concerts
-    GRADUATION = "graduation"  # University events
-    PARADE = "parade"         # Marathons, victory parades
-    CONVENTION = "convention" # Convention center events
-
-class EventPhase(Enum):
-    PRE_EVENT = "pre"    # Building crowd
-    DURING = "during"    # Event in progress
-    POST_EVENT = "post"  # Mass exodus
-
-class SpecialEventSimulation:
+class BaselineSpecialEventSimulation:
     def __init__(self, 
-                 net_file: str = 'baseline/osm.net.xml.gz',
-                 route_file: str = 'baseline/osm.passenger.trips.xml',
-                 port: int = 8813,
-                 event_type: EventType = EventType.SPORTS,
-                 event_phase: EventPhase = EventPhase.PRE_EVENT):
+                 net_file: str = 'Version1/2024-11-05-18-42-37/osm.net.xml',
+                 route_file: str = 'Version1/2024-11-05-18-42-37/osm.passenger.trips.xml',
+                 port: int = 8813):
         """
-        Initialize adaptive controller for special event traffic.
-        Handles different types of events and their phases.
+        Initialize a special event traffic simulation (e.g., TD Garden event).
+        Focuses on localized congestion around venue area with moderate overall impact.
         """
         self.net_file = net_file
         self.route_file = route_file
         self.port = port
-        self.event_type = event_type
-        self.event_phase = event_phase
         
-        # Event venue locations (simplified - would need actual coordinates)
-        self.venue_locations = {
-            EventType.SPORTS: {
-                'fenway': (42.3467, -71.0972),
-                'tdgarden': (42.3662, -71.0621)
-            },
-            EventType.CONCERT: {
-                'tdgarden': (42.3662, -71.0621),
-                'pavilion': (42.3543, -71.0444)
-            },
-            EventType.GRADUATION: {
-                'bu': (42.3505, -71.1054),
-                'harvard': (42.3744, -71.1182),
-                'mit': (42.3601, -71.0942)
-            },
-            EventType.CONVENTION: {
-                'hynes': (42.3486, -71.0827),
-                'bcec': (42.3449, -71.0444)
-            }
-        }
+        # Environment parameters (more moderate than rush hour)
+        self.delta_time = 6  # Simulation time step (seconds)
+        self.yellow_time = 2  # Short yellow phase
+        self.min_green = 5  # Reasonable minimum green
+        self.max_green = 40  # Moderate maximum green phase duration
         
-        # Phase-specific parameters
-        self.phase_params = {
-            EventPhase.PRE_EVENT: {
-                'min_green': 25,
-                'max_green': 75,
-                'queue_weight': 1.2,  # Weight more towards venue
-            },
-            EventPhase.DURING: {
-                'min_green': 20,
-                'max_green': 45,
-                'queue_weight': 1.0,  # Normal operations
-            },
-            EventPhase.POST_EVENT: {
-                'min_green': 30,
-                'max_green': 90,
-                'queue_weight': 1.5,  # Heavy weight to clear venue area
-            }
-        }
+        # Timing parameters
+        self.cycle_length = 5  # Moderate cycle length
+        self.random_change_prob = 0.4  # Lower probability of random changes
+        self.red_phase_bias = 0.7  # Moderate bias towards red phases
         
-        # Set current phase parameters
-        self.current_params = self.phase_params[event_phase]
-        self.min_green_time = self.current_params['min_green']
-        self.max_green_time = self.current_params['max_green']
-        self.queue_weight = self.current_params['queue_weight']
-        
-        # Event-specific settings
-        self.yellow_time = 4
-        self.detection_range = 150  # Extended for event crowds
-        self.venue_radius = 500  # meters around venue
-        
-        # Store metrics for evaluation
+        # Store metrics
         self.metrics_history = {
             'average_waiting_time': [],
-            'total_throughput': [],
-            'average_speed': [],
             'max_waiting_time': []
         }
         
-        # Traffic light information
         self.tl_phases = {}
-        self.phase_start_times = {}
-        self.venue_area_lights = set()  # TLs near venue
         
-        # Pedestrian consideration
-        self.ped_crossing_time = 15  # Minimum for large crowds
-        self.max_ped_wait = 60      # Maximum wait for pedestrians
+        # Event-specific parameters
+        self.event_area_radius = 5  # Number of intersections considered "near venue"
+        self.venue_impact_factor = 0.8  # Higher congestion near venue
+        self.disruption_interval = 8  # Less frequent disruptions
+        self.sequential_stop_prob = 0.5  # Moderate probability of sequential stops
+        self.sequence_length = 10  # Affect fewer lights in sequence
+        
+        # TD Garden area coordinates (approximate - adjust based on actual network)
+        self.venue_location = {
+            'x': 0,  # Will be set during initialization
+            'y': 0   # Will be set during initialization
+        }
 
     def _get_vehicle_data(self) -> List[Dict[str, Union[float, int]]]:
         """Collect current vehicle data from SUMO simulation."""
@@ -127,9 +89,7 @@ class SpecialEventSimulation:
             vehicle_data.append({
                 'id': veh_id,
                 'waiting_time': traci.vehicle.getWaitingTime(veh_id),
-                'speed': traci.vehicle.getSpeed(veh_id),
-                'position': traci.vehicle.getPosition(veh_id),
-                'route': traci.vehicle.getRoute(veh_id)
+                'speed': traci.vehicle.getSpeed(veh_id)
             })
         return vehicle_data
 
@@ -137,123 +97,109 @@ class SpecialEventSimulation:
         """Update simulation metrics."""
         self.metrics_history['average_waiting_time'].append(
             average_waiting_time(vehicle_data))
-        self.metrics_history['total_throughput'].append(
-            total_throughput(vehicle_data))
-        self.metrics_history['average_speed'].append(
-            average_speed(vehicle_data))
         self.metrics_history['max_waiting_time'].append(
             max_waiting_time(vehicle_data))
 
-    def _identify_venue_area_lights(self):
-        """Identify traffic lights in venue area."""
-        venue_coords = self.venue_locations[self.event_type]
-        for tl_id in traci.trafficlight.getIDList():
-            try:
-                # Get traffic light position
-                tl_pos = traci.junction.getPosition(
-                    traci.trafficlight.getControlledJunctions(tl_id)[0]
-                )
-                
-                # Check if within venue radius
-                for venue_pos in venue_coords.values():
-                    dist = np.sqrt(
-                        (tl_pos[0] - venue_pos[0])**2 + 
-                        (tl_pos[1] - venue_pos[1])**2
-                    )
-                    if dist <= self.venue_radius:
-                        self.venue_area_lights.add(tl_id)
-                        break
-            except:
-                continue
-
     def _initialize_traffic_lights(self):
-        """Initialize traffic light phase information."""
-        for tl_id in traci.trafficlight.getIDList():
-            logic = traci.trafficlight.getAllProgramLogics(tl_id)[0]
-            self.tl_phases[tl_id] = len(logic.phases)
-            self.phase_start_times[tl_id] = 0
+        """Initialize traffic light phase information and identify venue area lights."""
+        self.tl_list = list(traci.trafficlight.getIDList())
         
-        self._identify_venue_area_lights()
-
-    def _get_queue_length(self, tl_id: str) -> Dict[str, float]:
-        """
-        Get weighted queue lengths based on event phase and direction.
-        """
-        queues = {'venue': 0, 'other': 0}
-        is_venue_area = tl_id in self.venue_area_lights
+        # Find positions of traffic lights for venue location
+        x_coords = []
+        y_coords = []
+        for tl_id in self.tl_list:
+            try:
+                # Get one of the controlled lanes
+                lanes = traci.trafficlight.getControlledLanes(tl_id)
+                if lanes:
+                    # Get the position of the first controlled lane
+                    lane_shape = traci.lane.getShape(lanes[0])
+                    if lane_shape:
+                        x, y = lane_shape[0]  # Get the start position of the lane
+                        x_coords.append(x)
+                        y_coords.append(y)
+            except Exception:
+                continue
         
-        for veh_id in traci.vehicle.getIDList():
-            if traci.vehicle.getSpeed(veh_id) < 0.1:  # Stopped vehicle
+        if x_coords and y_coords:
+            # Set venue location to network center (adjust if needed)
+            self.venue_location['x'] = np.mean(x_coords)
+            self.venue_location['y'] = np.mean(y_coords)
+        
+        for tl_id in self.tl_list:
+            try:
+                logic = traci.trafficlight.getAllProgramLogics(tl_id)[0]
+                # Calculate distance to venue using lane positions
                 try:
-                    if tl_id in traci.vehicle.getNextTLS(veh_id)[0][0]:
-                        # Apply venue area weighting
-                        if is_venue_area:
-                            queues['venue'] += 1 * self.queue_weight
+                    lanes = traci.trafficlight.getControlledLanes(tl_id)
+                    if lanes:
+                        lane_shape = traci.lane.getShape(lanes[0])
+                        if lane_shape:
+                            x, y = lane_shape[0]
+                            distance = np.sqrt((x - self.venue_location['x'])**2 + 
+                                            (y - self.venue_location['y'])**2)
                         else:
-                            queues['other'] += 1
-                except:
-                    continue
-        
-        return queues
+                            distance = float('inf')
+                    else:
+                        distance = float('inf')
+                except Exception:
+                    distance = float('inf')
+                
+                self.tl_phases[tl_id] = {
+                    'total_phases': len(logic.phases),
+                    'red_phases': [],
+                    'venue_distance': distance,
+                    'near_venue': distance <= self.event_area_radius,
+                    'congested_phases': []
+                }
+                
+                # Identify congested phases
+                for i, phase in enumerate(logic.phases):
+                    red_ratio = phase.state.count('r') / len(phase.state)
+                    if red_ratio > 0.5:
+                        self.tl_phases[tl_id]['red_phases'].append(i)
+                    if red_ratio >= 0.7:
+                        self.tl_phases[tl_id]['congested_phases'].append(i)
+            except Exception as e:
+                logging.error(f"Error initializing traffic light {tl_id}: {e}")
 
-    def _adjust_for_pedestrians(self, tl_id: str, current_time: int) -> bool:
-        """
-        Adjust timing for heavy pedestrian volumes during events.
-        """
-        is_venue_area = tl_id in self.venue_area_lights
-        phase_duration = current_time - self.phase_start_times[tl_id]
+    def _get_event_adjusted_phase(self, tl_id: str, current_phase: int) -> int:
+        """Get next phase with bias based on proximity to venue."""
+        near_venue = self.tl_phases[tl_id]['near_venue']
+        bias = self.red_phase_bias * (1 + self.venue_impact_factor) if near_venue else self.red_phase_bias
         
-        if is_venue_area:
-            # Ensure minimum pedestrian crossing time
-            if phase_duration < self.ped_crossing_time:
-                return False
+        if np.random.random() < bias:
+            if near_venue and self.tl_phases[tl_id]['congested_phases']:
+                return np.random.choice(self.tl_phases[tl_id]['congested_phases'])
+            elif self.tl_phases[tl_id]['red_phases']:
+                return np.random.choice(self.tl_phases[tl_id]['red_phases'])
+        
+        return np.random.randint(0, self.tl_phases[tl_id]['total_phases'])
+
+    def _create_venue_area_congestion(self, step: int):
+        """Create concentrated congestion near venue area."""
+        if np.random.random() < self.sequential_stop_prob:
+            # Sort traffic lights by distance to venue
+            sorted_lights = sorted(
+                [(tl_id, self.tl_phases[tl_id]['venue_distance']) 
+                 for tl_id in self.tl_list],
+                key=lambda x: x[1]
+            )
             
-            # Force phase change if pedestrians waiting too long
-            if phase_duration > self.max_ped_wait:
-                return True
-        
-        return None
+            # Affect nearby lights more severely
+            for i in range(min(self.sequence_length, len(sorted_lights))):
+                tl_id = sorted_lights[i][0]
+                if self.tl_phases[tl_id]['congested_phases']:
+                    try:
+                        # Higher chance of congested phase for closer lights
+                        if np.random.random() < (1 - i/self.sequence_length):
+                            phase = np.random.choice(self.tl_phases[tl_id]['congested_phases'])
+                            traci.trafficlight.setPhase(tl_id, phase)
+                    except Exception as e:
+                        logging.error(f"Error setting venue congestion phase for traffic light {tl_id}: {e}")
 
-    def _should_change_phase(self, tl_id: str, current_time: int) -> bool:
-        """
-        Determine if phase should change based on event conditions.
-        """
-        phase_duration = current_time - self.phase_start_times[tl_id]
-        queues = self._get_queue_length(tl_id)
-        
-        # Check pedestrian requirements first
-        ped_decision = self._adjust_for_pedestrians(tl_id, current_time)
-        if ped_decision is not None:
-            return ped_decision
-        
-        # Minimum green time check
-        if phase_duration < self.min_green_time:
-            return False
-        
-        # Queue-based decision with event considerations
-        if tl_id in self.venue_area_lights:
-            # More patient with venue area queues during events
-            if queues['venue'] > 0 and phase_duration < self.max_green_time * 0.8:
-                return False
-            
-            # More aggressive for other directions to prevent gridlock
-            if queues['other'] > queues['venue'] * 1.5:
-                return True
-        else:
-            # Normal queue check for non-venue areas
-            if sum(queues.values()) < self.current_params['queue_weight'] * 5:
-                return True
-        
-        # Maximum green time check
-        if phase_duration >= self.max_green_time:
-            return True
-        
-        return False
-
-    def run(self, steps: int = 1000):
-        """
-        Run the special event simulation.
-        """
+    def run_episode(self, steps: int = 600, pbar_steps: tqdm = None):
+        """Run a single simulation episode."""
         sumo_cmd = [
             'sumo',
             '-n', self.net_file,
@@ -262,59 +208,124 @@ class SpecialEventSimulation:
             '--waiting-time-memory', '1000',
             '--no-warnings',
             '--duration-log.disable',
-            '--time-to-teleport', '-1',
+            '--time-to-teleport', '300',  # Allow teleporting after 5 minutes
             '--collision.action', 'warn',
-            '--start',
+            '--seed', str(random.randint(0, 10000)),
+            '--step-length', str(self.delta_time),
+            '--begin', '0',
             '--quit-on-end',
+            '--random',
+            '--max-depart-delay', '1800',  # 30 minutes max delay
+            '--lateral-resolution', '0.8',
+            '--ignore-route-errors',
+            '--no-internal-links'
         ]
         
-        traci.start(sumo_cmd, port=self.port)
-        
         try:
+            traci.start(sumo_cmd, port=self.port)
+            logging.info(f"SUMO started on port {self.port} for episode.")
+            
             self._initialize_traffic_lights()
             
             for step in range(steps):
-                traci.simulationStep()
+                try:
+                    traci.simulationStep()
+                except Exception as e:
+                    logging.error(f"Error during simulation step {step}: {e}")
+                    break
                 
-                # Handle all traffic lights
-                for tl_id in traci.trafficlight.getIDList():
-                    if self.tl_phases[tl_id] > 0:
-                        if self._should_change_phase(tl_id, step):
-                            current_phase = traci.trafficlight.getPhase(tl_id)
-                            next_phase = (current_phase + 1) % self.tl_phases[tl_id]
-                            traci.trafficlight.setPhase(tl_id, next_phase)
-                            self.phase_start_times[tl_id] = step
+                # Create venue area congestion periodically
+                if step % self.disruption_interval == 0:
+                    self._create_venue_area_congestion(step)
+                
+                # Regular control with event-specific adjustments
+                for tl_id in self.tl_list:
+                    if self.tl_phases[tl_id]['total_phases'] > 0:
+                        if step % self.cycle_length == 0 or np.random.random() < self.random_change_prob:
+                            try:
+                                current_phase = traci.trafficlight.getPhase(tl_id)
+                                next_phase = self._get_event_adjusted_phase(tl_id, current_phase)
+                                traci.trafficlight.setPhase(tl_id, next_phase)
+                            except Exception as e:
+                                logging.error(f"Error setting phase for traffic light {tl_id}: {e}")
                 
                 vehicle_data = self._get_vehicle_data()
                 self._update_metrics(vehicle_data)
                 
+                if pbar_steps is not None:
+                    pbar_steps.update(1)
+                
+        except Exception as e:
+            logging.error(f"Simulation error: {e}")
         finally:
-            traci.close()
+            try:
+                traci.close()
+                logging.info(f"SUMO closed for episode.")
+            except Exception as e:
+                logging.error(f"Error closing SUMO: {e}")
             sys.stdout.flush()
-            
-        return self.metrics_history
+
+    def run(self, episodes: int = 1, steps: int = 600):
+        """Run multiple simulation episodes."""
+        all_metrics = {
+            'average_waiting_time': [],
+            'max_waiting_time': []
+        }
+        
+        with tqdm(total=episodes, desc="Episodes", unit="episode") as pbar_episodes:
+            for episode in range(episodes):
+                print(f"\nRunning episode {episode + 1}/{episodes}")
+                start_time = time.time()
+                self.metrics_history = {
+                    'average_waiting_time': [],
+                    'max_waiting_time': []
+                }
+                
+                with tqdm(total=steps, desc=f"Episode {episode + 1} Steps", leave=False, unit="step") as pbar_steps:
+                    self.run_episode(steps=steps, pbar_steps=pbar_steps)
+                
+                if self.metrics_history['average_waiting_time']:
+                    all_metrics['average_waiting_time'].append(self.metrics_history['average_waiting_time'][-1])
+                else:
+                    logging.warning(f"No data for Average Waiting Time in episode {episode + 1}")
+                
+                if self.metrics_history['max_waiting_time']:
+                    all_metrics['max_waiting_time'].append(self.metrics_history['max_waiting_time'][-1])
+                else:
+                    logging.warning(f"No data for Max Waiting Time in episode {episode + 1}")
+                
+                end_time = time.time()
+                print(f"Episode {episode + 1} completed in {end_time - start_time:.2f} seconds")
+                
+                if self.metrics_history['average_waiting_time']:
+                    avg_wait = self.metrics_history['average_waiting_time'][-1]
+                    print(f"Episode {episode + 1} - Average Waiting Time: {avg_wait:.2f} seconds")
+                else:
+                    print(f"Episode {episode + 1} - No data for Average Waiting Time.")
+                
+                if self.metrics_history['max_waiting_time']:
+                    max_wait = self.metrics_history['max_waiting_time'][-1]
+                    print(f"Episode {episode + 1} - Max Waiting Time: {max_wait:.2f} seconds")
+                else:
+                    print(f"Episode {episode + 1} - No data for Max Waiting Time.")
+                
+                pbar_episodes.update(1)
+        
+        print("\nBaseline Special Event Results:")
+        if all_metrics['average_waiting_time']:
+            print(f"Average Waiting Time: {np.mean(all_metrics['average_waiting_time']):.2f} ± {np.std(all_metrics['average_waiting_time']):.2f} seconds")
+        else:
+            print("No data for Average Waiting Time.")
+        
+        if all_metrics['max_waiting_time']:
+            print(f"Average Max Waiting Time: {np.mean(all_metrics['max_waiting_time']):.2f} ± {np.std(all_metrics['max_waiting_time']):.2f} seconds")
+        else:
+            print("No data for Max Waiting Time.")
+
 
 if __name__ == "__main__":
-    # Run simulation for different event types and phases
-    events = [
-        (EventType.SPORTS, "Red Sox Game"),
-        (EventType.CONCERT, "TD Garden Concert"),
-        (EventType.GRADUATION, "University Graduation"),
-        (EventType.CONVENTION, "Convention Center Event")
-    ]
+    # Run baseline special event simulation
+    sim = BaselineSpecialEventSimulation()
     
-    for event_type, event_name in events:
-        print(f"\nSimulating {event_name}:")
-        for phase in EventPhase:
-            print(f"\nEvent Phase: {phase.value}")
-            sim = SpecialEventSimulation(
-                event_type=event_type,
-                event_phase=phase
-            )
-            metrics = sim.run(steps=1000)
-            
-            print(f"Results:")
-            print(f"Average Waiting Time: {metrics['average_waiting_time'][-1]:.2f} seconds")
-            print(f"Total Throughput: {metrics['total_throughput'][-1]} vehicles")
-            print(f"Average Speed: {metrics['average_speed'][-1]:.2f} km/h")
-            print(f"Max Waiting Time: {metrics['max_waiting_time'][-1]:.2f} seconds")
+    # Run the simulation with 1 episode and 600 steps
+    sim.run(episodes=1, steps=600)

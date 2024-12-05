@@ -11,7 +11,6 @@ from src.utils.logger import get_logger
 import time
 import contextlib
 
-
 class MACSFEnvironment:
     def __init__(self, config):
         # Initialize logger
@@ -235,6 +234,78 @@ class MACSFEnvironment:
         self.logger.debug(f"Neighbor states for {tl_id}: {neighbor_states}")
         return np.array(neighbor_states)
 
+    def compute_global_reward(self):
+        """
+        Compute the global reward based on overall grid performance.
+        For example, you can use negative average waiting time and negative average queue length plus total throughput.
+        """
+        total_waiting_time = 0
+        total_queue_length = 0
+        total_throughput = 0
+        num_lanes = 0
+
+        for tl_id in self.agent_ids:
+            for lane_id in traci.trafficlight.getControlledLanes(tl_id):
+                total_waiting_time += traci.lane.getWaitingTime(lane_id)
+                total_queue_length += traci.lane.getLastStepHaltingNumber(lane_id)
+                total_throughput += traci.lane.getLastStepVehicleNumber(lane_id)
+                num_lanes += 1
+
+        if num_lanes == 0:
+            self.logger.warning("No lanes controlled by traffic lights. Global reward set to 0.")
+            avg_waiting_time = 0
+            avg_queue_length = 0
+        else:
+            avg_waiting_time = total_waiting_time / num_lanes
+            avg_queue_length = total_queue_length / num_lanes
+
+        # Get reward weights from config
+        reward_weights = self.config.get('reward_weights', {
+            'waiting_time': 1.0,
+            'queue_length': 1.0,
+            'throughput': 1.0
+        })
+
+        # Compute global reward: similar to individual rewards
+        global_reward = (
+            -reward_weights['waiting_time'] * avg_waiting_time +
+            -reward_weights['queue_length'] * avg_queue_length +
+            reward_weights['throughput'] * total_throughput
+        )
+
+        self.logger.debug(f"Global Reward: {global_reward} (Avg Waiting Time: {avg_waiting_time}, "
+                          f"Avg Queue Length: {avg_queue_length}, Total Throughput: {total_throughput})")
+
+        return global_reward
+
+    def compute_reward(self, tl_id):
+        waiting_time = 0
+        queue_length = 0
+        throughput = 0
+
+        for lane_id in traci.trafficlight.getControlledLanes(tl_id):
+            waiting_time += traci.lane.getWaitingTime(lane_id)
+            queue_length += traci.lane.getLastStepHaltingNumber(lane_id)
+            throughput += traci.lane.getLastStepVehicleNumber(lane_id)
+
+        # Get reward weights from config
+        reward_weights = self.config.get('reward_weights', {
+            'waiting_time': 1.0,
+            'queue_length': 1.0,
+            'throughput': 1.0
+        })
+
+        # Compute reward: penalize waiting time and queue length, reward throughput
+        reward = (
+            -reward_weights['waiting_time'] * waiting_time +
+            -reward_weights['queue_length'] * queue_length +
+            reward_weights['throughput'] * throughput
+        )
+
+        self.logger.debug(f"Reward for {tl_id}: {reward} (waiting_time: {waiting_time}, "
+                          f"queue_length: {queue_length}, throughput: {throughput})")
+        return reward
+
     def step(self, actions):
         self.logger.debug("Applying actions to all traffic lights")
         # Apply actions
@@ -249,10 +320,13 @@ class MACSFEnvironment:
         try:
             states = [self.get_state(tl_id) for tl_id in self.agent_ids]
             neighbor_states = [self.get_neighbor_states(tl_id) for tl_id in self.agent_ids]
-            rewards = [self.compute_reward(tl_id) for tl_id in self.agent_ids]
+            local_rewards = [self.compute_reward(tl_id) for tl_id in self.agent_ids]
         except Exception as e:
             self.logger.error(f"Error while collecting states or rewards: {e}")
             raise e
+
+        # Compute global reward
+        global_reward = self.compute_global_reward()
 
         # Check termination
         current_time = traci.simulation.getTime()
@@ -264,11 +338,12 @@ class MACSFEnvironment:
             'total_waiting_time': sum([traci.lane.getWaitingTime(lane) for tl_id in self.agent_ids for lane in traci.trafficlight.getControlledLanes(tl_id)]),
             'avg_waiting_time': np.mean([traci.lane.getWaitingTime(lane) for tl_id in self.agent_ids for lane in traci.trafficlight.getControlledLanes(tl_id)]),
             'avg_queue_length': np.mean([traci.lane.getLastStepHaltingNumber(lane) for tl_id in self.agent_ids for lane in traci.trafficlight.getControlledLanes(tl_id)]),
-            'throughput': sum([traci.lane.getLastStepVehicleNumber(lane) for tl_id in self.agent_ids for lane in traci.trafficlight.getControlledLanes(tl_id)])
+            'throughput': sum([traci.lane.getLastStepVehicleNumber(lane) for tl_id in self.agent_ids for lane in traci.trafficlight.getControlledLanes(tl_id)]),
+            'global_reward': global_reward  # Add global reward to info
         }
 
         self.logger.debug(f"Step info: {info}")
-        return states, neighbor_states, rewards, dones, info
+        return states, neighbor_states, local_rewards, dones, info
 
     def apply_action(self, tl_id, actions):
         """
@@ -325,8 +400,53 @@ class MACSFEnvironment:
             reward_weights['throughput'] * throughput
         )
 
-        self.logger.debug(f"Reward for {tl_id}: {reward} (waiting_time: {waiting_time}, queue_length: {queue_length}, throughput: {throughput})")
+        self.logger.debug(f"Reward for {tl_id}: {reward} (waiting_time: {waiting_time}, "
+                          f"queue_length: {queue_length}, throughput: {throughput})")
         return reward
+
+    def compute_global_reward(self):
+        """
+        Compute the global reward based on overall grid performance.
+        For example, you can use negative average waiting time and negative average queue length plus total throughput.
+        """
+        total_waiting_time = 0
+        total_queue_length = 0
+        total_throughput = 0
+        num_lanes = 0
+
+        for tl_id in self.agent_ids:
+            for lane_id in traci.trafficlight.getControlledLanes(tl_id):
+                total_waiting_time += traci.lane.getWaitingTime(lane_id)
+                total_queue_length += traci.lane.getLastStepHaltingNumber(lane_id)
+                total_throughput += traci.lane.getLastStepVehicleNumber(lane_id)
+                num_lanes += 1
+
+        if num_lanes == 0:
+            self.logger.warning("No lanes controlled by traffic lights. Global reward set to 0.")
+            avg_waiting_time = 0
+            avg_queue_length = 0
+        else:
+            avg_waiting_time = total_waiting_time / num_lanes
+            avg_queue_length = total_queue_length / num_lanes
+
+        # Get reward weights from config
+        reward_weights = self.config.get('reward_weights', {
+            'waiting_time': 1.0,
+            'queue_length': 1.0,
+            'throughput': 1.0
+        })
+
+        # Compute global reward: similar to individual rewards
+        global_reward = (
+            -reward_weights['waiting_time'] * avg_waiting_time +
+            -reward_weights['queue_length'] * avg_queue_length +
+            reward_weights['throughput'] * total_throughput
+        )
+
+        self.logger.debug(f"Global Reward: {global_reward} (Avg Waiting Time: {avg_waiting_time}, "
+                          f"Avg Queue Length: {avg_queue_length}, Total Throughput: {total_throughput})")
+
+        return global_reward
 
     def reset(self):
         self.logger.info("Resetting environment")
@@ -347,9 +467,13 @@ class MACSFEnvironment:
         try:
             states = [self.get_state(tl_id) for tl_id in self.agent_ids]
             neighbor_states = [self.get_neighbor_states(tl_id) for tl_id in self.agent_ids]
+            local_rewards = [self.compute_reward(tl_id) for tl_id in self.agent_ids]
         except Exception as e:
             self.logger.error(f"Error while collecting states or neighbor states during reset: {e}")
             raise e
+
+        # Compute global reward
+        global_reward = self.compute_global_reward()
 
         # Ensure the lists have the correct length
         if len(states) != self.n_agents:
@@ -358,9 +482,16 @@ class MACSFEnvironment:
         if len(neighbor_states) != self.n_agents:
             self.logger.error(f"Mismatch in number of neighbor_states during reset: Expected {self.n_agents}, got {len(neighbor_states)}")
             raise IndexError(f"Mismatch in number of neighbor_states during reset: Expected {self.n_agents}, got {len(neighbor_states)}")
+        if len(local_rewards) != self.n_agents:
+            self.logger.error(f"Mismatch in number of local_rewards during reset: Expected {self.n_agents}, got {len(local_rewards)}")
+            raise IndexError(f"Mismatch in number of local_rewards during reset: Expected {self.n_agents}, got {len(local_rewards)}")
+
+        info = {
+            'global_reward': global_reward
+        }
 
         self.logger.info("Environment reset completed")
-        return states, neighbor_states
+        return states, neighbor_states, local_rewards, info
 
     def close(self):
         """Cleanly close the environment and SUMO connection."""
@@ -395,7 +526,7 @@ class MACSFEnvironment:
         for vid in current_vehicles:
             vehicle_info = {
                 'vehicle_id': vid,
-                'waiting_time': traci.vehicle.getWaitingTime(vid) / 1000.0,  # Convert ms to s
+                'waiting_time': traci.vehicle.getWaitingTime(vid),
                 'speed': traci.vehicle.getSpeed(vid),  # m/s
                 'route_id': traci.vehicle.getRouteID(vid)
             }

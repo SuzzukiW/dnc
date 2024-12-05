@@ -62,12 +62,13 @@ class MACSFTrainer:
 
         # Initialize other training parameters
         self.num_episodes = self.training_config.get('num_episodes', 1000)
-        self.steps_per_episode = self.training_config.get('steps_per_episode', 200)
+        self.steps_per_episode = self.training_config.get('steps_per_episode', 200)  # Aligned with environment's max_episode_steps
         self.batch_size = self.training_config.get('batch_size', 128)
         self.gamma = self.training_config.get('gamma', 0.95)
         self.tau = self.training_config.get('tau', 0.01)
         self.update_every = self.training_config.get('update_every', 10)
         self.checkpoint_interval = self.training_config.get('checkpoint_interval', 50)
+        self.hybrid_alpha = self.training_config.get('hybrid_alpha', 0.5)  # Weight for local reward
 
         # Initialize checkpoint manager
         self.checkpoint_dir = os.path.join('checkpoints', 'casf', current_time)
@@ -100,9 +101,12 @@ class MACSFTrainer:
     def train(self):
         self.logger.info("Starting training")
         for episode in tqdm(range(1, self.num_episodes + 1), desc="Episodes"):
-            states, neighbor_states = self.env.reset()
+            # Reset environment
+            states, neighbor_states, local_rewards, info = self.env.reset()
             total_rewards = {agent_id: 0 for agent_id in self.agents}
             episode_metrics = {}
+            global_reward = info.get('global_reward', 0.0)
+
             for step in tqdm(range(1, self.steps_per_episode + 1), desc="Steps", leave=False):
                 actions = []
                 agent_ids = list(self.agents.keys())
@@ -111,8 +115,17 @@ class MACSFTrainer:
                     action = agent.act(states[idx], neighbor_states[idx], noise=0.1)
                     actions.append(action)
 
-                next_states, next_neighbor_states, rewards, dones, info = self.env.step(actions)
+                # Take a step in the environment
+                next_states, next_neighbor_states, local_rewards_step, dones, info_step = self.env.step(actions)
+                global_reward_step = info_step.get('global_reward', 0.0)
 
+                # Compute hybrid rewards
+                hybrid_rewards = {}
+                for idx, agent_id in enumerate(agent_ids):
+                    hybrid_reward = self.hybrid_alpha * local_rewards_step[idx] + (1 - self.hybrid_alpha) * global_reward_step
+                    hybrid_rewards[agent_id] = hybrid_reward
+
+                # Store experiences with hybrid rewards
                 for idx, agent_id in enumerate(agent_ids):
                     agent = self.agents[agent_id]
                     # Ensure consistent shapes for states and neighbor states
@@ -126,16 +139,17 @@ class MACSFTrainer:
                     agent.store_experience(
                         state=state,
                         action=actions[idx],
-                        reward=rewards[idx],
+                        reward=hybrid_rewards[agent_id],  # Use hybrid reward
                         next_state=next_state,
                         neighbor_next_state=neighbor_next_state,
                         neighbor_next_action=neighbor_next_action,  # Placeholder
                         done=dones[idx]
                     )
-                    total_rewards[agent_id] += rewards[idx]
+                    total_rewards[agent_id] += hybrid_rewards[agent_id]
 
                 states = next_states
                 neighbor_states = next_neighbor_states
+                global_reward = global_reward_step  # Update global reward for the next step
 
                 # Learn every update_every steps
                 if step % self.update_every == 0:
@@ -154,19 +168,32 @@ class MACSFTrainer:
             episode_metrics['total_throughput'] = total_thruput
             episode_metrics['average_speed'] = avg_speed
             episode_metrics['max_waiting_time'] = max_wait_time
+            episode_metrics['global_reward'] = global_reward_step
+            episode_metrics['hybrid_reward'] = np.mean(list(hybrid_rewards.values()))
+            episode_metrics['local_reward'] = np.mean(local_rewards_step)
             self.metrics_history.append(episode_metrics)
 
             # Log episode metrics
             with self.summary_writer.as_default():
-                for agent_id, reward in total_rewards.items():
-                    tf.summary.scalar(f'reward/{agent_id}', reward, step=episode)
+                for agent_id, reward in hybrid_rewards.items():
+                    tf.summary.scalar(f'hybrid_reward/{agent_id}', reward, step=episode)
                 tf.summary.scalar('average_waiting_time', avg_wait_time, step=episode)
                 tf.summary.scalar('total_throughput', total_thruput, step=episode)
                 tf.summary.scalar('average_speed', avg_speed, step=episode)
                 tf.summary.scalar('max_waiting_time', max_wait_time, step=episode)
+                tf.summary.scalar('global_reward', global_reward_step, step=episode)
+                tf.summary.scalar('average_local_reward', np.mean(local_rewards_step), step=episode)
+                tf.summary.scalar('average_hybrid_reward', np.mean(list(hybrid_rewards.values())), step=episode)
 
-            self.logger.info(f"Episode {episode}/{self.num_episodes} - Total Rewards: {total_rewards}")
-            self.logger.info(f"Episode {episode} Metrics: Average Waiting Time: {avg_wait_time}, Total Throughput: {total_thruput}, Average Speed: {avg_speed}, Max Waiting Time: {max_wait_time}")
+            self.logger.info(f"Episode {episode}/{self.num_episodes} - Hybrid Rewards: {total_rewards}")
+            self.logger.info(f"Episode {episode} Metrics: "
+                             f"Avg Waiting Time: {avg_wait_time}, "
+                             f"Total Throughput: {total_thruput}, "
+                             f"Avg Speed: {avg_speed}, "
+                             f"Max Waiting Time: {max_wait_time}, "
+                             f"Global Reward: {global_reward_step}, "
+                             f"Average Local Reward: {np.mean(local_rewards_step)}, "
+                             f"Average Hybrid Reward: {np.mean(list(hybrid_rewards.values()))}")
 
             # Save checkpoints
             if episode % self.checkpoint_interval == 0:
@@ -179,12 +206,18 @@ class MACSFTrainer:
         total_thruputs = [m['total_throughput'] for m in self.metrics_history]
         avg_speeds = [m['average_speed'] for m in self.metrics_history]
         max_wait_times = [m['max_waiting_time'] for m in self.metrics_history]
+        global_rewards = [m['global_reward'] for m in self.metrics_history]
+        hybrid_rewards = [m['hybrid_reward'] for m in self.metrics_history]
+        local_rewards = [m['local_reward'] for m in self.metrics_history]
 
         final_metrics = {
             'average_waiting_time': sum(avg_wait_times) / total_episodes,
             'total_throughput': sum(total_thruputs),
             'average_speed': sum(avg_speeds) / total_episodes,
-            'max_waiting_time': max(max_wait_times)
+            'max_waiting_time': max(max_wait_times),
+            'average_global_reward': sum(global_rewards) / total_episodes,
+            'average_hybrid_reward': sum(hybrid_rewards) / total_episodes,
+            'average_local_reward': sum(local_rewards) / total_episodes
         }
 
         self.logger.info("Training completed")
@@ -193,10 +226,11 @@ class MACSFTrainer:
         self.logger.info(f"Total Throughput: {final_metrics['total_throughput']}")
         self.logger.info(f"Average Speed: {final_metrics['average_speed']}")
         self.logger.info(f"Max Waiting Time: {final_metrics['max_waiting_time']}")
+        self.logger.info(f"Average Global Reward: {final_metrics['average_global_reward']}")
+        self.logger.info(f"Average Hybrid Reward: {final_metrics['average_hybrid_reward']}")
+        self.logger.info(f"Average Local Reward: {final_metrics['average_local_reward']}")
 
         self.env.close()
-
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train CASF Agents")

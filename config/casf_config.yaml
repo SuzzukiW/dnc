@@ -4,13 +4,14 @@ model_name: CASF
 version: 1.2
 
 training:
-  num_episodes: 20           # Increased from 20 to 1000 for better learning
+  num_episodes: 20          # Increased from 20 to 1000 for better learning
   steps_per_episode: 600       # Aligned with environment's max_episode_steps
   batch_size: 128
   gamma: 0.95
   tau: 0.01
   update_every: 10             # Reduced from 100 to 10 for more frequent updates
   checkpoint_interval: 50      # Adjusted to save checkpoints every 50 episodes
+  hybrid_alpha: 0.5            # Weight for local reward
 
 model:
   state_encoder_units: [256, 128]
@@ -32,7 +33,7 @@ model:
 environment:
   observation_dim: 28
   action_dim: 2                 # Increased from 1 to 2 for more control (e.g., phase and duration)
-  max_episode_steps: 200
+  max_episode_steps: 600        # Aligned with training steps_per_episode
   max_neighbors: 4
   communication_range: 1000
   max_phase_duration: 60

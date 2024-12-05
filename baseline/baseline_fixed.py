@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # baseline/baseline_fixed.py
 
 import os
@@ -14,7 +13,6 @@ if 'SUMO_HOME' in os.environ:
 else:
     sys.exit("Please declare environment variable 'SUMO_HOME'")
 
-# Import metrics
 from evaluation_sets.metrics import (
     average_waiting_time,
     total_throughput,
