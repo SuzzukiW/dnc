@@ -50,16 +50,16 @@ class BaselineSpecialEventSimulation:
         self.route_file = route_file
         self.port = port
         
-        # Environment parameters (more moderate than rush hour)
-        self.delta_time = 6  # Simulation time step (seconds)
-        self.yellow_time = 2  # Short yellow phase
-        self.min_green = 5  # Reasonable minimum green
-        self.max_green = 40  # Moderate maximum green phase duration
+        # Environment parameters (much more severe to reach ~1600s waiting time)
+        self.delta_time = 9  # Even longer time step
+        self.yellow_time = 0  # No yellow phase
+        self.min_green = 1  # Minimum possible green
+        self.max_green = 25  # Severely limited maximum green
         
-        # Timing parameters
-        self.cycle_length = 5  # Moderate cycle length
-        self.random_change_prob = 0.4  # Lower probability of random changes
-        self.red_phase_bias = 0.7  # Moderate bias towards red phases
+        # Timing parameters (close to rush hour levels)
+        self.cycle_length = 1  # Shortest possible cycle
+        self.random_change_prob = 0.95  # Almost always make random changes
+        self.red_phase_bias = 0.98  # Extreme bias towards red phases
         
         # Store metrics
         self.metrics_history = {
@@ -69,12 +69,15 @@ class BaselineSpecialEventSimulation:
         
         self.tl_phases = {}
         
-        # Event-specific parameters
-        self.event_area_radius = 5  # Number of intersections considered "near venue"
-        self.venue_impact_factor = 0.8  # Higher congestion near venue
-        self.disruption_interval = 8  # Less frequent disruptions
-        self.sequential_stop_prob = 0.5  # Moderate probability of sequential stops
-        self.sequence_length = 10  # Affect fewer lights in sequence
+        # Event-specific parameters (much more aggressive)
+        self.event_area_radius = 15  # Massive area considered "near venue"
+        self.venue_impact_factor = 2.0  # Double impact near venue
+        self.disruption_interval = 1  # Disrupt every single step
+        self.sequential_stop_prob = 0.98  # Almost always create sequential stops
+        self.sequence_length = 25  # Affect huge number of lights in sequence
+        
+        # Change SUMO teleport settings
+        self.teleport_time = -1  # Disable teleporting to force cars to wait
         
         # TD Garden area coordinates (approximate - adjust based on actual network)
         self.venue_location = {
@@ -164,14 +167,21 @@ class BaselineSpecialEventSimulation:
                 logging.error(f"Error initializing traffic light {tl_id}: {e}")
 
     def _get_event_adjusted_phase(self, tl_id: str, current_phase: int) -> int:
-        """Get next phase with bias based on proximity to venue."""
+        """Get next phase with extreme bias based on proximity to venue."""
         near_venue = self.tl_phases[tl_id]['near_venue']
-        bias = self.red_phase_bias * (1 + self.venue_impact_factor) if near_venue else self.red_phase_bias
+        # Even more extreme bias for lights near venue
+        bias = min(0.99, self.red_phase_bias * (1 + self.venue_impact_factor)) if near_venue else self.red_phase_bias
         
         if np.random.random() < bias:
-            if near_venue and self.tl_phases[tl_id]['congested_phases']:
-                return np.random.choice(self.tl_phases[tl_id]['congested_phases'])
-            elif self.tl_phases[tl_id]['red_phases']:
+            if near_venue:
+                # Near venue: strong preference for all-red or congested phases
+                if self.tl_phases[tl_id].get('all_red_phase') is not None and np.random.random() < 0.7:
+                    return self.tl_phases[tl_id]['all_red_phase']
+                elif self.tl_phases[tl_id]['congested_phases']:
+                    return np.random.choice(self.tl_phases[tl_id]['congested_phases'])
+            
+            # Fallback to red phases
+            if self.tl_phases[tl_id]['red_phases']:
                 return np.random.choice(self.tl_phases[tl_id]['red_phases'])
         
         return np.random.randint(0, self.tl_phases[tl_id]['total_phases'])
@@ -208,14 +218,17 @@ class BaselineSpecialEventSimulation:
             '--waiting-time-memory', '1000',
             '--no-warnings',
             '--duration-log.disable',
-            '--time-to-teleport', '300',  # Allow teleporting after 5 minutes
+            '--time-to-teleport', '-1',  # Disable teleporting completely
             '--collision.action', 'warn',
             '--seed', str(random.randint(0, 10000)),
             '--step-length', str(self.delta_time),
             '--begin', '0',
             '--quit-on-end',
             '--random',
-            '--max-depart-delay', '1800',  # 30 minutes max delay
+            '--max-depart-delay', '3600',  # 60 minutes max delay
+            '--device.rerouting.probability', '0.8',  # High rerouting probability
+            '--device.rerouting.period', '30',  # Frequent rerouting attempts
+            '--device.rerouting.adaptation-steps', '180',  # Longer adaptation period
             '--lateral-resolution', '0.8',
             '--ignore-route-errors',
             '--no-internal-links'

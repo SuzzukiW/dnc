@@ -200,7 +200,7 @@ class BaselineFixedSimulation:
 
 if __name__ == "__main__":
     # Run baseline simulation matching RL episodes
-    num_episodes = 20
+    num_episodes = 1
     max_steps = 600
     all_metrics = {
         'average_waiting_time': [],
