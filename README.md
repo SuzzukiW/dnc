@@ -1,59 +1,104 @@
-# CoLight: Cooperative Light Signal Optimization via Multi-Agent Reinforcement Learning
+# Decentralized Neural Traffic Orchestration
 
-## Overview
-This project implements a multi-agent reinforcement learning system to optimize traffic light patterns in a simulated city grid, reducing congestion and improving traffic flow efficiency through cooperative learning.
+This repository accompanies the paper "Decentralized Neural Traffic Orchestration" at CDS DS 340 Fall 2024, at Boston University.
 
-## Team
-- George Jiang
-- Xiang Fu
+## Setup
 
-## Multi-Agent Deep Deterministic Policy Gradient (MADDPG)
+### Python Environment
 
-### Implementation Details
-- Centralized training with decentralized execution
-- Supports multiple agents in a cooperative learning environment
-- Uses Ornstein-Uhlenbeck noise for exploration
-- Configurable hyperparameters via YAML configuration
-
-### Key Components
-- `src/agents/maddpg_agent.py`: Multi-Agent DDPG Agent implementation
-- `src/models/maddpg_network.py`: Neural network architectures
-- `src/environment/maddpg_env.py`: Multi-agent environment wrapper
-- `experiments/train_multi_agent_maddpg.py`: Training script
-- `config/maddpg.yaml`: Configuration management
-
-## Setup and Installation
-
-### Prerequisites
-- Python 3.8+
-- pip
-
-### Installation
+1. Create and activate a new conda environment (recommended):
 ```bash
-git clone https://github.com/your-repo/colight.git
-cd colight
+conda create -n maestro python=3.8
+conda activate maestro
+```
+
+2. Install the package and dependencies:
+```bash
+# Install the package in development mode
+pip install -e .
+
+# Install required dependencies
 pip install -r requirements.txt
 ```
 
-### Training
-To train the MADDPG agent:
-```bash
-python experiments/train_multi_agent_maddpg.py
+### Requirements
+- Python 3.8+
+- PyTorch
+- SUMO (Simulation of Urban MObility)
+- Other dependencies listed in `requirements.txt`
+
+### GPU Support
+This project supports GPU acceleration for training deep learning models. To use GPU:
+- Ensure you have CUDA-compatible GPU
+- Install CUDA toolkit and cuDNN
+- PyTorch will automatically detect and use available GPU
+
+### Weights & Biases Integration
+We use Weights & Biases (WandB) for experiment tracking and visualization. To use WandB:
+1. Install wandb: `pip install wandb`
+2. Login to your WandB account: `wandb login`
+3. Set your project name in the configuration files
+4. Experiments will automatically log metrics and hyperparameters
+
+## Dataset
+The dataset is organized in the `data/` directory, containing:
+- Traffic scenarios
+- Network configurations
+- Traffic demand patterns
+
+### Data Structure
+```
+data/
+├── scenarios/      # Different traffic network scenarios
+├── demand/         # Traffic demand patterns
+└── configs/        # Configuration files for different setups
 ```
 
-## Configuration
-Modify `config/maddpg.yaml` to adjust:
-- Environment settings
-- Training hyperparameters
-- Noise parameters
-- Logging options
+## Using Checkpoints
+Model checkpoints are stored in the `experiments/models/` directory. To use a checkpoint:
+1. Navigate to the checkpoint directory
+2. Load the model using the appropriate configuration file
+3. Checkpoints contain model weights and training state
 
-## Dependencies
-- PyTorch
-- NumPy
-- Gymnasium
-- YAML
-- tqdm
+## Running Experiments
+
+### Training
+Training experiments are organized in the `experiments/train/` directory. To run an experiment:
+1. Configure your experiment parameters in the config files
+2. Execute the training script with your chosen configuration
+3. Monitor progress through WandB dashboard
+
+### Evaluation
+Evaluation scripts are in the `experiments/evaluate/` directory:
+1. Select the model checkpoint to evaluate
+2. Choose the evaluation scenario
+3. Run the evaluation script
+
+## Analysis Tools
+
+### Statistics and Tables
+- Use scripts in the `tools/` directory for data analysis
+- Generate performance metrics and statistical comparisons
+- Export results in various formats (CSV, JSON)
+
+### Visualization
+The project includes tools for:
+- Traffic flow visualization
+- Performance metrics plotting
+- Learning curves and training statistics
+
+## Notes
+
+### Naming Conventions
+- Model checkpoints: `{model_name}_{scenario}_{timestamp}.pth`
+- Configuration files: `{scenario}_{config_type}.yaml`
+- Results: `{experiment_name}_{date}_{metrics}.csv`
+
+### Implementation Details
+- Based on PyTorch for deep learning components
+- Uses SUMO's TraCI interface for traffic simulation
+- Modular architecture for easy extension and modification
+- Supports multiple traffic signal control algorithms
 
 ## License
-[Specify your license here]
+MIT License
