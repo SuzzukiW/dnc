@@ -49,10 +49,18 @@ venv/
 env/
 
 # Ignore cache and temporary files
-__pycache__/
 .cache/
 .tmp/
 *.tmp
 
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints/
+
+# Python cache files and directories
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Additional Python-related ignores
+.Python
+*.so
