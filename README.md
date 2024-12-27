@@ -1,5 +1,7 @@
 # Decentralized Neural Traffic Orchestration
 
+[_Xiang Fu_](https://xfu.fufoundation.co) and [_George Jiang_](https://www.linkedin.com/in/georgejiang1/)
+
 This repository accompanies the paper "Decentralized Neural Traffic Orchestration" at CDS DS 340 Fall 2024, at Boston University.
 
 ## Setup
